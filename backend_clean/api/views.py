@@ -68,7 +68,7 @@ class RegisterView(generics.CreateAPIView):
 
         try:
             subject = "Verify Your Account - Smart Resort"
-            message = (
+            message_body = (
                 f"Dear {user.first_name or user.username},\n\n"
                 f"Thank you for registering at Smart Resort! To complete your registration, "
                 f"please use the following 6-digit One-Time Password (OTP):\n\n"
@@ -79,18 +79,20 @@ class RegisterView(generics.CreateAPIView):
             )
             send_mail(
                 subject,
-                message,
+                message_body,
                 None,
                 [user.email],
                 fail_silently=False,
             )
+            success_msg = "Registration initiated. Verification OTP sent to your email."
         except Exception as e:
             print(f"Failed to send email to {user.email}: {str(e)}")
             print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}")
+            success_msg = f"Registration initiated. (Email failed to send. Your OTP is: {otp_code})"
 
         return Response({
             "status": "otp_sent",
-            "message": "Registration initiated. Verification OTP sent to your email.",
+            "message": success_msg,
             "username": user.username,
             "email": user.email
         }, status=status.HTTP_201_CREATED)
@@ -170,7 +172,7 @@ class ResendOTPView(APIView):
 
         try:
             subject = "Verify Your Account - Smart Resort"
-            message = (
+            message_body = (
                 f"Dear {user.first_name or user.username},\n\n"
                 f"You requested a new One-Time Password (OTP) for your registration. "
                 f"Please use the following 6-digit code:\n\n"
@@ -181,18 +183,20 @@ class ResendOTPView(APIView):
             )
             send_mail(
                 subject,
-                message,
+                message_body,
                 None,
                 [user.email],
                 fail_silently=False,
             )
+            success_msg = "A new verification OTP has been sent to your email."
         except Exception as e:
             print(f"Failed to send email to {user.email}: {str(e)}")
             print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}")
+            success_msg = f"A new verification OTP has been sent. (Email failed to send. Your OTP is: {otp_code})"
 
         return Response({
             "status": "otp_resent",
-            "message": "A new verification OTP has been sent to your email.",
+            "message": success_msg,
             "email": user.email
         }, status=status.HTTP_200_OK)
 
