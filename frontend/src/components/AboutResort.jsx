@@ -1,0 +1,188 @@
+import { useState, useEffect } from 'react';
+import api from '../services/api';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+
+const AboutResort = () => {
+  const [info, setInfo] = useState(null);
+
+  useEffect(() => {
+    api.get('rooms/info/').then(res => setInfo(res.data[0])).catch(console.error);
+  }, []);
+
+  useScrollReveal('#about .slide-in-up', [info]);
+
+  return (
+    <div className="section-padding bg-light overflow-hidden">
+      <div className="container">
+        {/* Header */}
+        <div className="text-center mb-5">
+          <h6 className="text-accent text-uppercase fw-bold letter-spacing-2 mb-2">The Esmeralda Story</h6>
+          <h2 className="display-4 fw-bold mb-3">About Our Paradise</h2>
+          <div className="divider mx-auto" style={{ width: '80px', height: '4px', backgroundColor: 'var(--color-accent)', borderRadius: '2px' }}></div>
+        </div>
+
+        {/* Main Intro with Collage Effect */}
+        <div className="row align-items-center mb-5 pb-5">
+          <div className="col-lg-6 mb-5 mb-lg-0 slide-in-up" style={{ animationDelay: '0.1s' }}>
+            <div className="position-relative">
+              <img src="/resort_img/3.jpeg" alt="Resort" className="img-fluid rounded-4 shadow-lg w-100" style={{ height: '450px', objectFit: 'cover' }} />
+              <div className="position-absolute bottom-0 start-0 m-4 p-4 bg-white rounded-4 shadow-lg d-none d-md-block border-start border-accent border-4" style={{ width: '250px', zIndex: '5' }}>
+                <h5 className="fw-bold text-accent mb-1">Authentic Kerala</h5>
+                <p className="text-muted small mb-0">Experience nature in its purest form at Thusharagiri.</p>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6 ps-lg-5 slide-in-up" style={{ animationDelay: '0.2s' }}>
+            <h2 className="display-6 fw-bold mb-4">{info?.name || 'Esmeralda Boutique Resort'}</h2>
+            <p className="lead text-dark mb-4" style={{ lineHeight: '1.8' }}>
+              {info?.description || 'Tucked away in the lush greenery of Thusharigiri, Esmeralda Boutique Resort is a peaceful and private escape designed for couples and small families who seek quality time, beautiful views, and a calming ambience.'}
+            </p>
+            <div className="row g-3">
+              <div className="col-6">
+                <div className="p-3 bg-white rounded-3 shadow-sm border-start border-accent border-4">
+                  <h6 className="fw-bold mb-1">Privacy First</h6>
+                  <p className="text-muted small mb-0">Isolated cottages for total peace.</p>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="p-3 bg-white rounded-3 shadow-sm border-start border-accent border-4">
+                  <h6 className="fw-bold mb-1">Nature-Centric</h6>
+                  <p className="text-muted small mb-0">Surrounded by vibrant plantations.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Nature Section with Parallax-ish feel */}
+        <div className="row align-items-center mb-5 py-5 flex-lg-row-reverse">
+          <div className="col-lg-6 mb-5 mb-lg-0 slide-in-up" style={{ animationDelay: '0.1s' }}>
+            <div className="position-relative">
+              <img src="/resort_img/4.jpeg" alt="Plantation" className="img-fluid rounded-4 shadow-lg w-100" style={{ height: '400px', objectFit: 'cover' }} />
+              <div className="position-absolute top-0 end-0 m-3 p-3 bg-accent rounded-circle text-white d-flex align-items-center justify-content-center shadow-lg" style={{ width: '100px', height: '100px', transform: 'translate(30px, -30px)' }}>
+                <div className="text-center">
+                  <span className="d-block fw-bold fs-4">10+</span>
+                  <small className="x-small">Varieties</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="col-lg-6 pe-lg-5 slide-in-up" style={{ animationDelay: '0.2s' }}>
+            <h3 className="display-6 fw-bold mb-4">🌿 A Living Green Experience</h3>
+            <p className="text-muted mb-4" style={{ fontSize: '1.1rem', lineHeight: '1.8' }}>
+              Spread across a lush green landscape, Esmeralda is home to a vibrant mix of fruit trees and spice plantations. As you walk through the estate, you’ll come across <strong>mango, jackfruit, guava, avocado</strong>, along with <strong>coffee, cardamom, cloves</strong>, and more.
+            </p>
+            <div className="p-4 bg-white rounded-4 border-start border-accent border-5 shadow-sm italic">
+               "More than just greenery, this is a living ecosystem that brings a sense of calm, freshness, and authenticity to your stay."
+            </div>
+          </div>
+        </div>
+
+        {/* Info & Amenities Grid */}
+        <div className="row g-4 mt-5">
+          <div className="col-lg-4 slide-in-up" style={{ animationDelay: '0.1s' }}>
+            <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+              <div className="bg-accent p-4 text-white">
+                <h4 className="fw-bold mb-0"><i className="fas fa-home me-2"></i>Stay Options</h4>
+              </div>
+              <div className="card-body p-4">
+                 <p className="text-muted mb-0">
+                  <i className="fas fa-check text-accent me-2"></i> 5 Private Single Cottages <br />
+                  <i className="fas fa-check text-accent me-2"></i> Double Cottages <br />
+                  <i className="fas fa-check text-accent me-2"></i> Spacious Luxury Rooms<br />
+                  <i className="fas fa-check text-accent me-2"></i> 24/7 Security & CCTV Surveillance<br />
+                  <i className="fas fa-check text-accent me-2"></i> Complimentary Breakfast<br />
+                  <i className="fas fa-check text-accent me-2"></i> Free Wi-Fi Access<br />
+                  <i className="fas fa-check text-accent me-2"></i>Campfire & Bonfire Area<br />  
+                  <i className="fas fa-check text-accent me-2"></i> Car Parking<br />
+                  <i className="fas fa-check text-accent me-2"></i> 1 Spacious Two-Bedroom Cottage
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-lg-8 slide-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="h-100 rounded-5 p-4 p-md-5 position-relative overflow-hidden shadow-sm border" style={{ backgroundColor: '#ffffff' }}>
+              <div className="position-absolute top-0 end-0 p-5 opacity-10" style={{ transform: 'translate(20%, -20%)' }}>
+                <i className="fas fa-spa text-accent" style={{ fontSize: '12rem' }}></i>
+              </div>
+              
+              <div className="position-relative z-1">
+                <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
+                  <div className="bg-accent rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '50px', height: '50px' }}>
+                    <i className="fas fa-sparkles text-white fs-4"></i>
+                  </div>
+                  <h3 className="fw-bold text-dark mb-0">What Awaits You</h3>
+                </div>
+
+                <div className="row g-4 mt-2">
+                  {[
+                    { title: "Scenic Viewpoints", text: "Experience stunning sunsets and panoramic nature vistas.", icon: "fa-mountain", color: "#f39c12" },
+                    { title: "Infinity Pool", text: "Take a refreshing dip completely surrounded by greenery.", icon: "fa-swimming-pool", color: "#3498db" },
+                    { title: "Campfire Evenings", text: "Gather around the warm fire under a blanket of stars.", icon: "fa-fire", color: "#e74c3c" },
+                    { title: "Aesthetic Restaurent and Spacious Dining", text: "Savor freshly prepared meals featuring local authentic flavors.", icon: "fa-utensils", color: "#9b59b6" },
+                    { title: "Cool Climate", text: "Enjoy refreshing, crisp mountain breezes all year round.", icon: "fa-wind", color: "#1abc9c" }
+                  ].map((item, idx) => (
+                    <div key={idx} className="col-md-6">
+                      <div 
+                        className="d-flex align-items-center p-3 rounded-4 bg-white" 
+                        style={{ 
+                          border: '1px solid rgba(0,0,0,0.05)', 
+                          boxShadow: '0 8px 20px rgba(0,0,0,0.03)',
+                          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                          cursor: 'default'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
+                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.08)';
+                          e.currentTarget.style.borderColor = `${item.color}50`;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.transform = 'translateY(0) scale(1)';
+                          e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.03)';
+                          e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+                        }}
+                      >
+                        <div className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0 transition-all" style={{ width: '50px', height: '50px', backgroundColor: `${item.color}15`, color: item.color }}>
+                          <i className={`fas ${item.icon} fs-5`}></i>
+                        </div>
+                        <div>
+                          <h6 className="fw-bold mb-1 text-dark">{item.title}</h6>
+                          <p className="text-muted small mb-0 lh-sm" style={{ fontSize: '0.85rem' }}>{item.text}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Perfect For & Closing - Premium Redesign */}
+        <div className="mt-5 pt-4 mb-3 slide-in-up" style={{ animationDelay: '0.15s' }}>
+          <div className="position-relative rounded-5 overflow-hidden shadow-lg p-4 p-md-5 text-center" style={{ background: 'linear-gradient(135deg, #3e3325 0%, #1c1917 100%)', color: 'white' }}>
+            {/* Subtle background image overlay for texture */}
+            <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundImage: 'url(/resort_img/1.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: '0.15', mixBlendMode: 'overlay' }}></div>
+            
+            <div className="position-relative z-1 py-3 py-md-4">
+              <span className="badge bg-white text-dark rounded-pill px-4 py-2 mb-4 text-uppercase fw-bold shadow-sm" style={{ letterSpacing: '2px', fontSize: '0.85rem' }}>
+                <i className="fas fa-heart text-danger me-2"></i> Perfect For
+              </span>
+              <h2 className="display-6 fw-bold mb-4 px-3">Couples & Micro Families Seeking Privacy</h2>
+              
+              <div className="mx-auto mt-4 pt-4 px-3" style={{ maxWidth: '800px', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
+                <p className="fst-italic fw-light mb-0 mt-2" style={{ fontSize: '1.5rem', lineHeight: '1.6', opacity: 0.95 }}>
+                  "At Esmeralda, it’s not just a stay… it’s where you slow down, 
+                  <span className="fw-bold px-2" style={{ color: '#ffd700' }}>reconnect</span>, and truly unwind."
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AboutResort;
