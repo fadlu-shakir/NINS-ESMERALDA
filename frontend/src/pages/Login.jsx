@@ -70,7 +70,9 @@ const AuthPage = () => {
           const errorMsg = error.response?.data?.detail || 
                            error.response?.data?.username?.[0] || 
                            error.response?.data?.email?.[0] || 
-                           'Registration failed';
+                           error.response?.data?.password?.[0] || 
+                           error.response?.data?.non_field_errors?.[0] || 
+                           'Registration failed. Please check your inputs.';
           toast.error(errorMsg);
         }
       } else {

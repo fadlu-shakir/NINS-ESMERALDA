@@ -66,6 +66,7 @@ class RegisterView(generics.CreateAPIView):
             expires_at=expires_at
         )
 
+        from django.conf import settings
         try:
             subject = "Verify Your Account - Smart Resort"
             message_body = (
@@ -84,7 +85,11 @@ class RegisterView(generics.CreateAPIView):
                 [user.email],
                 fail_silently=False,
             )
-            success_msg = "Registration initiated. Verification OTP sent to your email."
+            if not getattr(settings, 'EMAIL_HOST_USER', None):
+                # If no real email server is configured, tell the user the OTP directly
+                success_msg = f"Registration initiated. (Demo Mode: Your OTP is {otp_code})"
+            else:
+                success_msg = "Registration initiated. Verification OTP sent to your email."
         except Exception as e:
             print(f"Failed to send email to {user.email}: {str(e)}")
             print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}")
@@ -170,6 +175,7 @@ class ResendOTPView(APIView):
             expires_at=expires_at
         )
 
+        from django.conf import settings
         try:
             subject = "Verify Your Account - Smart Resort"
             message_body = (
@@ -188,7 +194,10 @@ class ResendOTPView(APIView):
                 [user.email],
                 fail_silently=False,
             )
-            success_msg = "A new verification OTP has been sent to your email."
+            if not getattr(settings, 'EMAIL_HOST_USER', None):
+                success_msg = f"A new verification OTP has been sent. (Demo Mode: Your OTP is {otp_code})"
+            else:
+                success_msg = "A new verification OTP has been sent to your email."
         except Exception as e:
             print(f"Failed to send email to {user.email}: {str(e)}")
             print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}")
