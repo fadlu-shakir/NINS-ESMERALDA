@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../utils/formatImage';
 
 const GalleryManager = () => {
   const [images, setImages] = useState([]);
@@ -147,7 +148,7 @@ const GalleryManager = () => {
             <div key={img.id} className="col-md-4 col-lg-3">
               <div className="card h-100 shadow-sm border-0 position-relative overflow-hidden group">
                 <img 
-                  src={img.image} 
+                  src={getImageUrl(img.image)} 
                   alt={img.caption || 'Gallery Image'} 
                   className="card-img-top" 
                   style={{ height: '200px', objectFit: 'cover' }} 

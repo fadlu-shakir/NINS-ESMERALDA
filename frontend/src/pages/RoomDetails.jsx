@@ -6,7 +6,7 @@ import { IoBed } from "react-icons/io5";
 import { GiCampfire } from "react-icons/gi";
 import { PiButterflyLight } from "react-icons/pi";
 import { TiWeatherPartlySunny } from "react-icons/ti";
-
+import { getImageUrl } from '../utils/formatImage';
 
 
 const RoomDetails = () => {
@@ -53,7 +53,10 @@ const RoomDetails = () => {
     );
   }
 
-  const images = [room.image, room.image2, room.image3, room.image4, room.image5].filter(Boolean);
+  const images = [room.image, room.image2, room.image3, room.image4, room.image5]
+    .filter(Boolean)
+    .map(getImageUrl);
+    
   if (images.length === 0) {
     images.push('/resort_img/7.jpeg'); // fallback image
   }

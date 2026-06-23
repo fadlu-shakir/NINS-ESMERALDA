@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
+import { getImageUrl } from '../utils/formatImage';
 
 const Gallery = () => {
   const [images, setImages] = useState([]);
@@ -64,7 +65,7 @@ const Gallery = () => {
                   style={{ cursor: 'pointer' }}
                 >
                   <img 
-                    src={img.image} 
+                    src={getImageUrl(img.image)} 
                     alt={img.caption || 'Resort Gallery'} 
                     className="card-img-top"
                     style={{ height: '250px', objectFit: 'cover', transition: 'transform 0.5s ease' }}
@@ -106,7 +107,7 @@ const Gallery = () => {
           </button>
 
           <div className="overlay-content text-center animate__animated animate__zoomIn" onClick={(e) => e.stopPropagation()}>
-            <img src={images[activeIndex].image} alt="Full View" className="img-fluid rounded shadow-lg mb-3" style={{ maxHeight: '75vh', objectFit: 'contain' }} />
+            <img src={getImageUrl(images[activeIndex].image)} alt="Full View" className="img-fluid rounded shadow-lg mb-3" style={{ maxHeight: '75vh', objectFit: 'contain' }} />
             <h4 className="text-white mb-1">{images[activeIndex].caption}</h4>
             <span className="text-white-50 small">Image {activeIndex + 1} of {images.length}</span>
           </div>

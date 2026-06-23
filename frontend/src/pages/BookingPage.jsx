@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import CustomCalendar from '../components/CustomCalendar';
 import api from '../services/api';
+import { getImageUrl } from '../utils/formatImage';
 
 const BookingPage = () => {
   const { id } = useParams();
@@ -82,7 +83,7 @@ const BookingPage = () => {
             <h2 className="mb-4">Complete Your Booking</h2>
             
             <div className="d-flex align-items-center mb-4 bg-light p-3 rounded">
-              <img src={room.image || '/resort_img/8.jpeg'} alt="Room" className="rounded" style={{ width: '100px', height: '80px', objectFit: 'cover' }} />
+              <img src={getImageUrl(room.image) || '/resort_img/8.jpeg'} alt="Room" className="rounded" style={{ width: '100px', height: '80px', objectFit: 'cover' }} />
               <div className="ms-3">
                 <h5 className="mb-1">{room.category_name}</h5>
                 <p className="text-accent mb-0">₹{room.price_per_night} / night</p>

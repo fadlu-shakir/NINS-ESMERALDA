@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { getImageUrl } from '../utils/formatImage';
 
 const RoomCard = ({ room }) => {
   return (
@@ -6,7 +7,7 @@ const RoomCard = ({ room }) => {
       {/* Image with Zoom effect */}
       <Link to={`/rooms/${room.id}`} className="luxury-card-img-wrapper rounded-top-3 d-block text-decoration-none">
         <img 
-          src={room.image || '/resort_img/6.jpeg'} 
+          src={getImageUrl(room.image) || '/resort_img/6.jpeg'} 
           className="luxury-card-img" 
           alt={room.room_number} 
         />

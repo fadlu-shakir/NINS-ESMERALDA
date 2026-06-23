@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../services/api';
+import { getImageUrl } from '../utils/formatImage';
 
 const UserDashboard = () => {
   const [bookings, setBookings] = useState([]);
@@ -88,7 +89,7 @@ const UserDashboard = () => {
             <tr key={booking.id}>
               <td>
                 <div className="d-flex align-items-center">
-                  <img src={booking.room_details?.image || 'https://via.placeholder.com/50'} alt="Room" className="rounded me-3" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
+                  <img src={getImageUrl(booking.room_details?.image) || 'https://via.placeholder.com/50'} alt="Room" className="rounded me-3" style={{ width: '50px', height: '50px', objectFit: 'cover' }} />
                   <div>
                     <h6 className="mb-0">{booking.room_details?.category_name}</h6>
                     <small className="text-muted">Room {booking.room_details?.room_number}</small>
