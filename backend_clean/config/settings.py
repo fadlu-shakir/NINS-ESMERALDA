@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django_filters',
     'cloudinary_storage',
     'cloudinary',
+    'anymail',
 
     # Single local app
     'api.apps.ApiConfig',
@@ -151,12 +152,10 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Email Configurations for OTP Verification
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER if EMAIL_HOST_USER else 'noreply@smartresort.com')
-EMAIL_TIMEOUT = 5
+EMAIL_BACKEND = 'anymail.backends.sendgrid.EmailBackend'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', os.getenv('EMAIL_HOST_USER', 'noreply@smartresort.com'))
+
+ANYMAIL = {
+    "SENDGRID_API_KEY": os.getenv("SENDGRID_API_KEY", ""),
+}
 
