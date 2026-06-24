@@ -85,7 +85,7 @@ class RegisterView(generics.CreateAPIView):
                 [user.email],
                 fail_silently=False,
             )
-            if not getattr(settings, 'ANYMAIL', {}).get('SENDGRID_API_KEY'):
+            if not getattr(settings, 'EMAIL_HOST_USER', None) and not getattr(settings, 'ANYMAIL', {}).get('SENDGRID_API_KEY'):
                 # If no real email server is configured, tell the user the OTP directly
                 success_msg = f"Registration initiated. (Demo Mode: Your OTP is {otp_code})"
             else:
@@ -194,7 +194,7 @@ class ResendOTPView(APIView):
                 [user.email],
                 fail_silently=False,
             )
-            if not getattr(settings, 'ANYMAIL', {}).get('SENDGRID_API_KEY'):
+            if not getattr(settings, 'EMAIL_HOST_USER', None) and not getattr(settings, 'ANYMAIL', {}).get('SENDGRID_API_KEY'):
                 success_msg = f"A new verification OTP has been sent. (Demo Mode: Your OTP is {otp_code})"
             else:
                 success_msg = "A new verification OTP has been sent to your email."
