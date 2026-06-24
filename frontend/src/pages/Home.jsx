@@ -6,6 +6,7 @@ import Gallery from '../components/Gallery';
 import AboutResort from '../components/AboutResort';
 import NearestAttractions from '../components/NearestAttractions';
 import Reviews from '../components/Reviews';
+import LocationMap from '../components/LocationMap';
 import { useScrollReveal } from '../hooks/useScrollReveal';
 import { useScrollParallax, use3DScroll } from '../hooks/useScrollParallax';
 
@@ -244,6 +245,11 @@ const Home = () => {
       {/* Attractions Section */}
       <div id="attractions" className="section-wrapper">
         <NearestAttractions />
+      </div>
+
+      {/* Location Map Section */}
+      <div id="location" className="section-wrapper bg-light">
+        <LocationMap />
       </div>
     </div>
   );
