@@ -79,6 +79,14 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const closeNavbar = () => {
+    const navbarCollapse = document.getElementById('navbarNav');
+    const toggler = document.querySelector('.navbar-toggler');
+    if (navbarCollapse && navbarCollapse.classList.contains('show') && toggler) {
+      toggler.click();
+    }
+  };
+
   return (
     <nav className={`navbar navbar-expand-lg fixed-top ${isTransparent ? 'transparent' : 'scrolled'}`}>
       <div className="container">
@@ -93,19 +101,19 @@ const Navbar = () => {
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item">
-              <a className="nav-link" href="/#">Home</a>
+              <a className="nav-link" href="/#" onClick={closeNavbar}>Home</a>
             </li>
             <li className="nav-item nav-item-has-megamenu">
-              <a className="nav-link" href="/#rooms">Rooms & Suites <i className="fas fa-chevron-down ms-1 x-small" style={{ fontSize: '0.65rem' }}></i></a>
+              <a className="nav-link" href="/#rooms" onClick={closeNavbar}>Rooms & Suites <i className="fas fa-chevron-down ms-1 x-small" style={{ fontSize: '0.65rem' }}></i></a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/#gallery">Gallery</a>
+              <a className="nav-link" href="/#gallery" onClick={closeNavbar}>Gallery</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/#about">About Us</a>
+              <a className="nav-link" href="/#about" onClick={closeNavbar}>About Us</a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/#reviews">Reviews</a>
+              <a className="nav-link" href="/#reviews" onClick={closeNavbar}>Reviews</a>
             </li>
 
             {user ? (
@@ -165,17 +173,17 @@ const Navbar = () => {
                   </a>
                   <ul className="dropdown-menu dropdown-menu-end shadow border-0">
                     {user.is_staff && (
-                      <li><Link className="dropdown-item" to="/admin"><i className="fas fa-cog me-2"></i>Admin Dashboard</Link></li>
+                      <li><Link className="dropdown-item" to="/admin" onClick={closeNavbar}><i className="fas fa-cog me-2"></i>Admin Dashboard</Link></li>
                     )}
-                    <li><Link className="dropdown-item" to="/dashboard"><i className="fas fa-tachometer-alt me-2"></i>Dashboard</Link></li>
+                    <li><Link className="dropdown-item" to="/dashboard" onClick={closeNavbar}><i className="fas fa-tachometer-alt me-2"></i>Dashboard</Link></li>
                     <li><hr className="dropdown-divider" /></li>
-                    <li><button className="dropdown-item text-danger" onClick={handleLogout}><i className="fas fa-sign-out-alt me-2"></i>Logout</button></li>
+                    <li><button className="dropdown-item text-danger" onClick={() => { handleLogout(); closeNavbar(); }}><i className="fas fa-sign-out-alt me-2"></i>Logout</button></li>
                   </ul>
                 </li>
               </>
             ) : (
               <li className="nav-item">
-                <Link className="nav-link" to="/login">Login / Register</Link>
+                <Link className="nav-link" to="/login" onClick={closeNavbar}>Login / Register</Link>
               </li>
             )}
           </ul>
