@@ -642,6 +642,11 @@ a:hover {
   .navbar-brand {
     font-size: 0.95rem;
   }
+  
+  .sticky-filter-btn {
+    padding: 12px 16px;
+    font-size: 0.75rem;
+  }
 }
 
 /* Luxury Editorial Styles (Iris Ceramica Inspired) */
@@ -723,6 +728,18 @@ a:hover {
   padding: 15px 20px;
   position: relative;
   transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.filter-scroll-container {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  gap: 0.5rem;
+}
+.filter-scroll-container::-webkit-scrollbar {
+  display: none;
 }
 
 .sticky-filter-btn:hover, .sticky-filter-btn.active {

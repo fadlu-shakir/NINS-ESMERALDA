@@ -53,7 +53,7 @@ const Rooms = () => {
       {/* Elegant Sticky Filter Bar */}
       <div className="sticky-filter-bar py-1 mb-5">
         <div className="container">
-          <div className="d-flex flex-wrap justify-content-center align-items-center gap-1">
+          <div className="filter-scroll-container justify-content-md-center align-items-center">
             <button 
               className={`sticky-filter-btn ${activeCategory === '' ? 'active' : ''}`}
               onClick={() => setActiveCategory('')}
