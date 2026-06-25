@@ -81,28 +81,38 @@ const AboutResort = () => {
         {/* Info & Amenities Grid */}
         <div className="row g-4 mt-5">
           <div className="col-lg-4 slide-in-up" style={{ animationDelay: '0.1s' }}>
-            <div className="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
-              <div className="bg-accent p-4 text-white">
-                <h4 className="fw-bold mb-0"><i className="fas fa-home me-2"></i>Stay Options</h4>
+            <div className="h-100 rounded-5 overflow-hidden position-relative" style={{
+              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.5))',
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 1)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.05)'
+            }}>
+              <div className="p-4 d-flex align-items-center border-bottom border-white border-opacity-50" style={{ background: 'rgba(255,255,255,0.3)' }}>
+                <div className="rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '45px', height: '45px', background: 'var(--color-accent)' }}>
+                  <i className="fas fa-home text-white fs-5"></i>
+                </div>
+                <h4 className="fw-bold mb-0 text-dark font-serif-luxury">Stay Options</h4>
               </div>
-              <div className="card-body p-4">
-                 <p className="text-muted mb-0">
-                  <i className="fas fa-check text-accent me-2"></i> 5 Private Single Cottages <br />
-                  <i className="fas fa-check text-accent me-2"></i> Double Cottages <br />
-                  <i className="fas fa-check text-accent me-2"></i> Spacious Luxury Rooms<br />
-                  <i className="fas fa-check text-accent me-2"></i> 24/7 Security & CCTV Surveillance<br />
-                  <i className="fas fa-check text-accent me-2"></i> Complimentary Breakfast<br />
-                  <i className="fas fa-check text-accent me-2"></i> Free Wi-Fi Access<br />
-                  <i className="fas fa-check text-accent me-2"></i>Campfire & Bonfire Area<br />  
-                  <i className="fas fa-check text-accent me-2"></i> Car Parking<br />
-                  <i className="fas fa-check text-accent me-2"></i> 1 Spacious Two-Bedroom Cottage
-                </p>
+              <div className="p-4 p-md-5">
+                 <ul className="list-unstyled mb-0 d-flex flex-column gap-3">
+                  <li className="d-flex align-items-start"><i className="fas fa-check text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">5 Private Single Cottages</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-check text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">Double Cottages</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-check text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">Spacious Luxury Rooms</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-check text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">1 Two-Bedroom Cottage</span></li>
+                  <div className="divider my-2" style={{ height: '1px', backgroundColor: 'rgba(0,0,0,0.1)' }}></div>
+                  <li className="d-flex align-items-start"><i className="fas fa-shield-alt text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">24/7 Security & CCTV</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-coffee text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">Complimentary Breakfast</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-wifi text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">Free Wi-Fi Access</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-fire text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">Campfire & Bonfire Area</span></li>
+                  <li className="d-flex align-items-start"><i className="fas fa-parking text-accent mt-1 me-3"></i> <span className="text-dark fw-medium opacity-75">Secure Car Parking</span></li>
+                </ul>
               </div>
             </div>
           </div>
 
           <div className="col-lg-8 slide-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="h-100 rounded-5 position-relative overflow-hidden shadow-lg" style={{ minHeight: '500px' }}>
+            <div className="h-100 rounded-5 position-relative overflow-hidden shadow-sm border border-white" style={{ minHeight: '500px' }}>
               
               {/* Image Background */}
               <div className="position-absolute top-0 start-0 w-100 h-100" style={{ 
@@ -112,8 +122,13 @@ const AboutResort = () => {
                 zIndex: 0 
               }}></div>
               
-              {/* Overlay to ensure readability while keeping the glass effect */}
-              <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 0 }}></div>
+              {/* Refined Liquid Glass Overlay */}
+              <div className="position-absolute top-0 start-0 w-100 h-100" style={{ 
+                background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1))', 
+                backdropFilter: 'blur(16px)', 
+                WebkitBackdropFilter: 'blur(16px)', 
+                zIndex: 0 
+              }}></div>
 
               <div className="position-relative z-1 p-4 p-md-5 h-100 d-flex flex-column justify-content-center">
                 <div className="d-flex align-items-center mb-5 pb-3 border-bottom border-dark border-opacity-10">
@@ -132,50 +147,50 @@ const AboutResort = () => {
                     { title: "Infinity Pool", text: "A refreshing dip surrounded by lush greenery.", icon: "fa-swimming-pool" },
                     { title: "Campfire Evenings", text: "Warm fires under a blanket of stars.", icon: "fa-fire" },
                     { title: "Aesthetic Dining", text: "Fresh meals with authentic local flavors.", icon: "fa-utensils" },
-                    { title: "Cool Climate", text: "Crisp, refreshing mountain breezes all year.", icon: "fa-wind" }
+                    { title: "Cool Climate", text: "Crisp, refreshing mountain breezes all year round.", icon: "fa-wind" }
                   ].map((item, idx) => (
-                    <div key={idx} className="col-md-6">
+                    <div key={idx} className={idx === 4 ? "col-12" : "col-md-6"}>
                       <div 
-                        className="d-flex align-items-center p-3 rounded-4" 
+                        className="d-flex align-items-center p-3 p-md-4 rounded-4" 
                         style={{ 
-                          background: 'rgba(255, 255, 255, 0.65)',
-                          border: '1px solid rgba(255, 255, 255, 0.9)', 
-                          backdropFilter: 'blur(15px)',
-                          WebkitBackdropFilter: 'blur(15px)',
-                          boxShadow: '0 8px 32px rgba(0,0,0,0.05)',
+                          background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4))',
+                          border: '1px solid rgba(255, 255, 255, 1)', 
+                          backdropFilter: 'blur(10px)',
+                          WebkitBackdropFilter: 'blur(10px)',
+                          boxShadow: '0 8px 32px rgba(0,0,0,0.03)',
                           transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                          cursor: 'default'
+                          cursor: 'pointer'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
+                          e.currentTarget.style.transform = 'translateY(-5px) scale(1.01)';
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.7))';
                           e.currentTarget.style.borderColor = 'var(--color-accent)';
-                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1), 0 0 15px rgba(197, 168, 128, 0.3)';
+                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.08), 0 0 15px rgba(197, 168, 128, 0.2)';
                           e.currentTarget.querySelector('.icon-box').style.transform = 'rotateY(180deg)';
                           e.currentTarget.querySelector('.icon-box').style.background = 'var(--color-accent)';
                           e.currentTarget.querySelector('.icon-box i').style.color = '#fff';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.65)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.9)';
-                          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.05)';
+                          e.currentTarget.style.background = 'linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4))';
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 1)';
+                          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.03)';
                           e.currentTarget.querySelector('.icon-box').style.transform = 'rotateY(0)';
                           e.currentTarget.querySelector('.icon-box').style.background = 'rgba(197, 168, 128, 0.1)';
                           e.currentTarget.querySelector('.icon-box i').style.color = 'var(--color-accent)';
                         }}
                       >
-                        <div className="icon-box rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ 
-                          width: '55px', height: '55px', 
+                        <div className="icon-box rounded-circle d-flex align-items-center justify-content-center me-4 flex-shrink-0" style={{ 
+                          width: '60px', height: '60px', 
                           background: 'rgba(197, 168, 128, 0.1)', 
                           transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
                           transformStyle: 'preserve-3d'
                         }}>
-                          <i className={`fas ${item.icon} fs-5`} style={{ color: 'var(--color-accent)', transition: 'color 0.3s' }}></i>
+                          <i className={`fas ${item.icon} fs-4`} style={{ color: 'var(--color-accent)', transition: 'color 0.3s' }}></i>
                         </div>
                         <div>
-                          <h6 className="fw-bold mb-1 text-dark letter-spacing-1">{item.title}</h6>
-                          <p className="mb-0 lh-sm text-dark opacity-75" style={{ fontSize: '0.85rem' }}>{item.text}</p>
+                          <h5 className="fw-bold mb-1 text-dark letter-spacing-1">{item.title}</h5>
+                          <p className="mb-0 lh-sm text-dark opacity-75" style={{ fontSize: '0.9rem' }}>{item.text}</p>
                         </div>
                       </div>
                     </div>
