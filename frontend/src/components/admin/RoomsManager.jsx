@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
+import { getImageUrl } from '../../utils/formatImage';
 
 const RoomsManager = () => {
   const [rooms, setRooms] = useState([]);
@@ -131,6 +132,42 @@ const RoomsManager = () => {
     return matchNo || matchCat;
   });
 
+  const renderImagePreviews = () => {
+    if (roomForm.images && roomForm.images.length > 0) {
+      return (
+        <div className="d-flex flex-wrap gap-2 mt-3">
+          {roomForm.images.map((file, index) => (
+            <div key={index} className="position-relative border rounded p-1 bg-white shadow-sm" style={{ width: '80px', height: '80px' }}>
+              <img src={URL.createObjectURL(file)} alt={`preview-${index}`} className="w-100 h-100 object-fit-cover rounded" />
+              {index === 0 && <span className="position-absolute bottom-0 start-50 translate-middle-x badge bg-primary" style={{ fontSize: '0.55rem', zIndex: 1 }}>Cover</span>}
+            </div>
+          ))}
+        </div>
+      );
+    } else if (editingRoom) {
+      const room = rooms.find(r => r.id === editingRoom);
+      if (room) {
+        const existingImages = [room.image, room.image2, room.image3, room.image4, room.image5].filter(Boolean);
+        if (existingImages.length > 0) {
+          return (
+            <div className="mt-3">
+              <small className="text-muted fw-bold d-block mb-2">Current Images:</small>
+              <div className="d-flex flex-wrap gap-2">
+                {existingImages.map((imgUrl, index) => (
+                  <div key={index} className="position-relative border rounded p-1 bg-white shadow-sm" style={{ width: '80px', height: '80px' }}>
+                    <img src={getImageUrl(imgUrl)} alt={`current-${index}`} className="w-100 h-100 object-fit-cover rounded" />
+                    {index === 0 && <span className="position-absolute bottom-0 start-50 translate-middle-x badge bg-secondary" style={{ fontSize: '0.55rem', zIndex: 1 }}>Cover</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        }
+      }
+    }
+    return null;
+  };
+
   return (
     <div className="row">
       <div className="col-lg-4 mb-4">
@@ -181,6 +218,7 @@ const RoomsManager = () => {
                 setRoomForm({...roomForm, images: files});
               }} />
               <small className="text-muted d-block mt-1">First image will be the primary cover image.</small>
+              {renderImagePreviews()}
             </div>
             <div className="d-flex gap-2">
               <button type="submit" className="btn btn-primary-modern flex-grow-1">
