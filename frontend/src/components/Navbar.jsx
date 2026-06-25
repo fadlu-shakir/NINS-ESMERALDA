@@ -82,8 +82,19 @@ const Navbar = () => {
   const closeNavbar = () => {
     const offcanvasNavbar = document.getElementById('navbarNav');
     if (offcanvasNavbar && offcanvasNavbar.classList.contains('show')) {
-      const offcanvasCloseBtn = offcanvasNavbar.querySelector('.btn-close');
-      if (offcanvasCloseBtn) offcanvasCloseBtn.click();
+      if (window.bootstrap) {
+        const bsOffcanvas = window.bootstrap.Offcanvas.getInstance(offcanvasNavbar);
+        if (bsOffcanvas) {
+          bsOffcanvas.hide();
+          return;
+        }
+      }
+      // Fallback if Bootstrap JS instance is unavailable
+      offcanvasNavbar.classList.remove('show');
+      const backdrop = document.querySelector('.offcanvas-backdrop');
+      if (backdrop) backdrop.remove();
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
   };
 
@@ -103,7 +114,7 @@ const Navbar = () => {
             <h5 className="offcanvas-title d-flex align-items-center fw-bold text-dark m-0" id="offcanvasNavbarLabel">
               <IoDiamondOutline className="me-2 text-accent fs-4" /> ESMERALDA
             </h5>
-            <button type="button" className="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            <button type="button" className="btn-close shadow-none" onClick={closeNavbar} aria-label="Close"></button>
           </div>
           <div className="offcanvas-body">
             <ul className="navbar-nav ms-auto align-items-center">

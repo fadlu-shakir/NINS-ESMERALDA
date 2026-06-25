@@ -219,6 +219,16 @@ a:hover {
   margin-top: 10px;
 }
 
+@media (max-width: 991px) {
+  .notification-dropdown {
+    position: static;
+    width: 100%;
+    margin-top: 15px;
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0;
+  }
+}
+
 .notification-item.unread {
   border-left: 4px solid var(--color-accent);
 }
