@@ -80,10 +80,10 @@ const Navbar = () => {
   };
 
   const closeNavbar = () => {
-    const navbarCollapse = document.getElementById('navbarNav');
-    const toggler = document.querySelector('.navbar-toggler');
-    if (navbarCollapse && navbarCollapse.classList.contains('show') && toggler) {
-      toggler.click();
+    const offcanvasNavbar = document.getElementById('navbarNav');
+    if (offcanvasNavbar && offcanvasNavbar.classList.contains('show')) {
+      const offcanvasCloseBtn = offcanvasNavbar.querySelector('.btn-close');
+      if (offcanvasCloseBtn) offcanvasCloseBtn.click();
     }
   };
 
@@ -94,12 +94,19 @@ const Navbar = () => {
           <IoDiamondOutline className="me-2 text-accent" />
           ESMERALDA BOUTIQUE RESORT
         </Link>
-        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <i className="fas fa-bars text-white"></i>
+        <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav">
+          <i className="fas fa-bars text-white fs-4"></i>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto align-items-center">
+        <div className="offcanvas offcanvas-start" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel" style={{ width: '300px' }}>
+          <div className="offcanvas-header border-bottom">
+            <h5 className="offcanvas-title d-flex align-items-center fw-bold text-dark m-0" id="offcanvasNavbarLabel">
+              <IoDiamondOutline className="me-2 text-accent fs-4" /> ESMERALDA
+            </h5>
+            <button type="button" className="btn-close shadow-none" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div className="offcanvas-body">
+            <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item">
               <a className="nav-link" href="/#" onClick={closeNavbar}>Home</a>
             </li>
@@ -187,6 +194,7 @@ const Navbar = () => {
               </li>
             )}
           </ul>
+          </div>
         </div>
       </div>
     </nav>
