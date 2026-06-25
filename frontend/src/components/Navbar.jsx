@@ -98,7 +98,7 @@ const Navbar = () => {
           <i className={`fas fa-bars fs-4 ${!isTransparent ? 'text-dark' : 'text-white'}`}></i>
         </button>
 
-        <div className="offcanvas-lg offcanvas-start" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel" style={{ width: '300px' }}>
+        <div className="offcanvas-lg offcanvas-end" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel" style={{ width: '300px' }}>
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title d-flex align-items-center fw-bold text-dark m-0" id="offcanvasNavbarLabel">
               <IoDiamondOutline className="me-2 text-accent fs-4" /> ESMERALDA
