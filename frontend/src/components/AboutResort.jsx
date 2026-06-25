@@ -102,22 +102,27 @@ const AboutResort = () => {
           </div>
 
           <div className="col-lg-8 slide-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="h-100 rounded-5 p-4 p-md-5 position-relative overflow-hidden shadow-lg" style={{ background: 'linear-gradient(145deg, var(--color-primary), #2a2522)' }}>
+            <div className="h-100 rounded-5 position-relative overflow-hidden shadow-lg" style={{ minHeight: '500px' }}>
               
-              {/* Premium Background Abstract Elements */}
-              <div className="position-absolute top-0 end-0 p-5 opacity-10" style={{ transform: 'translate(10%, -10%)' }}>
-                <i className="fas fa-leaf text-accent" style={{ fontSize: '15rem', filter: 'blur(4px)' }}></i>
-              </div>
-              <div className="position-absolute bottom-0 start-0 opacity-10" style={{ transform: 'translate(-20%, 20%)', width: '300px', height: '300px', background: 'radial-gradient(circle, var(--color-accent) 0%, transparent 70%)', filter: 'blur(40px)' }}></div>
+              {/* Image Background */}
+              <div className="position-absolute top-0 start-0 w-100 h-100" style={{ 
+                backgroundImage: 'url(/resort_img/2.jpeg)', 
+                backgroundSize: 'cover', 
+                backgroundPosition: 'center', 
+                zIndex: 0 
+              }}></div>
               
-              <div className="position-relative z-1">
-                <div className="d-flex align-items-center mb-5 pb-3 border-bottom border-light border-opacity-10">
-                  <div className="rounded-circle d-flex align-items-center justify-content-center me-4 shadow-lg" style={{ width: '60px', height: '60px', background: 'linear-gradient(135deg, var(--color-accent), #8c7350)' }}>
+              {/* Overlay to ensure readability while keeping the glass effect */}
+              <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', zIndex: 0 }}></div>
+
+              <div className="position-relative z-1 p-4 p-md-5 h-100 d-flex flex-column justify-content-center">
+                <div className="d-flex align-items-center mb-5 pb-3 border-bottom border-dark border-opacity-10">
+                  <div className="rounded-circle d-flex align-items-center justify-content-center me-4 shadow-sm" style={{ width: '60px', height: '60px', background: 'var(--color-accent)' }}>
                     <i className="fas fa-sparkles text-white fs-3"></i>
                   </div>
                   <div>
                     <h6 className="text-accent text-uppercase fw-bold letter-spacing-2 mb-1" style={{ fontSize: '0.75rem' }}>Experience The Magic</h6>
-                    <h3 className="fw-bold text-white mb-0 font-serif-luxury display-6">What Awaits You</h3>
+                    <h3 className="fw-bold text-dark mb-0 font-serif-luxury display-6">What Awaits You</h3>
                   </div>
                 </div>
 
@@ -133,28 +138,28 @@ const AboutResort = () => {
                       <div 
                         className="d-flex align-items-center p-3 rounded-4" 
                         style={{ 
-                          background: 'rgba(255, 255, 255, 0.03)',
-                          border: '1px solid rgba(255, 255, 255, 0.05)', 
-                          backdropFilter: 'blur(10px)',
-                          WebkitBackdropFilter: 'blur(10px)',
-                          boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                          background: 'rgba(255, 255, 255, 0.65)',
+                          border: '1px solid rgba(255, 255, 255, 0.9)', 
+                          backdropFilter: 'blur(15px)',
+                          WebkitBackdropFilter: 'blur(15px)',
+                          boxShadow: '0 8px 32px rgba(0,0,0,0.05)',
                           transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                           cursor: 'default'
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                          e.currentTarget.style.borderColor = 'rgba(197, 168, 128, 0.3)';
-                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.2), 0 0 15px rgba(197, 168, 128, 0.1)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
+                          e.currentTarget.style.borderColor = 'var(--color-accent)';
+                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.1), 0 0 15px rgba(197, 168, 128, 0.3)';
                           e.currentTarget.querySelector('.icon-box').style.transform = 'rotateY(180deg)';
                           e.currentTarget.querySelector('.icon-box').style.background = 'var(--color-accent)';
                           e.currentTarget.querySelector('.icon-box i').style.color = '#fff';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
-                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.65)';
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.9)';
+                          e.currentTarget.style.boxShadow = '0 8px 32px rgba(0,0,0,0.05)';
                           e.currentTarget.querySelector('.icon-box').style.transform = 'rotateY(0)';
                           e.currentTarget.querySelector('.icon-box').style.background = 'rgba(197, 168, 128, 0.1)';
                           e.currentTarget.querySelector('.icon-box i').style.color = 'var(--color-accent)';
@@ -169,8 +174,8 @@ const AboutResort = () => {
                           <i className={`fas ${item.icon} fs-5`} style={{ color: 'var(--color-accent)', transition: 'color 0.3s' }}></i>
                         </div>
                         <div>
-                          <h6 className="fw-bold mb-1 text-white letter-spacing-1">{item.title}</h6>
-                          <p className="mb-0 lh-sm" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>{item.text}</p>
+                          <h6 className="fw-bold mb-1 text-dark letter-spacing-1">{item.title}</h6>
+                          <p className="mb-0 lh-sm text-dark opacity-75" style={{ fontSize: '0.85rem' }}>{item.text}</p>
                         </div>
                       </div>
                     </div>
