@@ -102,53 +102,75 @@ const AboutResort = () => {
           </div>
 
           <div className="col-lg-8 slide-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="h-100 rounded-5 p-4 p-md-5 position-relative overflow-hidden shadow-sm border" style={{ backgroundColor: '#ffffff' }}>
-              <div className="position-absolute top-0 end-0 p-5 opacity-10" style={{ transform: 'translate(20%, -20%)' }}>
-                <i className="fas fa-spa text-accent" style={{ fontSize: '12rem' }}></i>
+            <div className="h-100 rounded-5 p-4 p-md-5 position-relative overflow-hidden shadow-lg" style={{ background: 'linear-gradient(145deg, var(--color-primary), #2a2522)' }}>
+              
+              {/* Premium Background Abstract Elements */}
+              <div className="position-absolute top-0 end-0 p-5 opacity-10" style={{ transform: 'translate(10%, -10%)' }}>
+                <i className="fas fa-leaf text-accent" style={{ fontSize: '15rem', filter: 'blur(4px)' }}></i>
               </div>
+              <div className="position-absolute bottom-0 start-0 opacity-10" style={{ transform: 'translate(-20%, 20%)', width: '300px', height: '300px', background: 'radial-gradient(circle, var(--color-accent) 0%, transparent 70%)', filter: 'blur(40px)' }}></div>
               
               <div className="position-relative z-1">
-                <div className="d-flex align-items-center mb-4 pb-3 border-bottom">
-                  <div className="bg-accent rounded-circle d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '50px', height: '50px' }}>
-                    <i className="fas fa-sparkles text-white fs-4"></i>
+                <div className="d-flex align-items-center mb-5 pb-3 border-bottom border-light border-opacity-10">
+                  <div className="rounded-circle d-flex align-items-center justify-content-center me-4 shadow-lg" style={{ width: '60px', height: '60px', background: 'linear-gradient(135deg, var(--color-accent), #8c7350)' }}>
+                    <i className="fas fa-sparkles text-white fs-3"></i>
                   </div>
-                  <h3 className="fw-bold text-dark mb-0">What Awaits You</h3>
+                  <div>
+                    <h6 className="text-accent text-uppercase fw-bold letter-spacing-2 mb-1" style={{ fontSize: '0.75rem' }}>Experience The Magic</h6>
+                    <h3 className="fw-bold text-white mb-0 font-serif-luxury display-6">What Awaits You</h3>
+                  </div>
                 </div>
 
-                <div className="row g-4 mt-2">
+                <div className="row g-4">
                   {[
-                    { title: "Scenic Viewpoints", text: "Experience stunning sunsets and panoramic nature vistas.", icon: "fa-mountain", color: "#f39c12" },
-                    { title: "Infinity Pool", text: "Take a refreshing dip completely surrounded by greenery.", icon: "fa-swimming-pool", color: "#3498db" },
-                    { title: "Campfire Evenings", text: "Gather around the warm fire under a blanket of stars.", icon: "fa-fire", color: "#e74c3c" },
-                    { title: "Aesthetic Restaurent and Spacious Dining", text: "Savor freshly prepared meals featuring local authentic flavors.", icon: "fa-utensils", color: "#9b59b6" },
-                    { title: "Cool Climate", text: "Enjoy refreshing, crisp mountain breezes all year round.", icon: "fa-wind", color: "#1abc9c" }
+                    { title: "Scenic Viewpoints", text: "Stunning sunsets & panoramic nature vistas.", icon: "fa-mountain" },
+                    { title: "Infinity Pool", text: "A refreshing dip surrounded by lush greenery.", icon: "fa-swimming-pool" },
+                    { title: "Campfire Evenings", text: "Warm fires under a blanket of stars.", icon: "fa-fire" },
+                    { title: "Aesthetic Dining", text: "Fresh meals with authentic local flavors.", icon: "fa-utensils" },
+                    { title: "Cool Climate", text: "Crisp, refreshing mountain breezes all year.", icon: "fa-wind" }
                   ].map((item, idx) => (
                     <div key={idx} className="col-md-6">
                       <div 
-                        className="d-flex align-items-center p-3 rounded-4 bg-white" 
+                        className="d-flex align-items-center p-3 rounded-4" 
                         style={{ 
-                          border: '1px solid rgba(0,0,0,0.05)', 
-                          boxShadow: '0 8px 20px rgba(0,0,0,0.03)',
-                          transition: 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)',
+                          background: 'rgba(255, 255, 255, 0.03)',
+                          border: '1px solid rgba(255, 255, 255, 0.05)', 
+                          backdropFilter: 'blur(10px)',
+                          WebkitBackdropFilter: 'blur(10px)',
+                          boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                          transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
                           cursor: 'default'
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = 'translateY(-5px) scale(1.02)';
-                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.08)';
-                          e.currentTarget.style.borderColor = `${item.color}50`;
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                          e.currentTarget.style.borderColor = 'rgba(197, 168, 128, 0.3)';
+                          e.currentTarget.style.boxShadow = '0 15px 30px rgba(0,0,0,0.2), 0 0 15px rgba(197, 168, 128, 0.1)';
+                          e.currentTarget.querySelector('.icon-box').style.transform = 'rotateY(180deg)';
+                          e.currentTarget.querySelector('.icon-box').style.background = 'var(--color-accent)';
+                          e.currentTarget.querySelector('.icon-box i').style.color = '#fff';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'translateY(0) scale(1)';
-                          e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.03)';
-                          e.currentTarget.style.borderColor = 'rgba(0,0,0,0.05)';
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                          e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+                          e.currentTarget.querySelector('.icon-box').style.transform = 'rotateY(0)';
+                          e.currentTarget.querySelector('.icon-box').style.background = 'rgba(197, 168, 128, 0.1)';
+                          e.currentTarget.querySelector('.icon-box i').style.color = 'var(--color-accent)';
                         }}
                       >
-                        <div className="rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0 transition-all" style={{ width: '50px', height: '50px', backgroundColor: `${item.color}15`, color: item.color }}>
-                          <i className={`fas ${item.icon} fs-5`}></i>
+                        <div className="icon-box rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style={{ 
+                          width: '55px', height: '55px', 
+                          background: 'rgba(197, 168, 128, 0.1)', 
+                          transition: 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                          transformStyle: 'preserve-3d'
+                        }}>
+                          <i className={`fas ${item.icon} fs-5`} style={{ color: 'var(--color-accent)', transition: 'color 0.3s' }}></i>
                         </div>
                         <div>
-                          <h6 className="fw-bold mb-1 text-dark">{item.title}</h6>
-                          <p className="text-muted small mb-0 lh-sm" style={{ fontSize: '0.85rem' }}>{item.text}</p>
+                          <h6 className="fw-bold mb-1 text-white letter-spacing-1">{item.title}</h6>
+                          <p className="mb-0 lh-sm" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>{item.text}</p>
                         </div>
                       </div>
                     </div>
