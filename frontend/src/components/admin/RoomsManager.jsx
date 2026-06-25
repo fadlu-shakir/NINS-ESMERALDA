@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { getImageUrl } from '../../utils/formatImage';
@@ -14,6 +14,7 @@ const RoomsManager = () => {
     check_in_time: '03:30 PM', check_out_time: '02:30 PM'
   });
   const [editingRoom, setEditingRoom] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchData();
@@ -65,6 +66,7 @@ const RoomsManager = () => {
       }
       setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', capacity: 2, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
       setEditingRoom(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
       fetchData();
     } catch (error) {
       console.error("API Error Response:", error.response?.data);
@@ -98,6 +100,7 @@ const RoomsManager = () => {
   const handleCancelRoomEdit = () => {
     setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', capacity: 2, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
     setEditingRoom(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleRoomStatusChange = async (roomId, is_available) => {
@@ -132,14 +135,53 @@ const RoomsManager = () => {
     return matchNo || matchCat;
   });
 
+  const handleRemoveImage = (indexToRemove) => {
+    const newImages = roomForm.images.filter((_, index) => index !== indexToRemove);
+    setRoomForm({ ...roomForm, images: newImages });
+    if (newImages.length === 0 && fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSetCover = (indexToCover) => {
+    if (indexToCover === 0) return;
+    const newImages = [...roomForm.images];
+    const coverImage = newImages.splice(indexToCover, 1)[0];
+    newImages.unshift(coverImage);
+    setRoomForm({ ...roomForm, images: newImages });
+  };
+
   const renderImagePreviews = () => {
     if (roomForm.images && roomForm.images.length > 0) {
       return (
         <div className="d-flex flex-wrap gap-2 mt-3">
           {roomForm.images.map((file, index) => (
-            <div key={index} className="position-relative border rounded p-1 bg-white shadow-sm" style={{ width: '80px', height: '80px' }}>
+            <div key={index} className="position-relative border rounded p-1 bg-white shadow-sm" style={{ width: '90px', height: '90px' }}>
               <img src={URL.createObjectURL(file)} alt={`preview-${index}`} className="w-100 h-100 object-fit-cover rounded" />
-              {index === 0 && <span className="position-absolute bottom-0 start-50 translate-middle-x badge bg-primary" style={{ fontSize: '0.55rem', zIndex: 1 }}>Cover</span>}
+              
+              <button 
+                type="button" 
+                className="btn btn-sm btn-danger rounded-circle position-absolute d-flex align-items-center justify-content-center p-0 shadow" 
+                style={{ top: '-6px', right: '-6px', width: '22px', height: '22px' }}
+                onClick={() => handleRemoveImage(index)}
+                title="Remove image"
+              >
+                <i className="fas fa-times" style={{ fontSize: '0.6rem' }}></i>
+              </button>
+
+              {index === 0 ? (
+                <span className="position-absolute bottom-0 start-50 translate-middle-x badge bg-primary shadow-sm" style={{ fontSize: '0.55rem', zIndex: 1, bottom: '-8px' }}>Cover</span>
+              ) : (
+                <button 
+                  type="button" 
+                  className="btn btn-sm btn-dark position-absolute bottom-0 start-50 translate-middle-x badge text-white px-2 shadow-sm" 
+                  style={{ fontSize: '0.5rem', zIndex: 1, whiteSpace: 'nowrap', opacity: 0.9, bottom: '-8px', border: 'none' }}
+                  onClick={() => handleSetCover(index)}
+                  title="Set as cover image"
+                >
+                  Set Cover
+                </button>
+              )}
             </div>
           ))}
         </div>
@@ -213,7 +255,7 @@ const RoomsManager = () => {
             </div>
             <div className="mb-4">
               <label className="form-label text-muted small fw-bold">Images (Up to 5)</label>
-              <input type="file" className="form-control" multiple accept="image/*" onChange={e => {
+              <input type="file" ref={fileInputRef} className="form-control" multiple accept="image/*" onChange={e => {
                 const files = Array.from(e.target.files).slice(0, 5);
                 setRoomForm({...roomForm, images: files});
               }} />
