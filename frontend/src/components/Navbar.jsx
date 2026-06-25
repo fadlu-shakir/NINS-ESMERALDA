@@ -95,10 +95,10 @@ const Navbar = () => {
           ESMERALDA BOUTIQUE RESORT
         </Link>
         <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav">
-          <i className="fas fa-bars text-white fs-4"></i>
+          <i className={`fas fa-bars fs-4 ${!isTransparent ? 'text-dark' : 'text-white'}`}></i>
         </button>
 
-        <div className="offcanvas offcanvas-start" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel" style={{ width: '300px' }}>
+        <div className="offcanvas-lg offcanvas-start" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel" style={{ width: '300px' }}>
           <div className="offcanvas-header border-bottom">
             <h5 className="offcanvas-title d-flex align-items-center fw-bold text-dark m-0" id="offcanvasNavbarLabel">
               <IoDiamondOutline className="me-2 text-accent fs-4" /> ESMERALDA
@@ -131,7 +131,7 @@ const Navbar = () => {
                     className="btn btn-link nav-link p-0 position-relative"
                     onClick={fetchNotifications}
                   >
-                    <IoNotificationsOutline size={24} className={!isTransparent ? "text-dark" : "text-white"} style={{ filter: isTransparent ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' : 'none' }} />
+                    <IoNotificationsOutline size={24} className="notification-icon" />
                     {unreadCount > 0 && (
                       <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: '0.6rem' }}>
                         {unreadCount}
