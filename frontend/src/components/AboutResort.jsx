@@ -161,33 +161,33 @@ const AboutResort = () => {
 
         {/* Perfect For & Closing - Liquid Glass Design */}
         <div className="mt-5 pt-4 mb-3 slide-in-up" style={{ animationDelay: '0.15s' }}>
-          <div className="position-relative rounded-5 overflow-hidden shadow-lg" style={{ minHeight: '400px', backgroundColor: '#1c1917' }}>
+          <div className="position-relative rounded-5 overflow-hidden shadow-lg" style={{ minHeight: '400px', background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
             
-            {/* Liquid Background Animation */}
+            {/* Liquid Background Animation (Water reflections) */}
             <div className="position-absolute w-100 h-100 top-0 start-0 overflow-hidden" style={{ zIndex: 0 }}>
               <div style={{
                 position: 'absolute', top: '-20%', left: '-10%', width: '70%', height: '70%',
-                background: 'radial-gradient(circle, rgba(197, 168, 128, 0.4) 0%, rgba(197, 168, 128, 0) 70%)',
-                borderRadius: '50%', filter: 'blur(40px)', animation: 'fluidMorph 8s infinite alternate'
+                background: 'radial-gradient(circle, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 70%)',
+                borderRadius: '50%', filter: 'blur(30px)', animation: 'fluidMorph 8s infinite alternate'
               }}></div>
               <div style={{
                 position: 'absolute', bottom: '-20%', right: '-10%', width: '80%', height: '80%',
-                background: 'radial-gradient(circle, rgba(235, 186, 120, 0.25) 0%, rgba(235, 186, 120, 0) 70%)',
+                background: 'radial-gradient(circle, rgba(161, 252, 253, 0.4) 0%, rgba(161, 252, 253, 0) 70%)',
                 borderRadius: '50%', filter: 'blur(40px)', animation: 'fluidMorphUser 10s infinite alternate-reverse'
               }}></div>
             </div>
             
             {/* Subtle Texture Overlay */}
-            <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundImage: 'url(/resort_img/1.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: '0.2', mixBlendMode: 'overlay', zIndex: 0 }}></div>
+            <div className="position-absolute top-0 start-0 w-100 h-100" style={{ backgroundImage: 'url(/resort_img/1.jpeg)', backgroundSize: 'cover', backgroundPosition: 'center', opacity: '0.1', mixBlendMode: 'overlay', zIndex: 0 }}></div>
             
             {/* Liquid Glass Card Center */}
             <div className="position-relative z-1 d-flex flex-column align-items-center justify-content-center h-100 p-4 p-md-5">
               <div className="p-4 p-md-5 rounded-5 text-center" style={{
-                background: 'rgba(255, 255, 255, 0.03)',
+                background: 'rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(24px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(24px) saturate(180%)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.3), inset 0 0 0 1px rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+                boxShadow: '0 8px 32px 0 rgba(0, 50, 100, 0.2), inset 0 0 0 1px rgba(255,255,255,0.2)',
                 color: 'white',
                 maxWidth: '900px',
                 width: '100%',
@@ -196,29 +196,30 @@ const AboutResort = () => {
               }}>
                 {/* Shine effect */}
                 <div className="position-absolute top-0 start-0 w-100 h-100" style={{
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%)',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%)',
                   pointerEvents: 'none'
                 }}></div>
 
                 <span className="badge rounded-pill px-4 py-2 mb-4 text-uppercase fw-bold position-relative" style={{ 
-                  background: 'rgba(255, 255, 255, 0.1)', 
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.2)', 
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
                   letterSpacing: '2px', 
                   fontSize: '0.85rem', 
                   backdropFilter: 'blur(10px)',
-                  color: 'white'
+                  color: 'white',
+                  boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
                 }}>
-                  <i className="fas fa-heart text-danger me-2"></i> Perfect For
+                  <i className="fas fa-heart text-white me-2"></i> Perfect For
                 </span>
                 
-                <h2 className="display-6 fw-bold mb-4 px-3 text-white position-relative" style={{ textShadow: '0 4px 15px rgba(0,0,0,0.5)' }}>
+                <h2 className="display-6 fw-bold mb-4 px-3 text-white position-relative" style={{ textShadow: '0 4px 15px rgba(0,100,200,0.4)' }}>
                   Couples & Micro Families Seeking Privacy
                 </h2>
                 
-                <div className="mx-auto mt-4 pt-4 px-3 position-relative" style={{ maxWidth: '800px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
-                  <p className="fst-italic fw-light mb-0 mt-2" style={{ fontSize: '1.5rem', lineHeight: '1.6', opacity: 0.95, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                <div className="mx-auto mt-4 pt-4 px-3 position-relative" style={{ maxWidth: '800px', borderTop: '1px solid rgba(255,255,255,0.3)' }}>
+                  <p className="fst-italic fw-light mb-0 mt-2" style={{ fontSize: '1.5rem', lineHeight: '1.6', opacity: 1, textShadow: '0 2px 10px rgba(0,100,200,0.3)' }}>
                     "At Esmeralda, it’s not just a stay… it’s where you slow down, 
-                    <span className="fw-bold px-2" style={{ color: '#ffd700', textShadow: '0 0 15px rgba(255,215,0,0.6)' }}>reconnect</span>, and truly unwind."
+                    <span className="fw-bold px-2" style={{ color: '#ffffff', textShadow: '0 0 15px rgba(255,255,255,0.8)' }}>reconnect</span>, and truly unwind."
                   </p>
                 </div>
               </div>
