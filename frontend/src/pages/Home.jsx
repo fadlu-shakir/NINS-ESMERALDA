@@ -139,11 +139,15 @@ const Home = () => {
                       {slide.subtitle}
                     </p>
 
-                    <div className="hero-cta-group fade-in-up">
+                    <div className="hero-cta-group fade-in-up d-flex flex-wrap gap-3 justify-content-center">
                       <a href={slide.buttonLink} className={`btn-hero-enhanced ${slide.buttonType}`}>
                         <span className="btn-text">{slide.buttonText}</span>
                         <span className="btn-icon">→</span>
                       </a>
+                      <Link to="/booking/entire-property" className="btn-hero-enhanced outline" style={{borderColor: 'rgba(255,255,255,0.7)', color: '#fff'}}>
+                        <span className="btn-text">Book Entire Property</span>
+                        <span className="btn-icon">★</span>
+                      </Link>
                     </div>
                   </div>
                 </div>

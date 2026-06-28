@@ -1,4 +1,5 @@
 import uuid
+from django.db import models
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework import generics, permissions, status, viewsets
@@ -279,7 +280,21 @@ class RoomViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def booked_dates(self, request, pk=None):
         room = self.get_object()
-        bookings = Booking.objects.filter(room=room, status__in=['Confirmed', 'Pending'])
+        # Include bookings for this room AND any bookings for the entire resort
+        bookings = Booking.objects.filter(models.Q(room=room) | models.Q(is_entire_resort=True), status__in=['Confirmed', 'Pending'])
+        data = []
+        for b in bookings:
+            data.append({
+                'check_in': b.check_in_date.strftime('%Y-%m-%d'),
+                'check_out': b.check_out_date.strftime('%Y-%m-%d'),
+                'status': b.status
+            })
+        return Response(data)
+
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
+    def entire_resort_booked_dates(self, request):
+        # The entire resort is unavailable if ANY room is booked or if the resort itself is booked
+        bookings = Booking.objects.filter(status__in=['Confirmed', 'Pending'])
         data = []
         for b in bookings:
             data.append({
