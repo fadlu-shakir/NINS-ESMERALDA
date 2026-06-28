@@ -217,8 +217,31 @@ const RoomsManager = () => {
           <h4 className="mb-4">{editingRoom ? 'Edit Room' : 'Add New Room'}</h4>
           <form onSubmit={handleRoomSubmit}>
             <div className="mb-3">
-              <label className="form-label text-muted small fw-bold">Room Number (Optional)</label>
-              <input type="text" className="form-control" value={roomForm.room_number || ''} onChange={e => setRoomForm({...roomForm, room_number: e.target.value})} placeholder="Leave blank for unnumbered" />
+              <label className="form-label text-muted small fw-bold">Select Room Number</label>
+              <div className="d-flex flex-wrap gap-2">
+                {Array.from({ length: 10 }, (_, i) => `R${i + 1}`).map(rNum => {
+                  const isUsed = rooms.some(r => r.room_number === rNum && r.id !== editingRoom);
+                  const isSelected = roomForm.room_number === rNum;
+                  return (
+                    <div 
+                      key={rNum}
+                      onClick={() => !isUsed && setRoomForm({...roomForm, room_number: rNum})}
+                      className={`border rounded d-flex align-items-center justify-content-center p-2 shadow-sm 
+                        ${isSelected ? 'bg-primary-modern text-white border-primary border-2' : isUsed ? 'bg-secondary text-white opacity-50' : 'bg-white'}`}
+                      style={{ 
+                        width: '45px', 
+                        height: '45px', 
+                        cursor: isUsed ? 'not-allowed' : 'pointer',
+                        transition: 'all 0.2s',
+                        transform: isSelected ? 'scale(1.1)' : 'none'
+                      }}
+                      title={isUsed ? 'Room already exists' : 'Select room'}
+                    >
+                      <span className="fw-bold" style={{ fontSize: '0.9rem' }}>{rNum}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="mb-3">
               <label className="form-label text-muted small fw-bold">Category</label>

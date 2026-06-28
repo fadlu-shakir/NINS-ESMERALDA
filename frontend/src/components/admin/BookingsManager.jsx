@@ -9,6 +9,13 @@ const BookingsManager = () => {
 
   useEffect(() => {
     fetchBookings();
+
+    const handleNewBooking = () => {
+      fetchBookings();
+    };
+
+    window.addEventListener('newBookingArrived', handleNewBooking);
+    return () => window.removeEventListener('newBookingArrived', handleNewBooking);
   }, []);
 
   const fetchBookings = async () => {

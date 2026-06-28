@@ -7,12 +7,14 @@ import NotificationsManager from '../components/admin/NotificationsManager';
 import UsersManager from '../components/admin/UsersManager';
 import AdminManager from '../components/admin/AdminManager';
 import GalleryManager from '../components/admin/GalleryManager';
+import NewBookingNotification from '../components/admin/NewBookingNotification';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('bookings');
 
   return (
     <div className="container py-5" style={{ marginTop: '70px' }}>
+      <NewBookingNotification />
       <h2 className="mb-4 border-bottom pb-3">Admin Dashboard</h2>
       
       <div className="d-flex flex-wrap gap-2 mb-5 p-2 shadow-sm rounded-4" style={{ background: '#f8f9fa', border: '1px solid #eaeaea' }}>
