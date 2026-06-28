@@ -28,10 +28,7 @@ const RoomCard = ({ room }) => {
 
       {/* Info Content Area */}
       <div className="p-4 d-flex flex-column flex-grow-1 border border-top-0 border-light rounded-bottom-3">
-        <div className="mb-2">
-          <span className="text-accent text-uppercase fw-bold x-small letter-spacing-2">Room {room.room_number}</span>
-        </div>
-        
+
         {/* Shifting Serif Title */}
         <h4 className="font-serif-luxury text-dark mb-3">
           <div className="luxury-title-container">

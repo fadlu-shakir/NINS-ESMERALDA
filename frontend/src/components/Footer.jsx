@@ -36,11 +36,6 @@ const Footer = () => {
                 </a>
               </li>
               <li className="mb-3">
-                <a href="https://wa.me/918590130953" target="_blank" rel="noopener noreferrer" className="text-decoration-none text-white hover-accent transition-all">
-                  <i className="fab fa-whatsapp me-2 text-accent"></i> +91 85901 30953
-                </a>
-              </li>
-              <li className="mb-3">
                 <a href="mailto:ninsesmeralda@gmail.com" className="text-decoration-none text-white hover-accent transition-all">
                   <i className="fas fa-envelope me-2 text-accent"></i> ninsesmeralda@gmail.com
                 </a>
