@@ -75,49 +75,25 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'room', 'room_details', 'is_entire_resort', 'check_in_date', 'check_out_date', 'total_amount', 'status', 'created_at', 'payment')
+        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'room', 'room_details', 'check_in_date', 'check_out_date', 'total_amount', 'status', 'created_at', 'payment')
         read_only_fields = ('user', 'total_amount', 'status')
 
     def validate(self, attrs):
         check_in = attrs.get('check_in_date')
         check_out = attrs.get('check_out_date')
         room = attrs.get('room')
-        is_entire_resort = attrs.get('is_entire_resort', False)
         
         if check_in and check_out and check_in >= check_out:
             raise serializers.ValidationError("Check-out date must be after check-in date.")
-            
-        # Check if entire resort is booked for these dates
-        overlapping_entire = Booking.objects.filter(
-            is_entire_resort=True,
+        
+        overlapping_bookings = Booking.objects.filter(
+            room=room,
             status__in=['Confirmed', 'Pending'],
             check_in_date__lt=check_out,
             check_out_date__gt=check_in
         )
-        if overlapping_entire.exists():
-            raise serializers.ValidationError("The entire resort is already booked for these dates.")
-            
-        if is_entire_resort:
-            # If trying to book entire resort, check if ANY room is booked
-            overlapping_rooms = Booking.objects.filter(
-                is_entire_resort=False,
-                status__in=['Confirmed', 'Pending'],
-                check_in_date__lt=check_out,
-                check_out_date__gt=check_in
-            )
-            if overlapping_rooms.exists():
-                raise serializers.ValidationError("Cannot book entire resort: some rooms are already booked for these dates.")
-        else:
-            if not room:
-                raise serializers.ValidationError("Room is required if not booking entire resort.")
-            overlapping_bookings = Booking.objects.filter(
-                room=room,
-                status__in=['Confirmed', 'Pending'],
-                check_in_date__lt=check_out,
-                check_out_date__gt=check_in
-            )
-            if overlapping_bookings.exists():
-                raise serializers.ValidationError("Room is already booked for these dates.")
+        if overlapping_bookings.exists():
+            raise serializers.ValidationError("Room is already booked for these dates.")
             
         return attrs
 

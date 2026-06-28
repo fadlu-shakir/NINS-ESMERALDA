@@ -20,69 +20,47 @@ const BookingPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-    const isEntireProperty = id === 'entire-property';
+  useEffect(() => {
+    api.get(`rooms/list/${id}/`).then(res => setRoom(res.data)).catch(console.error);
+    api.get(`rooms/list/${id}/booked_dates/`).then(res => {
+      setBookedDates(res.data);
+    }).catch(console.error);
+  }, [id]);
 
-    useEffect(() => {
-        if (isEntireProperty) {
-            api.get('rooms/list/').then(res => {
-                const availableRooms = res.data.filter(r => r.is_available);
-                const totalPrice = availableRooms.reduce((sum, r) => sum + parseFloat(r.price_per_night), 0) || 10000;
-                setRoom({
-                    category_name: 'Entire Resort',
-                    price_per_night: totalPrice,
-                    description: 'Book all available rooms in the property for exclusive access.',
-                    capacity: availableRooms.reduce((sum, r) => sum + r.capacity, 0) || 10
-                });
-            }).catch(console.error);
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-            api.get('rooms/list/entire_resort_booked_dates/').then(res => {
-                setBookedDates(res.data);
-            }).catch(console.error);
-        } else {
-            api.get(`rooms/list/${id}/`).then(res => setRoom(res.data)).catch(console.error);
-            api.get(`rooms/list/${id}/booked_dates/`).then(res => {
-                setBookedDates(res.data);
-            }).catch(console.error);
-        }
-    }, [id, isEntireProperty]);
+  const handleDateChange = (date, field) => {
+    if (date) {
+        const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+        setFormData({ ...formData, [field]: offsetDate.toISOString().split('T')[0] });
+    } else {
+        setFormData({ ...formData, [field]: '' });
+    }
+  };
 
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+  const calculateTotal = () => {
+    if (!formData.check_in_date || !formData.check_out_date || !room) return 0;
+    const start = new Date(formData.check_in_date + 'T00:00:00');
+    const end = new Date(formData.check_out_date + 'T00:00:00');
+    const diffTime = end - start;
+    if (diffTime <= 0) return room.price_per_night;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays * room.price_per_night;
+  };
 
-    const handleDateChange = (date, field) => {
-        if (date) {
-            const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-            setFormData({ ...formData, [field]: offsetDate.toISOString().split('T')[0] });
-        } else {
-            setFormData({ ...formData, [field]: '' });
-        }
-    };
-
-    const calculateTotal = () => {
-        if (!formData.check_in_date || !formData.check_out_date || !room) return 0;
-        const start = new Date(formData.check_in_date + 'T00:00:00');
-        const end = new Date(formData.check_out_date + 'T00:00:00');
-        const diffTime = end - start;
-        if (diffTime <= 0) return room.price_per_night;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays * room.price_per_night;
-    };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!formData.check_in_date || !formData.check_out_date) {
-            toast.error("Please select both dates");
-            return;
-        }
-        try {
-            const payload = { ...formData };
-            if (isEntireProperty) {
-                payload.is_entire_resort = true;
-            } else {
-                payload.room = id;
-            }
-            const res = await api.post('bookings/', payload);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.check_in_date || !formData.check_out_date) {
+        toast.error("Please select both dates");
+        return;
+    }
+    try {
+      const res = await api.post('bookings/', {
+        room: id,
+        ...formData
+      });
       toast.success('Booking created! Please complete payment.');
       navigate(`/payment/${res.data.id}`);
     } catch (error) {

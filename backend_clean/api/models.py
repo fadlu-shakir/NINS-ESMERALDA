@@ -69,8 +69,7 @@ class Booking(models.Model):
     )
 
     user = models.ForeignKey(User, related_name='bookings', on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE, null=True, blank=True)
-    is_entire_resort = models.BooleanField(default=False)
+    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     guest_count = models.IntegerField(default=1)
@@ -82,21 +81,11 @@ class Booking(models.Model):
         return f"{self.user.username} - {self.room.room_number} ({self.status})"
 
     def save(self, *args, **kwargs):
-        if self.check_in_date and self.check_out_date:
+        if self.check_in_date and self.check_out_date and self.room:
             days = (self.check_out_date - self.check_in_date).days
             if days <= 0:
                 days = 1
-            
-            if self.is_entire_resort and not self.total_amount:
-                # Sum the price of all available rooms
-                total_daily_price = sum(r.price_per_night for r in Room.objects.filter(is_available=True))
-                # Set a base price if no rooms exist to prevent 0 amount
-                if total_daily_price == 0:
-                    total_daily_price = 10000 
-                self.total_amount = days * total_daily_price
-            elif self.room and not self.total_amount:
-                self.total_amount = days * self.room.price_per_night
-                
+            self.total_amount = days * self.room.price_per_night
         super().save(*args, **kwargs)
 
 class Payment(models.Model):
