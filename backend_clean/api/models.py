@@ -22,7 +22,7 @@ class RoomCategory(models.Model):
 
 class Room(models.Model):
     category = models.ForeignKey(RoomCategory, related_name='rooms', on_delete=models.CASCADE)
-    room_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
+    room_number = models.CharField(max_length=10, null=True, blank=True)
     description = models.TextField()
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.IntegerField(default=2)
@@ -69,8 +69,7 @@ class Booking(models.Model):
     )
 
     user = models.ForeignKey(User, related_name='bookings', on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE, null=True, blank=True)
-    is_entire_resort = models.BooleanField(default=False)
+    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     guest_count = models.IntegerField(default=1)
@@ -79,8 +78,7 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        room_name = self.room.room_number if self.room else "Entire Resort"
-        return f"{self.user.username} - {room_name} ({self.status})"
+        return f"{self.user.username} - {self.room.room_number} ({self.status})"
 
     def save(self, *args, **kwargs):
         if self.check_in_date and self.check_out_date and self.room:

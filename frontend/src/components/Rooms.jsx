@@ -50,9 +50,10 @@ const Rooms = () => {
         </div>
       </div>
 
+      {/* Elegant Sticky Filter Bar */}
       <div className="sticky-filter-bar py-1 mb-5">
         <div className="container">
-          <div className="filter-scroll-container justify-content-md-center align-items-center position-relative">
+          <div className="filter-scroll-container justify-content-md-center align-items-center">
             <button 
               className={`sticky-filter-btn ${activeCategory === '' ? 'active' : ''}`}
               onClick={() => setActiveCategory('')}
@@ -68,14 +69,6 @@ const Rooms = () => {
                 {c.name}
               </button>
             ))}
-            
-            <a 
-              href="/booking/all" 
-              className="btn btn-primary-modern rounded-pill fw-bold ms-md-4 shadow-sm"
-              style={{ padding: '0.4rem 1.2rem', whiteSpace: 'nowrap' }}
-            >
-              <i className="fas fa-key me-2"></i> Book Entire Resort
-            </a>
           </div>
         </div>
       </div>

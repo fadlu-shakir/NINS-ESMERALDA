@@ -220,7 +220,8 @@ const RoomsManager = () => {
               <label className="form-label text-muted small fw-bold">Select Room Number</label>
               <div className="d-flex flex-wrap gap-2">
                 {Array.from({ length: 10 }, (_, i) => `R${i + 1}`).map(rNum => {
-                  const isUsed = rooms.some(r => r.room_number === rNum && r.id !== editingRoom);
+                  const usageCount = rooms.filter(r => r.room_number === rNum && r.id !== editingRoom).length;
+                  const isUsed = usageCount >= 3;
                   const isSelected = roomForm.room_number === rNum;
                   return (
                     <div 

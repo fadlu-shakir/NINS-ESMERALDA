@@ -1,5 +1,4 @@
 import uuid
-from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
 from rest_framework import generics, permissions, status, viewsets
@@ -280,19 +279,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def booked_dates(self, request, pk=None):
         room = self.get_object()
-        bookings = Booking.objects.filter(Q(room=room) | Q(is_entire_resort=True), status__in=['Confirmed', 'Pending'])
-        data = []
-        for b in bookings:
-            data.append({
-                'check_in': b.check_in_date.strftime('%Y-%m-%d'),
-                'check_out': b.check_out_date.strftime('%Y-%m-%d'),
-                'status': b.status
-            })
-        return Response(data)
-
-    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny])
-    def all_booked_dates(self, request):
-        bookings = Booking.objects.filter(status__in=['Confirmed', 'Pending'])
+        bookings = Booking.objects.filter(room=room, status__in=['Confirmed', 'Pending'])
         data = []
         for b in bookings:
             data.append({
@@ -324,39 +311,6 @@ class BookingViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    @action(detail=False, methods=['post'], permission_classes=[permissions.IsAuthenticated])
-    def book_all(self, request):
-        check_in_date = request.data.get('check_in_date')
-        check_out_date = request.data.get('check_out_date')
-        guest_count = request.data.get('guest_count', 1)
-
-        if not check_in_date or not check_out_date:
-            return Response({'detail': 'Dates required'}, status=status.HTTP_400_BAD_REQUEST)
-
-        active_rooms = Room.objects.filter(is_available=True)
-        total_per_night = sum(room.price_per_night for room in active_rooms)
-
-        from datetime import datetime
-        start = datetime.strptime(check_in_date, '%Y-%m-%d').date()
-        end = datetime.strptime(check_out_date, '%Y-%m-%d').date()
-        days = (end - start).days
-        if days <= 0:
-            days = 1
-            
-        total_amount = total_per_night * days
-
-        booking = Booking.objects.create(
-            user=request.user,
-            room=None,
-            is_entire_resort=True,
-            check_in_date=start,
-            check_out_date=end,
-            guest_count=guest_count,
-            total_amount=total_amount
-        )
-        serializer = self.get_serializer(booking)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def pay(self, request, pk=None):
