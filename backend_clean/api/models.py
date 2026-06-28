@@ -22,7 +22,7 @@ class RoomCategory(models.Model):
 
 class Room(models.Model):
     category = models.ForeignKey(RoomCategory, related_name='rooms', on_delete=models.CASCADE)
-    room_number = models.CharField(max_length=10, null=True, blank=True)
+    room_number = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField()
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
     capacity = models.IntegerField(default=2)

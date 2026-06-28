@@ -220,13 +220,32 @@ const RoomsManager = () => {
               <label className="form-label text-muted small fw-bold">Select Room Number</label>
               <div className="d-flex flex-wrap gap-2">
                 {Array.from({ length: 10 }, (_, i) => `R${i + 1}`).map(rNum => {
-                  const usageCount = rooms.filter(r => r.room_number === rNum && r.id !== editingRoom).length;
+                  const usageCount = rooms.filter(r => {
+                    if (r.id === editingRoom || !r.room_number) return false;
+                    return r.room_number.split(',').map(s => s.trim()).includes(rNum);
+                  }).length;
                   const isUsed = usageCount >= 3;
-                  const isSelected = roomForm.room_number === rNum;
+                  
+                  const currentNumbers = roomForm.room_number ? roomForm.room_number.split(',').map(s => s.trim()).filter(Boolean) : [];
+                  const isSelected = currentNumbers.includes(rNum);
+                  
+                  const handleToggleSelection = () => {
+                    if (isUsed) return;
+                    let newNumbers = [...currentNumbers];
+                    if (isSelected) {
+                      newNumbers = newNumbers.filter(n => n !== rNum);
+                    } else {
+                      newNumbers.push(rNum);
+                    }
+                    // Sort them correctly R1, R2, R10
+                    newNumbers.sort((a, b) => parseInt(a.replace('R', '')) - parseInt(b.replace('R', '')));
+                    setRoomForm({...roomForm, room_number: newNumbers.join(', ')});
+                  };
+
                   return (
                     <div 
                       key={rNum}
-                      onClick={() => !isUsed && setRoomForm({...roomForm, room_number: rNum})}
+                      onClick={handleToggleSelection}
                       className={`border rounded d-flex align-items-center justify-content-center p-2 shadow-sm 
                         ${isSelected ? 'bg-primary-modern text-white border-primary border-2' : isUsed ? 'bg-secondary text-white opacity-50' : 'bg-white'}`}
                       style={{ 
@@ -236,7 +255,7 @@ const RoomsManager = () => {
                         transition: 'all 0.2s',
                         transform: isSelected ? 'scale(1.1)' : 'none'
                       }}
-                      title={isUsed ? 'Room already exists' : 'Select room'}
+                      title={isUsed ? 'Room already used 3 times' : 'Toggle selection'}
                     >
                       <span className="fw-bold" style={{ fontSize: '0.9rem' }}>{rNum}</span>
                     </div>
