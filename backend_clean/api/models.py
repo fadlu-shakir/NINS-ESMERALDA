@@ -69,7 +69,8 @@ class Booking(models.Model):
     )
 
     user = models.ForeignKey(User, related_name='bookings', on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE, null=True, blank=True)
+    is_entire_resort = models.BooleanField(default=False)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     guest_count = models.IntegerField(default=1)
@@ -78,7 +79,8 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.room.room_number} ({self.status})"
+        room_name = self.room.room_number if self.room else "Entire Resort"
+        return f"{self.user.username} - {room_name} ({self.status})"
 
     def save(self, *args, **kwargs):
         if self.check_in_date and self.check_out_date and self.room:

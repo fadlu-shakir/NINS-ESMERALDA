@@ -15,16 +15,39 @@ const BookingPage = () => {
     guest_count: 1
   });
   const [bookedDates, setBookedDates] = useState([]);
+  const [isEntireResort, setIsEntireResort] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
-    api.get(`rooms/list/${id}/`).then(res => setRoom(res.data)).catch(console.error);
-    api.get(`rooms/list/${id}/booked_dates/`).then(res => {
-      setBookedDates(res.data);
-    }).catch(console.error);
+    if (id === 'all') {
+      setIsEntireResort(true);
+      api.get('rooms/list/').then(res => {
+        const activeRooms = res.data.filter(r => r.is_available);
+        const totalPrice = activeRooms.reduce((sum, r) => sum + parseFloat(r.price_per_night), 0);
+        const totalCapacity = activeRooms.reduce((sum, r) => sum + r.capacity, 0);
+        setRoom({
+          category_name: 'Entire Resort',
+          price_per_night: totalPrice,
+          capacity: totalCapacity,
+          check_in_time: '03:30 PM',
+          check_out_time: '02:30 PM',
+          is_entire_resort: true
+        });
+      }).catch(console.error);
+
+      api.get('rooms/all_booked_dates/').then(res => {
+        setBookedDates(res.data);
+      }).catch(console.error);
+    } else {
+      setIsEntireResort(false);
+      api.get(`rooms/list/${id}/`).then(res => setRoom(res.data)).catch(console.error);
+      api.get(`rooms/list/${id}/booked_dates/`).then(res => {
+        setBookedDates(res.data);
+      }).catch(console.error);
+    }
   }, [id]);
 
   const handleChange = (e) => {
@@ -57,10 +80,15 @@ const BookingPage = () => {
         return;
     }
     try {
-      const res = await api.post('bookings/', {
-        room: id,
-        ...formData
-      });
+      let res;
+      if (isEntireResort) {
+        res = await api.post('bookings/book_all/', formData);
+      } else {
+        res = await api.post('bookings/', {
+          room: id,
+          ...formData
+        });
+      }
       toast.success('Booking created! Please complete payment.');
       navigate(`/payment/${res.data.id}`);
     } catch (error) {
