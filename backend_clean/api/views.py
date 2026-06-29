@@ -279,14 +279,30 @@ class RoomViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def booked_dates(self, request, pk=None):
         room = self.get_object()
-        bookings = Booking.objects.filter(room=room, status__in=['Confirmed', 'Pending'])
+        all_bookings = Booking.objects.filter(status__in=['Confirmed', 'Pending'])
+        
+        request_numbers = set()
+        if room.room_number:
+            request_numbers = set([r.strip() for r in room.room_number.split(',') if r.strip()])
+            
         data = []
-        for b in bookings:
-            data.append({
-                'check_in': b.check_in_date.strftime('%Y-%m-%d'),
-                'check_out': b.check_out_date.strftime('%Y-%m-%d'),
-                'status': b.status
-            })
+        for b in all_bookings:
+            if b.room_id == room.id:
+                data.append({
+                    'check_in': b.check_in_date.strftime('%Y-%m-%d'),
+                    'check_out': b.check_out_date.strftime('%Y-%m-%d'),
+                    'status': b.status
+                })
+                continue
+                
+            if b.room and b.room.room_number and request_numbers:
+                b_numbers = set([r.strip() for r in b.room.room_number.split(',') if r.strip()])
+                if request_numbers.intersection(b_numbers):
+                    data.append({
+                        'check_in': b.check_in_date.strftime('%Y-%m-%d'),
+                        'check_out': b.check_out_date.strftime('%Y-%m-%d'),
+                        'status': b.status
+                    })
         return Response(data)
 
 class GalleryViewSet(viewsets.ModelViewSet):

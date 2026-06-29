@@ -86,14 +86,30 @@ class BookingSerializer(serializers.ModelSerializer):
         if check_in and check_out and check_in >= check_out:
             raise serializers.ValidationError("Check-out date must be after check-in date.")
         
+        if not room:
+            return attrs
+            
         overlapping_bookings = Booking.objects.filter(
-            room=room,
             status__in=['Confirmed', 'Pending'],
             check_in_date__lt=check_out,
             check_out_date__gt=check_in
         )
-        if overlapping_bookings.exists():
-            raise serializers.ValidationError("Room is already booked for these dates.")
+        
+        if self.instance:
+            overlapping_bookings = overlapping_bookings.exclude(pk=self.instance.pk)
+        
+        request_numbers = set()
+        if room.room_number:
+            request_numbers = set([r.strip() for r in room.room_number.split(',') if r.strip()])
+            
+        for b in overlapping_bookings:
+            if b.room_id == room.id:
+                raise serializers.ValidationError("Room is already booked for these dates.")
+            
+            if b.room and b.room.room_number and request_numbers:
+                b_numbers = set([r.strip() for r in b.room.room_number.split(',') if r.strip()])
+                if request_numbers.intersection(b_numbers):
+                    raise serializers.ValidationError(f"This room overlaps with an already booked room ({b.room.room_number}) for these dates.")
             
         return attrs
 

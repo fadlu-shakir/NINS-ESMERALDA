@@ -13,6 +13,15 @@
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+  --color-accent-dark: #a37f55;
+}
+
+.bg-accent-dark {
+  background-color: var(--color-accent-dark) !important;
+}
+
+.nav-pills .nav-link.active.text-black-force {
+  color: #000000 !important;
 }
 
 body {
@@ -1619,10 +1628,10 @@ a:hover {
   }
 }
 
-/* Highlight Section */
+/* Highlight Section - Bohemian Archway Design */
 .highlight-section {
-  padding: 80px 20px;
-  background: linear-gradient(135deg, var(--color-bg) 0%, #f4efe6 100%);
+  padding: 140px 20px;
+  background-color: #f7f4ee; /* Warm sandy beige */
   position: relative;
   overflow: hidden;
 }
@@ -1630,32 +1639,19 @@ a:hover {
 .highlight-section::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -50%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(197, 168, 128, 0.1) 0%, transparent 70%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.highlight-section::after {
-  content: '';
-  position: absolute;
-  bottom: -50%;
-  left: -50%;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(197, 168, 128, 0.08) 0%, transparent 70%);
-  border-radius: 50%;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background-image: repeating-linear-gradient(45deg, rgba(197, 168, 128, 0.03) 0, rgba(197, 168, 128, 0.03) 1px, transparent 1px, transparent 20px);
   pointer-events: none;
 }
 
 .highlight-item {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   opacity: 0;
   transform: translateY(60px);
-  transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1), transform 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   will-change: transform, opacity;
 }
 
@@ -1666,107 +1662,95 @@ a:hover {
 }
 
 .highlight-section.visible .highlight-item:nth-child(1),
-.highlight-item.visible:nth-child(1) {
-  transition-delay: 0.1s;
-}
-
+.highlight-item.visible:nth-child(1) { transition-delay: 0.1s; }
 .highlight-section.visible .highlight-item:nth-child(2),
-.highlight-item.visible:nth-child(2) {
-  transition-delay: 0.2s;
-}
-
+.highlight-item.visible:nth-child(2) { transition-delay: 0.2s; }
 .highlight-section.visible .highlight-item:nth-child(3),
-.highlight-item.visible:nth-child(3) {
-  transition-delay: 0.3s;
-}
-
+.highlight-item.visible:nth-child(3) { transition-delay: 0.3s; }
 .highlight-section.visible .highlight-item:nth-child(4),
-.highlight-item.visible:nth-child(4) {
-  transition-delay: 0.4s;
-}
+.highlight-item.visible:nth-child(4) { transition-delay: 0.4s; }
 
 .highlight-card {
-  background: var(--color-white);
-  padding: 40px 30px;
-  border-radius: 16px;
+  background: #ffffff;
+  padding: 70px 30px 50px;
+  border-radius: 150px 150px 20px 20px; /* Architectural Arch shape */
   text-align: center;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  border: 1px solid #e2e8f0;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(197, 168, 128, 0.1);
   position: relative;
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  justify-content: flex-start;
+  box-shadow: 0 15px 35px rgba(160, 145, 125, 0.08);
+  z-index: 1;
 }
 
 .highlight-card::before {
   content: '';
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--color-accent), #dfcca7);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.4s ease;
+  width: 100%;
+  height: 0;
+  background: var(--color-accent, #c5a880);
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: -1;
+  border-radius: 150px 150px 0 0;
 }
 
 .highlight-card:hover::before {
-  transform: scaleX(1);
+  height: 100%;
 }
 
 .highlight-card:hover {
-  transform: translateY(-12px) scale(1.02);
-  box-shadow: 0 12px 40px rgba(197, 168, 128, 0.2);
-  border-color: rgba(197, 168, 128, 0.3);
+  transform: translateY(-15px);
+  box-shadow: 0 25px 45px rgba(160, 145, 125, 0.15);
+  border-color: transparent;
 }
 
 .highlight-icon {
-  width: 70px;
-  height: 70px;
-  background: linear-gradient(135deg, rgba(197, 168, 128, 0.1), rgba(197, 168, 128, 0.05));
-  border-radius: 16px;
+  width: 60px;
+  height: 60px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
-  color: var(--color-accent);
-  transition: all 0.4s ease;
-  border: 1px solid rgba(197, 168, 128, 0.2);
+  margin: 0 auto 30px;
+  color: var(--color-accent, #c5a880);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .highlight-card:hover .highlight-icon {
-  background: linear-gradient(135deg, rgba(197, 168, 128, 0.15), rgba(197, 168, 128, 0.08));
-  transform: scale(1.1) rotate(5deg);
-  border-color: rgba(197, 168, 128, 0.4);
+  color: #fff;
+  transform: translateY(-10px) scale(1.1);
 }
 
 .highlight-card h4 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--color-primary);
-  transition: all 0.3s ease;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-bottom: 15px;
+  color: #2c2825;
+  transition: color 0.6s ease;
 }
 
 .highlight-card:hover h4 {
-  color: var(--color-accent);
+  color: #ffffff;
 }
 
 .highlight-card p {
+  color: #7a736a;
   font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 0;
-  transition: color 0.3s ease;
+  line-height: 1.7;
+  margin-bottom: 0;
+  transition: color 0.6s ease;
 }
 
 .highlight-card:hover p {
-  color: var(--color-primary);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Section Wrapper */

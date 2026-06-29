@@ -217,9 +217,38 @@ const RoomsManager = () => {
           <h4 className="mb-4">{editingRoom ? 'Edit Room' : 'Add New Room'}</h4>
           <form onSubmit={handleRoomSubmit}>
             <div className="mb-3">
-              <label className="form-label text-muted small fw-bold">Select Room Number</label>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="form-label text-muted small fw-bold mb-0">Select Room Number</label>
+                  <button  
+                    type="button" 
+                    className="btn btn-sm btn-outline-primary py-0 px-2"
+                    style={{ fontSize: '0.8rem' }}
+                    onClick={() => {
+                      const allAvailable = Array.from({ length: 8 }, (_, i) => `R${i + 1}`).filter(rNum => {
+                        const usageCount = rooms.filter(r => {
+                          if (r.id === editingRoom || !r.room_number) return false;
+                          return r.room_number.split(',').map(s => s.trim()).includes(rNum);
+                        }).length;
+                        return usageCount < 3;
+                      });
+                      
+                      const currentNumbers = roomForm.room_number ? roomForm.room_number.split(',').map(s => s.trim()).filter(Boolean) : [];
+                      
+                      if (currentNumbers.length === allAvailable.length && allAvailable.length > 0) {
+                        setRoomForm({...roomForm, room_number: ''});
+                      } else {
+                        setRoomForm({...roomForm, room_number: allAvailable.join(', ')});
+                      }
+                    }}
+                  >
+                    {roomForm.room_number && roomForm.room_number.split(',').filter(Boolean).length === Array.from({ length: 8 }, (_, i) => `R${i + 1}`).filter(rNum => {
+                        const usageCount = rooms.filter(r => (!r.room_number ? false : r.room_number.split(',').map(s => s.trim()).includes(rNum))).length;
+                        return usageCount < 3;
+                      }).length ? 'Deselect All' : 'Select All'}
+                  </button>
+              </div>
               <div className="d-flex flex-wrap gap-2">
-                {Array.from({ length: 10 }, (_, i) => `R${i + 1}`).map(rNum => {
+                {Array.from({ length: 8 }, (_, i) => `R${i + 1}`).map(rNum => {
                   const usageCount = rooms.filter(r => {
                     if (r.id === editingRoom || !r.room_number) return false;
                     return r.room_number.split(',').map(s => s.trim()).includes(rNum);

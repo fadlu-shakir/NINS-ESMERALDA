@@ -160,7 +160,7 @@ const Reviews = () => {
                           {/* User Avatar Circle */}
                           {user && user.username === r.username ? (
                             <img
-                              src="https://i1-c.pinimg.com/736x/93/1d/17/931d176cf12d85d1943d76684de79137.jpg"
+                              src="/resort_img/icon.png"
                               alt={r.username}
                               className="rounded-circle flex-shrink-0"
                               style={{
@@ -172,7 +172,7 @@ const Reviews = () => {
                             />
                           ) : (
                             <img
-                              src="https://i1-c.pinimg.com/736x/34/c3/33/34c3332cb8eb6c448bb4544cd7df4bcd.jpg"
+                              src="/resort_img/icon.png"
                               alt={r.username}
                               className="rounded-circle flex-shrink-0"
                               style={{

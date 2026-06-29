@@ -13,10 +13,31 @@ const UserDashboard = () => {
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [notifications, setNotifications] = useState([]);
+  const [activeTab, setActiveTab] = useState('current');
 
   useEffect(() => {
     fetchBookings();
+    fetchNotifications();
   }, []);
+
+  const fetchNotifications = async () => {
+    try {
+      const res = await api.get('notifications/');
+      setNotifications(res.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const markAsRead = async (id) => {
+    try {
+      await api.post(`notifications/${id}/mark_as_read/`);
+      fetchNotifications();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const fetchBookings = async () => {
     try {
@@ -213,35 +234,133 @@ const UserDashboard = () => {
       </style>
       
       <div className="container py-5 d-print-none" style={{ marginTop: '70px' }}>
-        <div className="d-flex justify-content-between align-items-end mb-4 border-bottom pb-3">
-          <div>
-            <h6 className="text-accent text-uppercase fw-bold letter-spacing-2 mb-1" style={{ fontSize: '0.75rem' }}>Welcome Back</h6>
-            <h2 className="mb-0 fw-bold font-serif-luxury text-dark">My Dashboard</h2>
+        {/* Profile Header */}
+        <div className="d-flex align-items-center justify-content-between mb-5 bg-white p-4 rounded-4 shadow-sm border flex-wrap gap-3" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+          <div className="d-flex align-items-center">
+            <img 
+              src="/resort_img/icon.png" 
+              alt={user?.username} 
+              className="rounded-circle me-4 shadow-sm"
+              style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+            />
+            <div>
+              <h6 className="text-accent text-uppercase fw-bold letter-spacing-2 mb-1" style={{ fontSize: '0.75rem' }}>Welcome Back,</h6>
+              <h2 className="mb-0 fw-bold font-serif-luxury text-dark">{user?.username}</h2>
+              {user?.email && <p className="text-muted mb-0">{user.email}</p>}
+            </div>
           </div>
+          <button 
+            className="btn btn-primary-modern rounded-pill px-4 py-2 fw-bold shadow-sm"
+            onClick={() => {
+              const url = "https://nins-esmeralda.vercel.app/";
+              if (navigator.share) {
+                navigator.share({
+                  title: 'NINS ESMERALDA Resort',
+                  text: 'Check out this amazing resort!',
+                  url: url,
+                }).catch(err => console.error("Error sharing:", err));
+              } else {
+                navigator.clipboard.writeText(url);
+                toast.success('Link copied to clipboard!');
+              }
+            }}
+          >
+            <i className="fas fa-share-alt me-2"></i>Share Website
+          </button>
         </div>
-        
-        <div className="row">
-          <div className="col-12 mb-5">
-            <h4 className="mb-4 text-dark fw-bold"><i className="fas fa-calendar-check text-accent me-2"></i>Active Bookings</h4>
-            
-            {activeBookings.length === 0 ? (
-              <div className="text-center p-5 bg-white rounded-5 shadow-sm border" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
-                <div className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style={{ width: '80px', height: '80px' }}>
-                  <i className="fas fa-suitcase-rolling text-muted fs-1"></i>
-                </div>
-                <h5 className="fw-bold text-dark mb-2">No Active Bookings</h5>
-                <p className="text-muted mb-4">You don't have any upcoming stays with us at the moment.</p>
-                <Link to="/#rooms" className="btn btn-primary-modern px-5 rounded-pill">Browse Rooms</Link>
-              </div>
-            ) : (
-              renderCards(activeBookings, true)
-            )}
-          </div>
 
-          {historyBookings.length > 0 && (
-            <div className="col-12 mt-4">
-              <h4 className="mb-4 text-dark fw-bold"><i className="fas fa-history text-accent me-2"></i>Past Stays</h4>
-              {renderCards(historyBookings, false)}
+        {/* Custom Tabs */}
+        <ul className="nav nav-pills mb-4 gap-2 border-bottom pb-3">
+          <li className="nav-item">
+            <button 
+              className={`nav-link rounded-pill px-4 fw-bold ${activeTab === 'current' ? 'active bg-accent-dark text-black-force' : 'text-dark bg-light'}`} 
+              onClick={() => setActiveTab('current')}
+            >
+              <i className="fas fa-calendar-check me-2"></i>Current Bookings
+            </button>
+          </li>
+          <li className="nav-item">
+            <button 
+              className={`nav-link rounded-pill px-4 fw-bold ${activeTab === 'past' ? 'active bg-accent-dark text-black-force' : 'text-dark bg-light'}`} 
+              onClick={() => setActiveTab('past')}
+            >
+              <i className="fas fa-history me-2"></i>My Past Activities
+            </button>
+          </li>
+          <li className="nav-item">
+            <button 
+              className={`nav-link rounded-pill px-4 fw-bold ${activeTab === 'notifications' ? 'active bg-accent-dark text-black-force' : 'text-dark bg-light'}`} 
+              onClick={() => setActiveTab('notifications')}
+            >
+              <i className="fas fa-bell me-2"></i>Notifications
+              {notifications.filter(n => !n.is_read).length > 0 && (
+                <span className="badge bg-danger ms-2 rounded-pill">{notifications.filter(n => !n.is_read).length}</span>
+              )}
+            </button>
+          </li>
+        </ul>
+        
+        {/* Tab Content */}
+        <div className="row">
+          {activeTab === 'current' && (
+            <div className="col-12 mb-5 animate__animated animate__fadeIn">
+              {activeBookings.length === 0 ? (
+                <div className="text-center p-5 bg-white rounded-5 shadow-sm border" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                  <div className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style={{ width: '80px', height: '80px' }}>
+                    <i className="fas fa-suitcase-rolling text-muted fs-1"></i>
+                  </div>
+                  <h5 className="fw-bold text-dark mb-2">No Active Bookings</h5>
+                  <p className="text-muted mb-4">You don't have any upcoming stays with us at the moment.</p>
+                  <Link to="/#rooms" className="btn btn-primary-modern px-5 rounded-pill">Browse Rooms</Link>
+                </div>
+              ) : (
+                renderCards(activeBookings, true)
+              )}
+            </div>
+          )}
+
+          {activeTab === 'past' && (
+            <div className="col-12 mb-5 animate__animated animate__fadeIn">
+              {historyBookings.length === 0 ? (
+                <div className="text-center p-5 bg-white rounded-5 shadow-sm border" style={{ borderColor: 'rgba(0,0,0,0.05)' }}>
+                  <div className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style={{ width: '80px', height: '80px' }}>
+                    <i className="fas fa-history text-muted fs-1"></i>
+                  </div>
+                  <h5 className="fw-bold text-dark mb-2">No Past Activities</h5>
+                  <p className="text-muted mb-0">Your completed and cancelled bookings will appear here.</p>
+                </div>
+              ) : (
+                renderCards(historyBookings, false)
+              )}
+            </div>
+          )}
+
+          {activeTab === 'notifications' && (
+            <div className="col-12 animate__animated animate__fadeIn">
+              <div className="bg-white rounded-4 shadow-sm border overflow-hidden">
+                {notifications.length > 0 ? (
+                  notifications.map(n => (
+                    <div key={n.id} className={`p-4 border-bottom notification-item ${!n.is_read ? 'bg-light border-start border-accent border-4' : ''}`}>
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h6 className="fw-bold mb-0 text-dark">{n.title}</h6>
+                        <div className="text-end">
+                          <small className="text-muted d-block">{new Date(n.created_at).toLocaleDateString()}</small>
+                          {!n.is_read && <button className="btn btn-sm btn-link p-0 text-accent x-small fw-bold mt-1" onClick={() => markAsRead(n.id)}>Mark as read</button>}
+                        </div>
+                      </div>
+                      <p className="text-muted mb-0">{n.message}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-5 text-center text-muted">
+                    <div className="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style={{ width: '80px', height: '80px' }}>
+                      <i className="fas fa-bell-slash text-muted fs-1"></i>
+                    </div>
+                    <h5 className="fw-bold text-dark mb-2">No Notifications</h5>
+                    <p className="mb-0">You're all caught up!</p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

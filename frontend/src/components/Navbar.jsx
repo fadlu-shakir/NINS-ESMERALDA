@@ -182,7 +182,7 @@ const Navbar = () => {
                 <li className="nav-item dropdown">
                   <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
                     <img
-                      src="https://i1-c.pinimg.com/736x/93/1d/17/931d176cf12d85d1943d76684de79137.jpg"
+                      src="/resort_img/icon.png"
                       alt={user.username}
                       className="rounded-circle me-1.5"
                       style={{ width: '35px', height: '35px', objectFit: 'cover' }}

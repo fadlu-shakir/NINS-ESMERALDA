@@ -69,7 +69,7 @@ class Booking(models.Model):
     )
 
     user = models.ForeignKey(User, related_name='bookings', on_delete=models.CASCADE)
-    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE, null=True, blank=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     guest_count = models.IntegerField(default=1)
