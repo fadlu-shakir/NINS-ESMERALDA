@@ -7,8 +7,9 @@
   --color-white: #ffffff;      /* Pure White - Cards, navbar */
   
   --text-muted: #78716c;       /* Warm Stone Text Muted */
-  --font-main: 'Inter', sans-serif;
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-main: 'Outfit', sans-serif;
+  --font-serif: 'Bodoni Moda', serif;
+  --font-logo: 'Bodoni Moda', serif;
   --transition: all 0.2s ease-in-out;
   --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
@@ -146,14 +147,89 @@ a:hover {
 
 /* Navbar */
 .navbar {
-  padding: 15px 0;
+  padding: 15px 25px;
   transition: all 0.3s ease-in-out;
+}
+
+.navbar.fixed-top {
+  top: 25px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 92%;
+  max-width: 1400px;
+  border-radius: 50px;
+}
+
+@media (max-width: 991px) {
+  .navbar.fixed-top {
+    top: auto !important;
+    bottom: 20px;
+    width: 95%;
+    border-radius: 30px;
+    padding: 12px 20px;
+    background-color: var(--color-white) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    border: 1px solid #e2e8f0 !important;
+    z-index: 1040;
+  }
+  
+  .navbar.transparent::before {
+    display: none !important;
+  }
+  
+  .navbar .navbar-brand {
+    color: var(--color-primary) !important;
+    text-shadow: none !important;
+  }
+  
+  .navbar .navbar-toggler i {
+    color: var(--color-primary) !important;
+    text-shadow: none !important;
+  }
+  
+  .navbar .notification-icon {
+    color: var(--color-primary) !important;
+    filter: none !important;
+  }
+  
+  /* Bottom Sheet Menu for Mobile */
+  .offcanvas-end {
+    top: auto !important;
+    bottom: 0 !important;
+    height: auto !important;
+    max-height: 85vh;
+    width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-left: none !important;
+    transform: translateY(100%);
+  }
+  
+  .offcanvas-end.show {
+    transform: translateY(0);
+  }
+  
+  .offcanvas-body {
+    padding: 1.5rem;
+  }
+  
+  .nav-item {
+    margin-bottom: 0.5rem;
+  }
+  
+  .nav-link {
+    padding: 12px 16px !important;
+    border-radius: 12px;
+    background-color: #f8fafc;
+    font-size: 1.05rem;
+  }
 }
 
 .navbar.transparent {
   background-color: transparent !important;
   box-shadow: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .navbar.transparent::before {
@@ -167,6 +243,7 @@ a:hover {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   z-index: -1;
+  border-radius: inherit;
 }
 
 .navbar.transparent .navbar-brand {
@@ -196,8 +273,15 @@ a:hover {
 
 .navbar.scrolled {
   background-color: var(--color-white) !important;
-  box-shadow: var(--shadow-sm);
-  padding: 10px 0;
+  box-shadow: var(--shadow-lg);
+  padding: 10px 25px;
+  border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 991px) {
+  .navbar.scrolled {
+    padding: 10px 15px;
+  }
 }
 
 .navbar-brand {
@@ -660,7 +744,7 @@ a:hover {
 
 /* Luxury Editorial Styles (Iris Ceramica Inspired) */
 .font-serif-luxury {
-  font-family: var(--font-serif);
+  font-family: var(--font-logo);
 }
 
 .luxury-card {

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead
+from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, BlockedDate
 
 User = get_user_model()
 
@@ -75,8 +75,8 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'room', 'room_details', 'check_in_date', 'check_out_date', 'total_amount', 'status', 'created_at', 'payment')
-        read_only_fields = ('user', 'total_amount', 'status')
+        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'room', 'room_details', 'check_in_date', 'check_out_date', 'total_amount', 'status', 'created_at', 'payment', 'booking_key')
+        read_only_fields = ('user', 'total_amount', 'status', 'booking_key')
 
     def validate(self, attrs):
         check_in = attrs.get('check_in_date')
@@ -102,6 +102,11 @@ class BookingSerializer(serializers.ModelSerializer):
         if room.room_number:
             request_numbers = set([r.strip() for r in room.room_number.split(',') if r.strip()])
             
+        overlapping_blocks = BlockedDate.objects.filter(
+            start_date__lt=check_out,
+            end_date__gt=check_in
+        )
+
         for b in overlapping_bookings:
             if b.room_id == room.id:
                 raise serializers.ValidationError("Room is already booked for these dates.")
@@ -111,7 +116,26 @@ class BookingSerializer(serializers.ModelSerializer):
                 if request_numbers.intersection(b_numbers):
                     raise serializers.ValidationError(f"This room overlaps with an already booked room ({b.room.room_number}) for these dates.")
             
+        for b in overlapping_blocks:
+            if b.room_id == room.id:
+                raise serializers.ValidationError("Room is blocked by admin for these dates.")
+            
+            if b.room and b.room.room_number and request_numbers:
+                b_numbers = set([r.strip() for r in b.room.room_number.split(',') if r.strip()])
+                if request_numbers.intersection(b_numbers):
+                    raise serializers.ValidationError(f"This room overlaps with a blocked room ({b.room.room_number}) for these dates.")
+            
         return attrs
+
+# --- AVAILABILITY SERIALIZERS ---
+class BlockedDateSerializer(serializers.ModelSerializer):
+    room_name = serializers.CharField(source='room.category.name', read_only=True)
+    room_number = serializers.CharField(source='room.room_number', read_only=True)
+
+    class Meta:
+        model = BlockedDate
+        fields = ('id', 'room', 'room_name', 'room_number', 'start_date', 'end_date', 'reason', 'created_at')
+
 
 # --- REVIEW SERIALIZERS ---
 class ReviewSerializer(serializers.ModelSerializer):

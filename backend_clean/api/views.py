@@ -13,11 +13,11 @@ from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 import random
 
-from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, OTPVerification
+from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, OTPVerification, BlockedDate
 from .serializers import (
     UserSerializer, RegisterSerializer, 
     RoomCategorySerializer, RoomSerializer, GallerySerializer, ResortInformationSerializer,
-    BookingSerializer, ReviewSerializer, NotificationSerializer
+    BookingSerializer, ReviewSerializer, NotificationSerializer, BlockedDateSerializer
 )
 
 User = get_user_model()
@@ -280,6 +280,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     def booked_dates(self, request, pk=None):
         room = self.get_object()
         all_bookings = Booking.objects.filter(status__in=['Confirmed', 'Pending'])
+        all_blocked = BlockedDate.objects.all()
         
         request_numbers = set()
         if room.room_number:
@@ -303,7 +304,30 @@ class RoomViewSet(viewsets.ModelViewSet):
                         'check_out': b.check_out_date.strftime('%Y-%m-%d'),
                         'status': b.status
                     })
+                    
+        for b in all_blocked:
+            if b.room_id == room.id:
+                data.append({
+                    'check_in': b.start_date.strftime('%Y-%m-%d'),
+                    'check_out': b.end_date.strftime('%Y-%m-%d'),
+                    'status': 'Blocked'
+                })
+                continue
+                
+            if b.room and b.room.room_number and request_numbers:
+                b_numbers = set([r.strip() for r in b.room.room_number.split(',') if r.strip()])
+                if request_numbers.intersection(b_numbers):
+                    data.append({
+                        'check_in': b.start_date.strftime('%Y-%m-%d'),
+                        'check_out': b.end_date.strftime('%Y-%m-%d'),
+                        'status': 'Blocked'
+                    })
         return Response(data)
+
+class BlockedDateViewSet(viewsets.ModelViewSet):
+    queryset = BlockedDate.objects.all().order_by('-start_date')
+    serializer_class = BlockedDateSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 class GalleryViewSet(viewsets.ModelViewSet):
     queryset = Gallery.objects.all()
@@ -446,3 +470,59 @@ class NotificationViewSet(viewsets.ModelViewSet):
         read_recent_count = NotificationRead.objects.filter(user=request.user, notification__in=recent_broadcasts).count()
         unread = max(0, recent_broadcasts.count() - read_recent_count)
         return Response({'unread_count': unread})
+
+# --- ANALYTICS VIEWS ---
+from django.db.models import Sum
+
+class AnalyticsView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request):
+        now = timezone.now()
+        today = now.date()
+        current_month_start = today.replace(day=1)
+        
+        # Calculate past month start and end
+        if current_month_start.month == 1:
+            past_month_start = current_month_start.replace(year=current_month_start.year - 1, month=12)
+        else:
+            past_month_start = current_month_start.replace(month=current_month_start.month - 1)
+            
+        # Current month revenue (completed stays in the current month)
+        current_month_bookings = Booking.objects.filter(
+            status='Confirmed',
+            check_out_date__gte=current_month_start,
+            check_out_date__lte=today
+        )
+        current_month_revenue = current_month_bookings.aggregate(total=Sum('total_amount'))['total'] or 0
+
+        # Past month revenue (completed stays in the past month)
+        past_month_bookings = Booking.objects.filter(
+            status='Confirmed',
+            check_out_date__gte=past_month_start,
+            check_out_date__lt=current_month_start
+        )
+        past_month_revenue = past_month_bookings.aggregate(total=Sum('total_amount'))['total'] or 0
+        
+        # Top category by revenue (all time completed stays)
+        categories = RoomCategory.objects.all()
+        top_category = None
+        max_revenue = -1
+        
+        for category in categories:
+            cat_bookings = Booking.objects.filter(
+                status='Confirmed',
+                check_out_date__lte=today,
+                room__category=category
+            )
+            cat_rev = cat_bookings.aggregate(total=Sum('total_amount'))['total'] or 0
+            if cat_rev > max_revenue:
+                max_revenue = cat_rev
+                top_category = category.name
+                
+        return Response({
+            'current_month_revenue': current_month_revenue,
+            'past_month_revenue': past_month_revenue,
+            'top_category': top_category,
+            'top_category_revenue': max_revenue if max_revenue > 0 else 0
+        })

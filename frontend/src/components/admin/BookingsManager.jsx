@@ -114,27 +114,29 @@ const BookingsManager = () => {
       )}
 
       <div className="row mb-4">
-        <div className="col-md-4">
+        <div className="col-md-6">
           <div className="card text-white bg-primary mb-3 shadow">
             <div className="card-body">
-              <h5 className="card-title">Current Bookings</h5>
-              <h2 className="display-6">{bookings.length}</h2>
+              <h5 className="card-title">Total Bookings</h5>
+              <h2 className="display-6">{activeBookings.length}</h2>
             </div>
           </div>
         </div>
-        <div className="col-md-4">
+        <div className="col-md-6">
           <div className="card text-white bg-success mb-3 shadow">
             <div className="card-body">
-              <h5 className="card-title">Confirmed</h5>
-              <h2 className="display-6">{bookings.filter(b => b.status === 'Confirmed').length}</h2>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card text-white bg-warning mb-3 shadow">
-            <div className="card-body">
-              <h5 className="card-title">Pending</h5>
-              <h2 className="display-6">{bookings.filter(b => b.status === 'Pending').length}</h2>
+              <h5 className="card-title">Today's Bookings</h5>
+              <h2 className="display-6">
+                {bookings.filter(b => {
+                  if (b.status === 'Cancelled') return false;
+                  if (!b.check_in_date || !b.check_out_date) return false;
+                  const checkIn = new Date(b.check_in_date);
+                  const checkOut = new Date(b.check_out_date);
+                  checkIn.setHours(0,0,0,0);
+                  checkOut.setHours(0,0,0,0);
+                  return today.getTime() >= checkIn.getTime() && today.getTime() <= checkOut.getTime();
+                }).length}
+              </h2>
             </div>
           </div>
         </div>
@@ -159,7 +161,7 @@ const BookingsManager = () => {
             <table className="table table-hover align-middle">
               <thead className="table-light">
                 <tr>
-                  <th>ID</th>
+                  <th>Booking Ref</th>
                   <th>User Details</th>
                   <th>Room Details</th>
                   <th>Dates</th>
@@ -176,7 +178,10 @@ const BookingsManager = () => {
                 ) : (
                   filteredBookings.map(booking => (
                     <tr key={booking.id}>
-                      <td>#{booking.id}</td>
+                      <td>
+                        <div className="badge bg-light text-dark border font-monospace mb-1">{booking.booking_key || `#${booking.id}`}</div>
+                        <div className="small text-muted" style={{ fontSize: '0.7rem' }}>Sys ID: {booking.id}</div>
+                      </td>
                       <td>
                         <div className="fw-bold">{booking.username}</div>
                         <div className="small text-muted">{booking.user_email}</div>

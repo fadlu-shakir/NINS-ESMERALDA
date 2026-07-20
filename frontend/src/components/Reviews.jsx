@@ -289,24 +289,7 @@ const Reviews = () => {
                     </div>
                   </div>
 
-                  {/* Room Selection Dropdown */}
-                  <div className="mb-3">
-                    <label className="form-label text-muted small fw-bold">Select Room (Optional)</label>
-                    <select
-                      className="form-select"
-                      value={selectedRoom}
-                      onChange={(e) => setSelectedRoom(e.target.value)}
-                    >
-                      <option value="">General Resort Feedback</option>
-                      {rooms.map((room) => (
-                        <option key={room.id} value={room.id}>
-                          {room.room_number ? `Room ${room.room_number} - ` : ''}
-                          {room.category_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
+                
                   {/* Comment Text Area */}
                   <div className="mb-4">
                     <label className="form-label text-muted small fw-bold">Your Review</label>

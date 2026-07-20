@@ -4,9 +4,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import (
     RegisterView, VerifyOTPView, ResendOTPView, UserProfileView, LogoutView, UserListView,
-    VerifyPasswordView, ToggleAdminView,
+    VerifyPasswordView, ToggleAdminView, AnalyticsView,
     RoomCategoryViewSet, RoomViewSet, GalleryViewSet, ResortInformationViewSet,
-    BookingViewSet, ReviewViewSet, NotificationViewSet
+    BookingViewSet, ReviewViewSet, NotificationViewSet, BlockedDateViewSet
 )
 
 router = DefaultRouter()
@@ -17,6 +17,7 @@ router.register(r'rooms/info', ResortInformationViewSet, basename='resort-info')
 router.register(r'bookings', BookingViewSet, basename='bookings')
 router.register(r'reviews', ReviewViewSet, basename='reviews')
 router.register(r'notifications', NotificationViewSet, basename='notifications')
+router.register(r'availability/blocked-dates', BlockedDateViewSet, basename='blocked-dates')
 
 urlpatterns = [
     # Auth & User Routes
@@ -30,6 +31,7 @@ urlpatterns = [
     path('users/list/', UserListView.as_view(), name='user_list'),
     path('users/verify-password/', VerifyPasswordView.as_view(), name='verify_password'),
     path('users/<int:pk>/toggle-admin/', ToggleAdminView.as_view(), name='toggle_admin'),
+    path('analytics/', AnalyticsView.as_view(), name='analytics'),
 
     # ViewSet Routes (Rooms, Bookings, Reviews)
     path('', include(router.urls)),

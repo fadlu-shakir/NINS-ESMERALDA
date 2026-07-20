@@ -70,6 +70,7 @@ class Booking(models.Model):
 
     user = models.ForeignKey(User, related_name='bookings', on_delete=models.CASCADE)
     room = models.ForeignKey(Room, related_name='bookings', on_delete=models.CASCADE, null=True, blank=True)
+    booking_key = models.CharField(max_length=20, unique=True, blank=True, null=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     guest_count = models.IntegerField(default=1)
@@ -78,7 +79,8 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.room.room_number} ({self.status})"
+        booking_ref = self.booking_key if self.booking_key else "Pending"
+        return f"{self.user.username} - {booking_ref} ({self.status})"
 
     def save(self, *args, **kwargs):
         if self.check_in_date and self.check_out_date and self.room:
@@ -86,7 +88,14 @@ class Booking(models.Model):
             if days <= 0:
                 days = 1
             self.total_amount = days * self.room.price_per_night
+            
         super().save(*args, **kwargs)
+        
+        if not self.booking_key and self.id:
+            # Generate the key using the database ID
+            generated_key = f"ESM{self.id:04d}"
+            Booking.objects.filter(id=self.id).update(booking_key=generated_key)
+            self.booking_key = generated_key
 
 class Payment(models.Model):
     PAYMENT_STATUS_CHOICES = (
@@ -143,4 +152,15 @@ class OTPVerification(models.Model):
     def __str__(self):
         user_display = self.user.username if self.user else "Anonymous"
         return f"OTP for {user_display}: {self.otp_code}"
+
+# --- AVAILABILITY MODELS ---
+class BlockedDate(models.Model):
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='blocked_dates')
+    start_date = models.DateField()
+    end_date = models.DateField()
+    reason = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.room.category.name} Blocked ({self.start_date} to {self.end_date})"
 

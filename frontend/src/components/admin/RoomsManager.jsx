@@ -1,13 +1,32 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
 import { getImageUrl } from '../../utils/formatImage';
 
+const BASE_FACILITIES = [
+  'Free WiFi', 'Air Conditioning', 'Smart TV',
+  'Room Service',  'Private Balcony', 'In-Room Safe', 
+  'Coffee Maker', 'Bathtub', 'Hairdryer', 'Workspace',
+  'King Bed', 'Twin Beds', 'Lounge Area', 'Pool Access'
+];
 const RoomsManager = () => {
   const [rooms, setRooms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const dynamicFacilities = useMemo(() => {
+    const facilitiesSet = new Set(BASE_FACILITIES);
+    rooms.forEach(room => {
+      if (room.facilities) {
+        room.facilities.split(',').forEach(f => {
+          const trimmed = f.trim();
+          if (trimmed) facilitiesSet.add(trimmed);
+        });
+      }
+    });
+    return Array.from(facilitiesSet).sort();
+  }, [rooms]);
   
   const [roomForm, setRoomForm] = useState({
     room_number: '', category: '', description: '', price_per_night: '', capacity: 2, facilities: '', images: [],
@@ -308,8 +327,29 @@ const RoomsManager = () => {
               <input type="number" className="form-control" required value={roomForm.capacity} onChange={e => setRoomForm({...roomForm, capacity: e.target.value})} />
             </div>
             <div className="mb-3">
-              <label className="form-label text-muted small fw-bold">Facilities (comma separated)</label>
-              <input type="text" className="form-control" required value={roomForm.facilities} onChange={e => setRoomForm({...roomForm, facilities: e.target.value})} placeholder="WiFi, TV, AC" />
+              <label className="form-label text-muted small fw-bold mb-2">Facilities</label>
+              <div className="d-flex flex-wrap gap-2">
+                {dynamicFacilities.map(facility => {
+                  const currentFacilities = roomForm.facilities ? roomForm.facilities.split(',').map(f => f.trim()).filter(Boolean) : [];
+                  const isSelected = currentFacilities.includes(facility);
+                  
+                  return (
+                    <div 
+                      key={facility}
+                      onClick={() => {
+                        let updated = [...currentFacilities];
+                        if (isSelected) updated = updated.filter(f => f !== facility);
+                        else updated.push(facility);
+                        setRoomForm({...roomForm, facilities: updated.join(', ')});
+                      }}
+                      className={`badge border p-2 ${isSelected ? 'bg-primary-modern text-white border-primary' : 'bg-white text-dark border-secondary'}`}
+                      style={{ cursor: 'pointer', fontSize: '0.8rem', userSelect: 'none', transition: 'all 0.2s' }}
+                    >
+                      <i className={`fas ${isSelected ? 'fa-check text-white' : 'fa-plus text-muted'} me-1`}></i> {facility}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div className="mb-3">
               <label className="form-label text-muted small fw-bold">Description</label>

@@ -39,7 +39,14 @@ const UsersManager = () => {
     <div className="card shadow border-0">
       <div className="card-body">
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-          <h5 className="card-title mb-0">Registered Users</h5>
+          <h5 className="card-title mb-0 d-flex align-items-center">
+            Registered Users
+            {!loading && (
+              <span className="badge bg-primary bg-gradient rounded-pill ms-3 shadow-sm px-3 py-2 fs-6" style={{ letterSpacing: '0.5px' }}>
+                Total: {users.length}
+              </span>
+            )}
+          </h5>
           <div className="search-box position-relative" style={{ minWidth: '300px' }}>
             <i className="bi bi-search position-absolute text-muted" style={{ top: '10px', left: '15px' }}></i>
             <input 

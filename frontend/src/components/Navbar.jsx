@@ -3,6 +3,27 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { IoDiamondOutline, IoNotificationsOutline } from "react-icons/io5";
 import api from '../services/api';
+import brandIcon from '../../resort_img/diamond_icon_only.png';
+
+const BrandLogo = ({ isMobile = false }) => (
+  <div className="d-flex align-items-center">
+    <img 
+      src={brandIcon} 
+      alt="Diamond Icon" 
+      className="me-3" 
+      style={{ 
+        height: isMobile ? '35px' : '45px', 
+        width: 'auto',
+        objectFit: 'contain' 
+      }} 
+    />
+    <div className="d-flex flex-column justify-content-center align-items-start text-start" style={{ color: 'inherit', marginTop: '2px' }}>
+      <span style={{ fontSize: isMobile ? '0.45rem' : '0.55rem', letterSpacing: '0.3em', lineHeight: '1', fontWeight: '600' }}>NINS</span>
+      <span className="font-serif-luxury" style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', letterSpacing: '0.05em', lineHeight: '1', margin: '2px 0' }}>ESMERALDA</span>
+      <span style={{ fontSize: isMobile ? '0.4rem' : '0.45rem', letterSpacing: '0.25em', lineHeight: '1', fontWeight: '500', opacity: 0.8 }}>BOUTIQUE RESORT</span>
+    </div>
+  </div>
+);
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
@@ -100,10 +121,9 @@ const Navbar = () => {
 
   return (
     <nav className={`navbar navbar-expand-lg fixed-top ${isTransparent ? 'transparent' : 'scrolled'}`}>
-      <div className="container">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
-          <IoDiamondOutline className="me-2 text-accent" />
-          ESMERALDA BOUTIQUE RESORT
+      <div className="container-fluid px-3 px-md-4">
+        <Link className="navbar-brand p-0" to="/">
+          <BrandLogo />
         </Link>
         <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav">
           <i className={`fas fa-bars fs-4 ${!isTransparent ? 'text-dark' : 'text-white'}`}></i>
@@ -111,8 +131,8 @@ const Navbar = () => {
 
         <div className="offcanvas-lg offcanvas-end flex-grow-1" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel">
           <div className="offcanvas-header border-bottom">
-            <h5 className="offcanvas-title d-flex align-items-center fw-bold text-dark m-0" id="offcanvasNavbarLabel">
-              <IoDiamondOutline className="me-2 text-accent fs-4" /> ESMERALDA
+            <h5 className="offcanvas-title m-0" id="offcanvasNavbarLabel">
+              <BrandLogo isMobile={true} />
             </h5>
             <button type="button" className="btn-close shadow-none" onClick={closeNavbar} aria-label="Close"></button>
           </div>

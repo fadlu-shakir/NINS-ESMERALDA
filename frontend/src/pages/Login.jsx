@@ -21,6 +21,7 @@ const AuthPage = () => {
   const [otpCode, setOtpCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { login, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -45,8 +46,12 @@ const AuthPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    
     if (isLogin) {
       const success = await login(username, password);
+      setIsSubmitting(false);
       if (success) navigate('/');
     } else {
       if (!otpSent) {
@@ -74,6 +79,8 @@ const AuthPage = () => {
                            error.response?.data?.non_field_errors?.[0] || 
                            'Registration failed. Please check your inputs.';
           toast.error(errorMsg);
+        } finally {
+          setIsSubmitting(false);
         }
       } else {
         // Step 2: Verify OTP
@@ -101,6 +108,7 @@ const AuthPage = () => {
           toast.error(error.response?.data?.detail || 'Invalid or expired OTP code.');
         } finally {
           setIsVerifying(false);
+          setIsSubmitting(false);
         }
       }
     }
@@ -223,8 +231,10 @@ const AuthPage = () => {
                       </div>
                     )}
 
-                    <button type="submit" disabled={otpSent && isVerifying} className="btn btn-primary-modern w-100 py-3 text-uppercase fw-bold mt-2" style={{ transition: 'all 0.3s' }}>
-                      {isLogin ? 'Sign In' : (otpSent ? (isVerifying ? 'Verifying...' : 'Verify & Sign In') : 'Register')}
+                    <button type="submit" disabled={isSubmitting || (otpSent && isVerifying)} className="btn btn-primary-modern w-100 py-3 text-uppercase fw-bold mt-2" style={{ transition: 'all 0.3s' }}>
+                      {isSubmitting && isLogin ? 'Logging in...' : 
+                       isSubmitting && !isLogin && !otpSent ? 'Registering...' :
+                       isLogin ? 'Sign In' : (otpSent ? (isVerifying ? 'Verifying...' : 'Verify & Sign In') : 'Register')}
                     </button>
                   </form>
                   

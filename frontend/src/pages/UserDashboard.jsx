@@ -127,8 +127,18 @@ const UserDashboard = () => {
             </div>
             
             <div className="card-body p-4 d-flex flex-column">
-              <h5 className="fw-bold mb-1 text-dark">{booking.room_details?.category_name}</h5>
-              <p className="text-muted small mb-3">Room {booking.room_details?.room_number}</p>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                  <h5 className="fw-bold mb-1 text-dark">{booking.room_details?.category_name}</h5>
+                  <p className="text-muted small mb-0">Room {booking.room_details?.room_number}</p>
+                </div>
+                {booking.booking_key && (
+                  <div className="text-end">
+                    <small className="text-muted d-block mb-1 text-uppercase fw-bold letter-spacing-1" style={{ fontSize: '0.65rem' }}>Reference</small>
+                    <span className="badge bg-light text-dark border font-monospace px-2 py-1">{booking.booking_key}</span>
+                  </div>
+                )}
+              </div>
               
               <div className="d-flex justify-content-between mb-4 p-3 bg-light rounded-3 border">
                 <div>
