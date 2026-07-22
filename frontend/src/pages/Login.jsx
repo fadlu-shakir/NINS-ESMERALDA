@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { toast } from 'react-toastify';
 import api from '../services/api';
+import { GoogleLogin } from '@react-oauth/google';
 
 const AuthPage = () => {
   const location = useLocation();
@@ -15,6 +16,7 @@ const AuthPage = () => {
   const [formData, setFormData] = useState({
     first_name: '', last_name: '', email: '', phone_number: '', password_confirm: ''
   });
+  const [countryCode, setCountryCode] = useState('+91');
 
   // OTP specific states
   const [otpSent, setOtpSent] = useState(false);
@@ -61,15 +63,17 @@ const AuthPage = () => {
           return;
         }
         try {
+          const fullPhoneNumber = `${countryCode}${formData.phone_number.replace(/^0+/, '').replace(/^\+/, '')}`;
           const res = await api.post('users/register/', {
             username,
             password,
-            ...formData
+            ...formData,
+            phone_number: fullPhoneNumber
           });
           if (res.data.status === 'otp_sent') {
             setOtpSent(true);
             setResendCountdown(60);
-            toast.success(res.data.message || 'OTP verification code sent to your email.');
+            toast.success(res.data.message || 'OTP verification code sent to your phone_number.');
           }
         } catch (error) {
           const errorMsg = error.response?.data?.detail || 
@@ -120,7 +124,7 @@ const AuthPage = () => {
       const res = await api.post('users/resend-otp/', { username });
       if (res.data.status === 'otp_resent') {
         setResendCountdown(60);
-        toast.success(res.data.message || 'A new OTP has been sent to your email.');
+        toast.success(res.data.message || 'A new OTP has been sent to your phone_number.');
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Failed to resend OTP.');
@@ -140,6 +144,24 @@ const AuthPage = () => {
     navigate(newMode ? '/login' : '/register', { replace: true });
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setIsSubmitting(true);
+      const res = await api.post('users/google-login/', { token: credentialResponse.credential });
+      localStorage.setItem('access_token', res.data.access);
+      localStorage.setItem('refresh_token', res.data.refresh);
+      setUser(res.data.user);
+      localStorage.setItem('user', JSON.stringify(res.data.user));
+      toast.success('Logged in with Google successfully!');
+      navigate('/');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Google login failed.');
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="auth-container py-5" style={{ marginTop: '50px' }}>
       <div className="container">
@@ -152,8 +174,8 @@ const AuthPage = () => {
                 </div>
                 <div className="col-md-7 p-5">
                   <div className="text-center mb-4">
-                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : (otpSent ? 'Verify Email' : 'Create Account')}</h3>
-                    <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : (otpSent ? `We sent a 6-digit verification code to ${formData.email}` : 'Join us to experience luxury')}</p>
+                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : (otpSent ? 'Verify Phone Number' : 'Create Account')}</h3>
+                    <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : (otpSent ? `We sent a 6-digit verification code to ${formData.phone_number}` : 'Join us to experience luxury')}</p>
                   </div>
                   
                   <form onSubmit={handleSubmit} className="animate__animated animate__fadeIn">
@@ -188,7 +210,28 @@ const AuthPage = () => {
                           <input type="email" name="email" className="form-control bg-light" placeholder="Email Address" onChange={handleRegisterChange} required={!isLogin} />
                         </div>
                         <div className="col-12">
-                          <input type="text" name="phone_number" className="form-control bg-light" placeholder="Phone Number" onChange={handleRegisterChange} required={!isLogin} />
+                          <div className="input-group">
+                            <select 
+                              className="form-select bg-light border-0" 
+                              style={{ maxWidth: '110px' }} 
+                              value={countryCode} 
+                              onChange={(e) => setCountryCode(e.target.value)}
+                            >
+                              <option value="+1">+1 (US)</option>
+                              <option value="+44">+44 (UK)</option>
+                              <option value="+91">+91 (IN)</option>
+                              <option value="+61">+61 (AU)</option>
+                              <option value="+971">+971 (AE)</option>
+                            </select>
+                            <input 
+                              type="tel" 
+                              name="phone_number" 
+                              className="form-control bg-light border-0" 
+                              placeholder="Phone Number" 
+                              onChange={handleRegisterChange} 
+                              required={!isLogin} 
+                            />
+                          </div>
                         </div>
                       </div>
                     )}
@@ -236,6 +279,27 @@ const AuthPage = () => {
                        isSubmitting && !isLogin && !otpSent ? 'Registering...' :
                        isLogin ? 'Sign In' : (otpSent ? (isVerifying ? 'Verifying...' : 'Verify & Sign In') : 'Register')}
                     </button>
+
+                    {!otpSent && (
+                      <div className="mt-4">
+                        <div className="d-flex align-items-center mb-3">
+                          <hr className="flex-grow-1" />
+                          <span className="px-3 text-muted small fw-bold text-uppercase">Or continue with</span>
+                          <hr className="flex-grow-1" />
+                        </div>
+                        <div className="d-flex justify-content-center">
+                          <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={() => {
+                              toast.error('Google Login Failed');
+                            }}
+                            theme="filled_black"
+                            shape="pill"
+                            size="large"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </form>
                   
                   <div className="text-center mt-4 text-muted">

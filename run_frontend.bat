@@ -7,8 +7,8 @@ cd frontend
 
 :: Install npm dependencies
 echo Installing npm packages...
-npm install
+call npm install
 
 :: Start Vite dev server
 echo Starting Vite server...
-npm run dev
+call npm run dev

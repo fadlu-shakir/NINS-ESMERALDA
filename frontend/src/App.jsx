@@ -13,6 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import NotFound from './pages/NotFound';
+import WhatsAppButton from './components/WhatsAppButton';
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
+      <WhatsAppButton />
       <Footer />
       <ToastContainer position="top-right" autoClose={3000} />
     </Router>

@@ -167,60 +167,6 @@ const Home = () => {
 
       </section>
 
-      {/* Highlight Features Section */}
-      <section className="highlight-section">
-        <div className="container">
-          <div className="row">
-            <div className="col-md-3 col-sm-6 highlight-item">
-              <div className="highlight-card card-3d-tilt perspective-element">
-                <div className="highlight-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
-                  </svg>
-                </div>
-                <h4>Luxury Comfort</h4>
-                <p>Experience premium amenities and world-class service</p>
-              </div>
-            </div>
-            <div className="col-md-3 col-sm-6 highlight-item">
-              <div className="highlight-card card-3d-tilt perspective-element">
-                <div className="highlight-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                </div>
-                <h4>Prime Location</h4>
-                <p>Nestled in pristine natural surroundings</p>
-              </div>
-            </div>
-            <div className="col-md-3 col-sm-6 highlight-item">
-              <div className="highlight-card card-3d-tilt perspective-element">
-                <div className="highlight-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                </div>
-                <h4>24/7 Service</h4>
-                <p>Round-the-clock customer support and facilities</p>
-              </div>
-            </div>
-            <div className="col-md-3 col-sm-6 highlight-item">
-              <div className="highlight-card card-3d-tilt perspective-element">
-                <div className="highlight-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M23 7l-7 5 7 5V7z"></path>
-                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
-                  </svg>
-                </div>
-                <h4>Unforgettable Moments</h4>
-                <p>Create lasting memories with your loved ones</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Rooms Section */}
       <div id="rooms" className="section-wrapper">

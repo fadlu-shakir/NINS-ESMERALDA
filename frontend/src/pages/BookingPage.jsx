@@ -31,12 +31,36 @@ const BookingPage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDateChange = (date, field) => {
+  const handleDateChange = (date) => {
+    if (!date) {
+        setFormData({ ...formData, check_in_date: '', check_out_date: '' });
+        return;
+    }
+    
     if (date) {
         const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-        setFormData({ ...formData, [field]: offsetDate.toISOString().split('T')[0] });
-    } else {
-        setFormData({ ...formData, [field]: '' });
+        const dStr = offsetDate.toISOString().split('T')[0];
+        
+        if (!formData.check_in_date || (formData.check_in_date && formData.check_out_date)) {
+            setFormData({ ...formData, check_in_date: dStr, check_out_date: '' });
+        } else if (formData.check_in_date && !formData.check_out_date) {
+            if (new Date(dStr) > new Date(formData.check_in_date)) {
+                // Check if there are booked dates in between
+                const isConflict = bookedDates.some(booking => {
+                    return (booking.check_in >= formData.check_in_date && booking.check_in < dStr) ||
+                           (booking.check_out > formData.check_in_date && booking.check_out <= dStr) ||
+                           (booking.check_in <= formData.check_in_date && booking.check_out >= dStr);
+                });
+                if (isConflict) {
+                    toast.error("You cannot book dates that include already reserved days.");
+                    setFormData({ ...formData, check_in_date: dStr, check_out_date: '' });
+                } else {
+                    setFormData({ ...formData, check_out_date: dStr });
+                }
+            } else {
+                setFormData({ ...formData, check_in_date: dStr, check_out_date: '' });
+            }
+        }
     }
   };
 
@@ -92,29 +116,21 @@ const BookingPage = () => {
 
             <form onSubmit={handleSubmit}>
               <div className="row g-4 mb-4">
-                <div className="col-md-6">
+                <div className="col-md-12">
                   <label className="form-label text-muted small fw-bold text-uppercase d-block mb-3">
-                    Check-in Date <span className="text-accent ms-2">({room.check_in_time})</span>
+                    Select Check-in & Check-out Dates <span className="text-accent ms-2">({room.check_in_time} to {room.check_out_time})</span>
                   </label>
                   <CustomCalendar 
-                    selectedDate={formData.check_in_date}
-                    onDateChange={(date) => handleDateChange(date, 'check_in_date')}
+                    checkInDate={formData.check_in_date}
+                    checkOutDate={formData.check_out_date}
+                    onDateChange={handleDateChange}
                     bookedDates={bookedDates}
                     minDate={new Date()}
                   />
-                  {formData.check_in_date && <div className="mt-2 text-success small">Selected: {formData.check_in_date}</div>}
-                </div>
-                <div className="col-md-6">
-                  <label className="form-label text-muted small fw-bold text-uppercase d-block mb-3">
-                    Check-out Date <span className="text-accent ms-2">({room.check_out_time})</span>
-                  </label>
-                  <CustomCalendar 
-                    selectedDate={formData.check_out_date}
-                    onDateChange={(date) => handleDateChange(date, 'check_out_date')}
-                    bookedDates={bookedDates}
-                    minDate={formData.check_in_date ? new Date(new Date(formData.check_in_date + 'T00:00:00').getTime() + 86400000) : new Date()}
-                  />
-                  {formData.check_out_date && <div className="mt-2 text-success small">Selected: {formData.check_out_date}</div>}
+                  <div className="d-flex justify-content-between mt-2 px-2">
+                    {formData.check_in_date && <div className="text-muted small fw-bold"><i className="fas fa-sign-in-alt me-1 text-accent"></i> In: {formData.check_in_date}</div>}
+                    {formData.check_out_date && <div className="text-muted small fw-bold"><i className="fas fa-sign-out-alt me-1 text-accent"></i> Out: {formData.check_out_date}</div>}
+                  </div>
                 </div>
                 <div className="col-md-12">
                   <label className="form-label text-muted small fw-bold text-uppercase">Number of Guests</label>

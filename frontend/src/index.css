@@ -164,8 +164,8 @@ a:hover {
 
 @media (max-width: 991px) {
   .navbar.fixed-top {
-    top: auto !important;
-    bottom: 20px;
+    top: 20px !important;
+    bottom: auto;
     width: 95%;
     border-radius: 30px;
     padding: 12px 20px;

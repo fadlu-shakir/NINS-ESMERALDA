@@ -12,6 +12,10 @@ from django.contrib.auth import get_user_model
 
 from django.core.mail import send_mail
 import random
+import os
+
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
 
 from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, OTPVerification, BlockedDate
 from .serializers import (
@@ -78,22 +82,36 @@ class RegisterView(generics.CreateAPIView):
                 f"Warm regards,\n"
                 f"Smart Resort Team"
             )
-            send_mail(
-                subject,
-                message_body,
-                None,
-                [user.email],
-                fail_silently=False,
-            )
-            if not getattr(settings, 'ANYMAIL', {}).get('SENDGRID_API_KEY'):
-                # If no real email server is configured, tell the user the OTP directly
-                success_msg = f"Registration initiated. (Demo Mode: Your OTP is {otp_code})"
-            else:
-                success_msg = "Registration initiated. Verification OTP sent to your email."
+
+            # Send WhatsApp using Twilio
+            twilio_account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+            twilio_auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+            twilio_whatsapp_number = os.environ.get('TWILIO_WHATSAPP_NUMBER')
+            
+            if twilio_account_sid and twilio_auth_token and twilio_whatsapp_number:
+                try:
+                    from twilio.rest import Client
+                    client = Client(twilio_account_sid, twilio_auth_token)
+                    whatsapp_msg = f"Hello {user.first_name or user.username},\n\nYour Smart Resort registration OTP is: *{otp_code}*.\nIt expires in 10 minutes."
+                    
+                    user_phone = getattr(user, 'phone_number', '')
+                    if user_phone:
+                        if not str(user_phone).startswith('+'):
+                            user_phone = f"+{user_phone}"
+                        message = client.messages.create(
+                            from_=f"whatsapp:{twilio_whatsapp_number}",
+                            body=whatsapp_msg,
+                            to=f"whatsapp:{user_phone}"
+                        )
+                        print(f"WhatsApp message successfully sent to {user_phone} with SID: {message.sid}", flush=True)
+                except Exception as e:
+                    print(f"Failed to send WhatsApp message: {str(e)}", flush=True)
+
+            success_msg = "Registration initiated. Verification OTP sent to your WhatsApp."
         except Exception as e:
-            print(f"Failed to send email to {user.email}: {str(e)}")
-            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}")
-            success_msg = f"Registration initiated. (Email failed to send. Your OTP is: {otp_code})"
+            print(f"Registration notification error: {str(e)}", flush=True)
+            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
+            success_msg = f"Registration initiated. (Notification failed. Your OTP is: {otp_code})"
 
         return Response({
             "status": "otp_sent",
@@ -187,21 +205,36 @@ class ResendOTPView(APIView):
                 f"Warm regards,\n"
                 f"Smart Resort Team"
             )
-            send_mail(
-                subject,
-                message_body,
-                None,
-                [user.email],
-                fail_silently=False,
-            )
-            if not getattr(settings, 'ANYMAIL', {}).get('SENDGRID_API_KEY'):
-                success_msg = f"A new verification OTP has been sent. (Demo Mode: Your OTP is {otp_code})"
-            else:
-                success_msg = "A new verification OTP has been sent to your email."
+
+            # Send WhatsApp using Twilio
+            twilio_account_sid = os.environ.get('TWILIO_ACCOUNT_SID')
+            twilio_auth_token = os.environ.get('TWILIO_AUTH_TOKEN')
+            twilio_whatsapp_number = os.environ.get('TWILIO_WHATSAPP_NUMBER')
+            
+            if twilio_account_sid and twilio_auth_token and twilio_whatsapp_number:
+                try:
+                    from twilio.rest import Client
+                    client = Client(twilio_account_sid, twilio_auth_token)
+                    whatsapp_msg = f"Hello {user.first_name or user.username},\n\nYour new Smart Resort OTP is: *{otp_code}*.\nIt expires in 10 minutes."
+                    
+                    user_phone = getattr(user, 'phone_number', '')
+                    if user_phone:
+                        if not str(user_phone).startswith('+'):
+                            user_phone = f"+{user_phone}"
+                        message = client.messages.create(
+                            from_=f"whatsapp:{twilio_whatsapp_number}",
+                            body=whatsapp_msg,
+                            to=f"whatsapp:{user_phone}"
+                        )
+                        print(f"WhatsApp message successfully sent to {user_phone} with SID: {message.sid}", flush=True)
+                except Exception as e:
+                    print(f"Failed to send WhatsApp message: {str(e)}", flush=True)
+
+            success_msg = "A new verification OTP has been sent to your WhatsApp."
         except Exception as e:
-            print(f"Failed to send email to {user.email}: {str(e)}")
-            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}")
-            success_msg = f"A new verification OTP has been sent. (Email failed to send. Your OTP is: {otp_code})"
+            print(f"Notification error: {str(e)}", flush=True)
+            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
+            success_msg = f"A new verification OTP has been sent. (Notification failed. Your OTP is: {otp_code})"
 
         return Response({
             "status": "otp_resent",
@@ -526,3 +559,54 @@ class AnalyticsView(APIView):
             'top_category': top_category,
             'top_category_revenue': max_revenue if max_revenue > 0 else 0
         })
+
+class GoogleLoginView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request):
+        token = request.data.get('token')
+        if not token:
+            return Response({"detail": "Token is missing."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Verify the token using Google's library
+            CLIENT_ID = "29407116929-vb70aij9lrbr2m8ncbs90mghg203p73e.apps.googleusercontent.com"
+            idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), CLIENT_ID)
+
+            email = idinfo.get('email')
+            if not email:
+                return Response({"detail": "Token does not contain an email."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Check if user exists
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                # Create user
+                username = email.split('@')[0]
+                # Ensure unique username
+                base_username = username
+                counter = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{counter}"
+                    counter += 1
+                
+                user = User.objects.create_user(
+                    username=username,
+                    email=email,
+                    first_name=idinfo.get('given_name', ''),
+                    last_name=idinfo.get('family_name', ''),
+                    password=User.objects.make_random_password()
+                )
+                user.is_active = True
+                user.save()
+
+            # Generate tokens
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": UserSerializer(user).data
+            }, status=status.HTTP_200_OK)
+
+        except ValueError as e:
+            return Response({"detail": "Invalid Google token.", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from .views import (
     RegisterView, VerifyOTPView, ResendOTPView, UserProfileView, LogoutView, UserListView,
-    VerifyPasswordView, ToggleAdminView, AnalyticsView,
+    VerifyPasswordView, ToggleAdminView, AnalyticsView, GoogleLoginView,
     RoomCategoryViewSet, RoomViewSet, GalleryViewSet, ResortInformationViewSet,
     BookingViewSet, ReviewViewSet, NotificationViewSet, BlockedDateViewSet
 )
@@ -25,6 +25,7 @@ urlpatterns = [
     path('users/verify-otp/', VerifyOTPView.as_view(), name='verify_otp'),
     path('users/resend-otp/', ResendOTPView.as_view(), name='resend_otp'),
     path('users/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('users/google-login/', GoogleLoginView.as_view(), name='google_login'),
     path('users/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('users/logout/', LogoutView.as_view(), name='auth_logout'),
     path('users/profile/', UserProfileView.as_view(), name='user_profile'),
