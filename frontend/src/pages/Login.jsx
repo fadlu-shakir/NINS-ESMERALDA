@@ -73,7 +73,7 @@ const AuthPage = () => {
           if (res.data.status === 'otp_sent') {
             setOtpSent(true);
             setResendCountdown(60);
-            toast.success(res.data.message || 'OTP verification code sent to your phone_number.');
+            toast.success(res.data.message || 'Registration initiated. Verification OTP sent to your WhatsApp.');
           }
         } catch (error) {
           const errorMsg = error.response?.data?.detail || 
