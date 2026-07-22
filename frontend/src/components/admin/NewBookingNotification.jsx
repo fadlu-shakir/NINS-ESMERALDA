@@ -55,7 +55,7 @@ const NewBookingNotification = () => {
       } catch (error) {
         console.error('Error polling bookings:', error);
       }
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, [lastBookingId]);
