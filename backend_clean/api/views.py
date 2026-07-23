@@ -92,7 +92,7 @@ class RegisterView(generics.CreateAPIView):
                 try:
                     from twilio.rest import Client
                     client = Client(twilio_account_sid, twilio_auth_token)
-                    whatsapp_msg = f"Hello {user.first_name or user.username},\n\nYour Smart Resort registration OTP is: *{otp_code}*.\nIt expires in 10 minutes."
+                    whatsapp_msg = f"Your Smart Resort code is {otp_code}"
                     
                     user_phone = getattr(user, 'phone_number', '')
                     if user_phone:
@@ -215,7 +215,7 @@ class ResendOTPView(APIView):
                 try:
                     from twilio.rest import Client
                     client = Client(twilio_account_sid, twilio_auth_token)
-                    whatsapp_msg = f"Hello {user.first_name or user.username},\n\nYour new Smart Resort OTP is: *{otp_code}*.\nIt expires in 10 minutes."
+                    whatsapp_msg = f"Your Smart Resort code is {otp_code}"
                     
                     user_phone = getattr(user, 'phone_number', '')
                     if user_phone:
