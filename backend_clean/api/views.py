@@ -107,6 +107,7 @@ class RegisterView(generics.CreateAPIView):
                 except Exception as e:
                     print(f"Failed to send WhatsApp message: {str(e)}", flush=True)
 
+            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
             success_msg = "Registration initiated. Verification OTP sent to your WhatsApp."
         except Exception as e:
             print(f"Registration notification error: {str(e)}", flush=True)
@@ -230,6 +231,7 @@ class ResendOTPView(APIView):
                 except Exception as e:
                     print(f"Failed to send WhatsApp message: {str(e)}", flush=True)
 
+            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
             success_msg = "A new verification OTP has been sent to your WhatsApp."
         except Exception as e:
             print(f"Notification error: {str(e)}", flush=True)
