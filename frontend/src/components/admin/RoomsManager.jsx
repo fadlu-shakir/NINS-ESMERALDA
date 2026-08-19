@@ -29,7 +29,7 @@ const RoomsManager = () => {
   }, [rooms]);
   
   const [roomForm, setRoomForm] = useState({
-    room_number: '', category: '', description: '', price_per_night: '', capacity: 2, facilities: '', images: [],
+    room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, facilities: '', images: [],
     check_in_time: '03:30 PM', check_out_time: '02:30 PM'
   });
   const [editingRoom, setEditingRoom] = useState(null);
@@ -83,7 +83,7 @@ const RoomsManager = () => {
         });
         toast.success('Room added successfully');
       }
-      setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', capacity: 2, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
+      setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
       setEditingRoom(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       fetchData();
@@ -107,7 +107,8 @@ const RoomsManager = () => {
       category: room.category,
       description: room.description,
       price_per_night: room.price_per_night,
-      capacity: room.capacity,
+      adult_capacity: room.adult_capacity,
+      child_capacity: room.child_capacity,
       facilities: room.facilities,
       check_in_time: room.check_in_time || '03:30 PM',
       check_out_time: room.check_out_time || '02:30 PM',
@@ -322,9 +323,15 @@ const RoomsManager = () => {
               <label className="form-label text-muted small fw-bold">Price / Night (₹)</label>
               <input type="number" step="0.01" className="form-control" required value={roomForm.price_per_night} onChange={e => setRoomForm({...roomForm, price_per_night: e.target.value})} />
             </div>
-            <div className="mb-3">
-              <label className="form-label text-muted small fw-bold">Capacity</label>
-              <input type="number" className="form-control" required value={roomForm.capacity} onChange={e => setRoomForm({...roomForm, capacity: e.target.value})} />
+            <div className="row mb-3">
+              <div className="col-md-6">
+                <label className="form-label text-muted small fw-bold">Adult Capacity</label>
+                <input type="number" className="form-control" required value={roomForm.adult_capacity} onChange={e => setRoomForm({...roomForm, adult_capacity: e.target.value})} />
+              </div>
+              <div className="col-md-6">
+                <label className="form-label text-muted small fw-bold">Kids Capacity</label>
+                <input type="number" className="form-control" required value={roomForm.child_capacity} onChange={e => setRoomForm({...roomForm, child_capacity: e.target.value})} />
+              </div>
             </div>
             <div className="mb-3">
               <label className="form-label text-muted small fw-bold mb-2">Facilities</label>
@@ -425,7 +432,7 @@ const RoomsManager = () => {
                       <td><strong>{r.room_number || <span className="text-muted fst-italic">Unnumbered</span>}</strong></td>
                       <td>{r.category_name}</td>
                       <td>₹{r.price_per_night}</td>
-                      <td>{r.capacity}</td>
+                      <td>{r.adult_capacity}A, {r.child_capacity}K</td>
                       <td>
                         <select 
                           className={`form-select form-select-sm border-0 ${r.is_available ? 'bg-success text-white' : 'bg-danger text-white'}`}

@@ -446,6 +446,7 @@ const UserDashboard = () => {
                       <h6 className="fw-bold text-dark mb-3 text-uppercase letter-spacing-1" style={{ fontSize: '0.8rem' }}>Stay Details:</h6>
                       <p className="mb-1 small">Check-in: <span className="text-dark fw-bold">{selectedInvoice.check_in_date}</span></p>
                       <p className="mb-1 small">Check-out: <span className="text-dark fw-bold">{selectedInvoice.check_out_date}</span></p>
+                      <p className="mb-1 small">Guests: <span className="text-dark fw-bold">{selectedInvoice.adults} Adults, {selectedInvoice.kids} Kids</span></p>
                       <p className="mb-0 small">Status: <span className="text-success fw-bold text-uppercase">{selectedInvoice.status}</span></p>
                     </div>
                   </div>

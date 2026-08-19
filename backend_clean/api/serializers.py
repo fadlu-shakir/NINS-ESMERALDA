@@ -1,24 +1,35 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
-from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, BlockedDate
+from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, BlockedDate, UserProfile
 
 User = get_user_model()
 
 # --- USER SERIALIZERS ---
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ('is_broker', 'is_broker_verified')
+
 class UserSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer(read_only=True)
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'address', 'is_staff')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'phone_number', 'address', 'is_staff', 'profile')
         read_only_fields = ('id', 'is_staff')
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
     password_confirm = serializers.CharField(write_only=True, required=True)
+    is_broker = serializers.BooleanField(write_only=True, required=False, default=False)
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'password_confirm', 'first_name', 'last_name', 'phone_number')
+        fields = ('username', 'email', 'password', 'password_confirm', 'first_name', 'last_name', 'phone_number', 'address', 'is_broker')
+        extra_kwargs = {
+            'email': {'required': True},
+            'first_name': {'required': True},
+        }
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
@@ -26,6 +37,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        is_broker = validated_data.pop('is_broker', False)
         validated_data.pop('password_confirm')
         user = User.objects.create_user(
             username=validated_data['username'],
@@ -33,8 +45,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', ''),
-            phone_number=validated_data.get('phone_number', '')
+            phone_number=validated_data.get('phone_number', ''),
+            address=validated_data.get('address', '')
         )
+        UserProfile.objects.create(user=user, is_broker=is_broker)
         return user
 
 # --- ROOM SERIALIZERS ---
@@ -72,10 +86,11 @@ class BookingSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
     user_phone = serializers.CharField(source='user.phone_number', read_only=True)
+    is_broker = serializers.BooleanField(source='user.profile.is_broker', read_only=True)
 
     class Meta:
         model = Booking
-        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'room', 'room_details', 'check_in_date', 'check_out_date', 'total_amount', 'status', 'created_at', 'payment', 'booking_key')
+        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'is_broker', 'room', 'room_details', 'check_in_date', 'check_out_date', 'adults', 'kids', 'total_amount', 'status', 'created_at', 'payment', 'booking_key')
         read_only_fields = ('user', 'total_amount', 'status', 'booking_key')
 
     def validate(self, attrs):

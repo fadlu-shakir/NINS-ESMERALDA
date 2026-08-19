@@ -54,7 +54,17 @@ const AuthPage = () => {
     if (isLogin) {
       const success = await login(username, password);
       setIsSubmitting(false);
-      if (success) navigate('/');
+      if (success) {
+         const userStr = localStorage.getItem('user');
+         if (userStr) {
+             const usr = JSON.parse(userStr);
+             if (usr.profile?.is_broker) {
+                 navigate(usr.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
+                 return;
+             }
+         }
+         navigate('/');
+      }
     } else {
       if (!otpSent) {
         // Step 1: Submit user registration data
@@ -64,11 +74,15 @@ const AuthPage = () => {
         }
         try {
           const fullPhoneNumber = `${countryCode}${formData.phone_number.replace(/^0+/, '').replace(/^\+/, '')}`;
+          const urlParams = new URLSearchParams(window.location.search);
+          const is_broker = urlParams.get('invite') === 'broker';
+
           const res = await api.post('users/register/', {
             username,
             password,
             ...formData,
-            phone_number: fullPhoneNumber
+            phone_number: fullPhoneNumber,
+            is_broker: is_broker
           });
           if (res.data.status === 'otp_sent') {
             setOtpSent(true);
@@ -106,7 +120,11 @@ const AuthPage = () => {
             localStorage.setItem('user', JSON.stringify(res.data.user));
 
             toast.success('Registration verified and logged in successfully!');
-            navigate('/');
+            if (res.data.user?.profile?.is_broker) {
+                navigate(res.data.user.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
+            } else {
+                navigate('/');
+            }
           }
         } catch (error) {
           toast.error(error.response?.data?.detail || 'Invalid or expired OTP code.');
@@ -153,7 +171,11 @@ const AuthPage = () => {
       setUser(res.data.user);
       localStorage.setItem('user', JSON.stringify(res.data.user));
       toast.success('Logged in with Google successfully!');
-      navigate('/');
+      if (res.data.user?.profile?.is_broker) {
+          navigate(res.data.user.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
+      } else {
+          navigate('/');
+      }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Google login failed.');
       console.error(error);
@@ -302,7 +324,7 @@ const AuthPage = () => {
                     )}
                   </form>
                   
-                  <div className="text-center mt-4 text-muted">
+                  <div className="text-center mt-4 text-muted position-relative">
                     {isLogin ? (
                       <>Don't have an account? <span onClick={toggleAuthMode} className="text-accent fw-bold text-decoration-none" style={{ cursor: 'pointer' }}>Register Now</span></>
                     ) : (
@@ -334,6 +356,16 @@ const AuthPage = () => {
                       ) : (
                         <>Already have an account? <span onClick={toggleAuthMode} className="text-accent fw-bold text-decoration-none" style={{ cursor: 'pointer' }}>Login</span></>
                       )
+                    )}
+                    
+                    {!isLogin && !otpSent && (
+                       <span 
+                         onClick={() => navigate('/register?invite=broker')}
+                         style={{ position: 'absolute', right: '-15px', bottom: '-20px', opacity: 0.10, cursor: 'pointer', padding: '10px', fontSize: '10px', userSelect: 'none' }}
+                         title="b"
+                       >
+                         b
+                       </span>
                     )}
                   </div>
                 </div>

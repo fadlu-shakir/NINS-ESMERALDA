@@ -12,10 +12,34 @@ import UserDashboard from './pages/UserDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
+import BrokerRoute from './components/BrokerRoute';
 import NotFound from './pages/NotFound';
 import WhatsAppButton from './components/WhatsAppButton';
+import BrokerPending from './pages/BrokerPending';
+import BrokerDashboard from './pages/BrokerDashboard';
+import { useContext } from 'react';
+import { AuthContext } from './context/AuthContext';
 
 function App() {
+  const { user } = useContext(AuthContext);
+  const isBroker = user?.profile?.is_broker;
+  const isBrokerVerified = user?.profile?.is_broker_verified;
+
+  if (isBroker) {
+    return (
+      <Router>
+        <Routes>
+          {isBrokerVerified ? (
+            <Route path="*" element={<BrokerDashboard />} />
+          ) : (
+            <Route path="*" element={<BrokerPending />} />
+          )}
+        </Routes>
+        <ToastContainer position="top-right" autoClose={3000} />
+      </Router>
+    );
+  }
+
   return (
     <Router>
       <Navbar />
@@ -35,7 +59,7 @@ function App() {
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboard />} />
           </Route>
-
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </div>

@@ -11,6 +11,14 @@ class User(AbstractUser):
     def __str__(self):
         return self.username
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    is_broker = models.BooleanField(default=False)
+    is_broker_verified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} Profile"
+
 # --- ROOM MODELS ---
 class RoomCategory(models.Model):
     name = models.CharField(max_length=100)
@@ -25,7 +33,8 @@ class Room(models.Model):
     room_number = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField()
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
-    capacity = models.IntegerField(default=2)
+    adult_capacity = models.IntegerField(default=2)
+    child_capacity = models.IntegerField(default=0)
     facilities = models.TextField(help_text="Comma separated facilities e.g., WiFi, AC, TV")
     is_available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='rooms/', null=True, blank=True)
@@ -73,7 +82,8 @@ class Booking(models.Model):
     booking_key = models.CharField(max_length=20, unique=True, blank=True, null=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
-    guest_count = models.IntegerField(default=1)
+    adults = models.IntegerField(default=1)
+    kids = models.IntegerField(default=0)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='Pending')
     created_at = models.DateTimeField(auto_now_add=True)

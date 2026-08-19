@@ -10,6 +10,8 @@ import AvailabilityManager from '../components/admin/AvailabilityManager';
 import AnalyticsManager from '../components/admin/AnalyticsManager';
 import UsersManager from '../components/admin/UsersManager';
 import AdminManager from '../components/admin/AdminManager';
+import BrokersManager from '../components/admin/BrokersManager';
+import NewBrokerNotification from '../components/admin/NewBrokerNotification';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('bookings');
@@ -17,6 +19,7 @@ const AdminDashboard = () => {
   return (
     <div className="container py-5" style={{ marginTop: '70px' }}>
       <NewBookingNotification />
+      <NewBrokerNotification />
       <h2 className="mb-4 border-bottom pb-3">Admin Dashboard</h2>
       
       <div className="position-relative mb-5" style={{ zIndex: 10 }}>
@@ -45,6 +48,7 @@ const AdminDashboard = () => {
             { id: 'availability', label: 'Availability', icon: 'fa-calendar-times' },
             { id: 'gallery', label: 'Gallery', icon: 'fa-images' },
             { id: 'users', label: 'Users', icon: 'fa-users' },
+            { id: 'brokers', label: 'Brokers', icon: 'fa-briefcase' },
             { id: 'admins', label: 'Admins', icon: 'fa-user-shield' },
             { id: 'notifications', label: 'Alerts', icon: 'fa-bell' }
           ].map(tab => (
@@ -91,6 +95,7 @@ const AdminDashboard = () => {
       
       { activeTab === 'gallery' && <GalleryManager /> }
       { activeTab === 'users' && <UsersManager /> }
+      { activeTab === 'brokers' && <BrokersManager /> }
       { activeTab === 'admins' && <AdminManager /> }
       { activeTab === 'notifications' && <NotificationsManager /> }
     </div>

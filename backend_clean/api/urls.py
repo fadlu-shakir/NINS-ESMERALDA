@@ -6,7 +6,7 @@ from .views import (
     RegisterView, VerifyOTPView, ResendOTPView, UserProfileView, LogoutView, UserListView,
     VerifyPasswordView, ToggleAdminView, AnalyticsView, GoogleLoginView,
     RoomCategoryViewSet, RoomViewSet, GalleryViewSet, ResortInformationViewSet,
-    BookingViewSet, ReviewViewSet, NotificationViewSet, BlockedDateViewSet
+    BookingViewSet, ReviewViewSet, NotificationViewSet, BlockedDateViewSet, BrokerViewSet
 )
 
 router = DefaultRouter()
@@ -18,6 +18,7 @@ router.register(r'bookings', BookingViewSet, basename='bookings')
 router.register(r'reviews', ReviewViewSet, basename='reviews')
 router.register(r'notifications', NotificationViewSet, basename='notifications')
 router.register(r'availability/blocked-dates', BlockedDateViewSet, basename='blocked-dates')
+router.register(r'brokers', BrokerViewSet, basename='brokers')
 
 urlpatterns = [
     # Auth & User Routes

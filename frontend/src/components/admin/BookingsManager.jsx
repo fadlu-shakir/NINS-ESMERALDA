@@ -6,6 +6,7 @@ const BookingsManager = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [approvedBroker, setApprovedBroker] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -30,10 +31,13 @@ const BookingsManager = () => {
     }
   };
 
-  const approveBooking = async (id) => {
+  const approveBooking = async (booking) => {
     try {
-      await api.post(`bookings/${id}/approve/`);
+      await api.post(`bookings/${booking.id}/approve/`);
       toast.success('Booking approved');
+      if (booking.is_broker) {
+        setApprovedBroker(booking);
+      }
       fetchBookings();
     } catch (error) {
       toast.error('Failed to approve');
@@ -183,9 +187,13 @@ const BookingsManager = () => {
                         <div className="small text-muted" style={{ fontSize: '0.7rem' }}>Sys ID: {booking.id}</div>
                       </td>
                       <td>
-                        <div className="fw-bold">{booking.username}</div>
+                        <div className="fw-bold d-flex align-items-center gap-2">
+                          {booking.username}
+                          {booking.is_broker && <span className="badge bg-primary text-white" style={{fontSize: '0.65rem'}}>Broker</span>}
+                        </div>
                         <div className="small text-muted">{booking.user_email}</div>
                         <div className="small text-muted">{booking.user_phone || 'No phone'}</div>
+                        <div className="small text-accent mt-1 fw-bold"><i className="fas fa-users me-1"></i>{booking.adults} Adults, {booking.kids} Kids</div>
                       </td>
                       <td>
                         <strong>Room {booking.room_details?.room_number || 'N/A'}</strong>
@@ -201,7 +209,7 @@ const BookingsManager = () => {
                       <td>
                         <div className="btn-group gap-1">
                           {booking.status === 'Pending' && (
-                            <button className="btn btn-sm btn-success" onClick={() => approveBooking(booking.id)}>Approve</button>
+                            <button className="btn btn-sm btn-success" onClick={() => approveBooking(booking)}>Approve</button>
                           )}
                           {booking.status === 'Cancellation Requested' && (
                             <>
@@ -222,6 +230,38 @@ const BookingsManager = () => {
           </div>
         </div>
       </div>
+
+      {/* Broker Approval Success Popup */}
+      {approvedBroker && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999
+        }}>
+          <div className="bg-white rounded-4 shadow-lg p-5 text-center" style={{ maxWidth: '400px', animation: 'popIn 0.3s ease-out' }}>
+            <div className="mb-4">
+              <i className="bi bi-check-circle-fill text-success" style={{ fontSize: '4rem' }}></i>
+            </div>
+            <h3 className="fw-bold mb-3">Booking Confirmed!</h3>
+            <p className="text-muted mb-4">
+              The booking request for <strong className="text-primary">{approvedBroker.username}</strong> (Broker) has been successfully confirmed.
+            </p>
+            <button className="btn btn-primary px-4 rounded-pill fw-bold shadow-sm" onClick={() => setApprovedBroker(null)}>
+              Awesome!
+            </button>
+          </div>
+          <style>{`
+            @keyframes popIn {
+              0% { transform: scale(0.8); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+          `}</style>
+        </div>
+      )}
 
     </>
   );

@@ -19,11 +19,28 @@ const CustomCalendar = ({ checkInDate, checkOutDate, onDateChange, bookedDates =
 
   const getDayStatus = (date) => {
     const dStr = formatDate(date);
+    let isCheckIn = false;
+    let isCheckOut = false;
+    let isMine = false;
+    
     for (const booking of bookedDates) {
-      if (booking.check_in === dStr) return 'check-in';
-      if (booking.check_out === dStr) return 'check-out';
-      if (dStr > booking.check_in && dStr < booking.check_out) return 'reserved';
+      if (dStr > booking.check_in && dStr < booking.check_out) {
+        return booking.is_mine ? 'reserved my-booking' : 'reserved';
+      }
+      if (booking.check_in === dStr) {
+         isCheckIn = true;
+         if (booking.is_mine) isMine = true;
+      }
+      if (booking.check_out === dStr) {
+         isCheckOut = true;
+         if (booking.is_mine) isMine = true;
+      }
     }
+    
+    if (isCheckIn && isCheckOut) return isMine ? 'fully-booked my-booking' : 'fully-booked';
+    if (isCheckIn) return isMine ? 'check-in my-booking' : 'check-in';
+    if (isCheckOut) return isMine ? 'check-out my-booking' : 'check-out';
+    
     return 'available';
   };
 
@@ -69,7 +86,17 @@ const CustomCalendar = ({ checkInDate, checkOutDate, onDateChange, bookedDates =
       const past = isPast(date);
       const selectionStatus = getSelectionStatus(date);
       
-      const isDisabled = past || status === 'reserved' || status === 'check-in' || (minDate && date < new Date(new Date(minDate).setHours(0,0,0,0)));
+      const isSelectingCheckIn = !checkInDate || (checkInDate && checkOutDate);
+      let isDisabled = past || (minDate && date < new Date(new Date(minDate).setHours(0,0,0,0))) || status.includes('reserved') || status.includes('fully-booked');
+      
+      if (!isDisabled) {
+          if (isSelectingCheckIn) {
+              if (status.includes('check-in')) isDisabled = true;
+          } else {
+              if (status.includes('check-out')) isDisabled = true;
+              if (date <= new Date(checkInDate)) isDisabled = true;
+          }
+      }
 
       days.push(
         <div 
@@ -224,17 +251,24 @@ const CustomCalendar = ({ checkInDate, checkOutDate, onDateChange, bookedDates =
         }
 
         .calendar-day.check-in,
-        .calendar-day.reserved {
-          background-color: transparent !important;
-          color: #cbd5e1 !important;
-          text-decoration: line-through;
-          cursor: not-allowed;
-        }
+        .calendar-day.reserved,
+        .calendar-day.fully-booked,
         .calendar-day.check-out {
-          background-color: transparent !important;
-          color: #cbd5e1 !important;
-          border: 1px dashed #cbd5e1;
+          background-color: #cbd5e1 !important;
+          color: #fff !important;
+          text-decoration: none;
           cursor: not-allowed;
+          border-radius: 50%;
+        }
+        
+        .calendar-day.check-out:not(.disabled):hover,
+        .calendar-day.check-in:not(.disabled):hover {
+          background-color: #2563eb !important;
+          cursor: pointer;
+        }
+        .calendar-day.my-booking {
+          background-color: #1e293b !important;
+          color: #fff !important;
         }
         .calendar-day.disabled:not(.reserved):not(.check-in):not(.check-out) {
           color: #cbd5e1;

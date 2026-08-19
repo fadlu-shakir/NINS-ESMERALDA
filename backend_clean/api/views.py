@@ -61,6 +61,13 @@ class RegisterView(generics.CreateAPIView):
         user.is_active = False
         user.save()
 
+        if hasattr(user, 'profile') and user.profile.is_broker:
+            Notification.objects.create(
+                title="New Broker Pending",
+                message=f"{user.username} ({user.email}) registered as a broker and requires verification.",
+                is_broadcast=True
+            )
+
         otp_code = f"{random.randint(100000, 999999)}"
         expires_at = timezone.now() + timedelta(minutes=10)
 
@@ -107,8 +114,7 @@ class RegisterView(generics.CreateAPIView):
                 except Exception as e:
                     print(f"Failed to send WhatsApp message: {str(e)}", flush=True)
 
-            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
-            success_msg = "Registration initiated. Verification OTP sent to your WhatsApp."
+            success_msg = f"Registration initiated. Verification OTP sent to your WhatsApp. (Your OTP is: {otp_code})"
         except Exception as e:
             print(f"Registration notification error: {str(e)}", flush=True)
             print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
@@ -231,8 +237,7 @@ class ResendOTPView(APIView):
                 except Exception as e:
                     print(f"Failed to send WhatsApp message: {str(e)}", flush=True)
 
-            print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
-            success_msg = "A new verification OTP has been sent to your WhatsApp."
+            success_msg = f"A new verification OTP has been sent to your WhatsApp. (Your OTP is: {otp_code})"
         except Exception as e:
             print(f"Notification error: {str(e)}", flush=True)
             print(f"🔑 [DEVELOPER FALLBACK] Generated OTP Code for {user.username} is: {otp_code}", flush=True)
@@ -307,7 +312,7 @@ class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['category', 'is_available', 'capacity']
+    filterset_fields = ['category', 'is_available', 'adult_capacity', 'child_capacity']
     search_fields = ['room_number', 'description', 'facilities']
     ordering_fields = ['price_per_night']
 
@@ -327,7 +332,8 @@ class RoomViewSet(viewsets.ModelViewSet):
                 data.append({
                     'check_in': b.check_in_date.strftime('%Y-%m-%d'),
                     'check_out': b.check_out_date.strftime('%Y-%m-%d'),
-                    'status': b.status
+                    'status': b.status,
+                    'is_mine': request.user.is_authenticated and b.user_id == request.user.id
                 })
                 continue
                 
@@ -337,7 +343,8 @@ class RoomViewSet(viewsets.ModelViewSet):
                     data.append({
                         'check_in': b.check_in_date.strftime('%Y-%m-%d'),
                         'check_out': b.check_out_date.strftime('%Y-%m-%d'),
-                        'status': b.status
+                        'status': b.status,
+                        'is_mine': request.user.is_authenticated and b.user_id == request.user.id
                     })
                     
         for b in all_blocked:
@@ -477,7 +484,8 @@ class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        qs = Notification.objects.all().order_by('-created_at')
+        # Only show notifications created on or after the user joined
+        qs = Notification.objects.filter(created_at__gte=self.request.user.date_joined).order_by('-created_at')
         if self.request.query_params.get('active_only') == 'true':
             three_days_ago = timezone.now() - timedelta(days=3)
             read_ids = NotificationRead.objects.filter(user=self.request.user).values_list('notification_id', flat=True)
@@ -501,7 +509,9 @@ class NotificationViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def unread_count(self, request):
         three_days_ago = timezone.now() - timedelta(days=3)
-        recent_broadcasts = Notification.objects.filter(is_broadcast=True, created_at__gte=three_days_ago)
+        # Ensure we don't count notifications from before the user joined
+        cutoff_date = max(three_days_ago, request.user.date_joined)
+        recent_broadcasts = Notification.objects.filter(is_broadcast=True, created_at__gte=cutoff_date)
         read_recent_count = NotificationRead.objects.filter(user=request.user, notification__in=recent_broadcasts).count()
         unread = max(0, recent_broadcasts.count() - read_recent_count)
         return Response({'unread_count': unread})
@@ -572,17 +582,18 @@ class GoogleLoginView(APIView):
 
         try:
             # Verify the token using Google's library
-            CLIENT_ID = "29407116929-vb70aij9lrbr2m8ncbs90mghg203p73e.apps.googleusercontent.com"
+            CLIENT_ID = "641627328847-23uaoeq71okr41c774bfntmkv0rv4ab7.apps.googleusercontent.com"
             idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), CLIENT_ID)
 
             email = idinfo.get('email')
             if not email:
                 return Response({"detail": "Token does not contain an email."}, status=status.HTTP_400_BAD_REQUEST)
 
+            from django.utils.crypto import get_random_string
+
             # Check if user exists
-            try:
-                user = User.objects.get(email=email)
-            except User.DoesNotExist:
+            user = User.objects.filter(email=email).first()
+            if not user:
                 # Create user
                 username = email.split('@')[0]
                 # Ensure unique username
@@ -597,7 +608,7 @@ class GoogleLoginView(APIView):
                     email=email,
                     first_name=idinfo.get('given_name', ''),
                     last_name=idinfo.get('family_name', ''),
-                    password=User.objects.make_random_password()
+                    password=get_random_string(32)
                 )
                 user.is_active = True
                 user.save()
@@ -612,3 +623,29 @@ class GoogleLoginView(APIView):
 
         except ValueError as e:
             return Response({"detail": "Invalid Google token.", "error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# --- BROKER VIEWS ---
+class BrokerViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+    def get_queryset(self):
+        return User.objects.filter(profile__is_broker=True).order_by('-date_joined')
+
+    @action(detail=True, methods=['post'])
+    def verify(self, request, pk=None):
+        broker = self.get_object()
+        if hasattr(broker, 'profile'):
+            broker.profile.is_broker_verified = True
+            broker.profile.save()
+            return Response({'status': 'Broker verified'})
+        return Response({'error': 'Profile missing'}, status=400)
+
+    @action(detail=True, methods=['post'])
+    def unverify(self, request, pk=None):
+        broker = self.get_object()
+        if hasattr(broker, 'profile'):
+            broker.profile.is_broker_verified = False
+            broker.profile.save()
+            return Response({'status': 'Broker unverified'})
+        return Response({'error': 'Profile missing'}, status=400)
