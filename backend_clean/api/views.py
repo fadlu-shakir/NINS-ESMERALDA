@@ -582,7 +582,7 @@ class GoogleLoginView(APIView):
 
         try:
             # Verify the token using Google's library
-            CLIENT_ID = "641627328847-23uaoeq71okr41c774bfntmkv0rv4ab7.apps.googleusercontent.com"
+            CLIENT_ID = "928368334434-sb3tsor2ahng98nrb2tenkl6brkpgubk.apps.googleusercontent.com"
             idinfo = id_token.verify_oauth2_token(token, google_requests.Request(), CLIENT_ID)
 
             email = idinfo.get('email')
