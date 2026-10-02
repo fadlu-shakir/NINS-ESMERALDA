@@ -90,7 +90,7 @@ const AuthPage = () => {
                 </div>
                 <div className="col-md-7 p-5">
                   <div className="text-center mb-4">
-                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Registration' : 'Create Account')}</h3>
+                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Login' : 'Create Account')}</h3>
                     <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : (isBrokerInvite ? 'Join our broker network securely using Google' : 'Join us to experience luxury using Google')}</p>
                   </div>
                   
