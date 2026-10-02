@@ -63,11 +63,12 @@ const AuthPage = () => {
       localStorage.setItem('refresh_token', res.data.refresh);
       setUser(res.data.user);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      toast.success('Logged in with Google successfully!');
       
       if (res.data.user?.profile?.is_broker) {
+          toast.success('Logged in as Broker successfully!');
           navigate(res.data.user.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
       } else {
+          toast.success('Logged in with Google successfully!');
           navigate('/');
       }
     } catch (error) {
