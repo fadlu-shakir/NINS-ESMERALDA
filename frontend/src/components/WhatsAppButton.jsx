@@ -12,7 +12,7 @@ const WhatsAppButton = () => {
   }
 
   // Replace with your actual WhatsApp phone number (including country code)
-  const phoneNumber = '1234567890';
+  const phoneNumber = '918590130953';
   
   return (
     <a
