@@ -8,6 +8,7 @@ import { GoogleLogin } from '@react-oauth/google';
 const AuthPage = () => {
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(location.pathname !== '/register');
+  const isBrokerInvite = new URLSearchParams(location.search).get('invite') === 'broker';
   
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -53,9 +54,6 @@ const AuthPage = () => {
     try {
       setIsSubmitting(true);
       
-      const urlParams = new URLSearchParams(window.location.search);
-      const isBrokerInvite = urlParams.get('invite') === 'broker';
-
       const res = await api.post('users/google-login/', { 
         token: credentialResponse.credential,
         is_broker: isBrokerInvite
@@ -92,8 +90,8 @@ const AuthPage = () => {
                 </div>
                 <div className="col-md-7 p-5">
                   <div className="text-center mb-4">
-                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : 'Create Account'}</h3>
-                    <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : 'Join us to experience luxury using Google'}</p>
+                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Registration' : 'Create Account')}</h3>
+                    <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : (isBrokerInvite ? 'Join our broker network securely using Google' : 'Join us to experience luxury using Google')}</p>
                   </div>
                   
                   {isLogin ? (
@@ -143,7 +141,11 @@ const AuthPage = () => {
                     </form>
                   ) : (
                     <div className="animate__animated animate__fadeIn text-center">
-                      <p className="mb-4 text-muted">We have simplified registration. You can now securely create an account using your Google account in one click!</p>
+                      <p className="mb-4 text-muted">
+                        {isBrokerInvite 
+                          ? "You are registering as a broker. You can now securely create an account using your Google account in one click!"
+                          : "We have simplified registration. You can now securely create an account using your Google account in one click!"}
+                      </p>
                       <div className="d-flex justify-content-center my-4">
                         <GoogleLogin
                           onSuccess={handleGoogleSuccess}
