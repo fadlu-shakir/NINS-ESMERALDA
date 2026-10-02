@@ -52,13 +52,14 @@ const AuthPage = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setIsSubmitting(true);
-      const res = await api.post('users/google-login/', { token: credentialResponse.credential });
       
       const urlParams = new URLSearchParams(window.location.search);
       const isBrokerInvite = urlParams.get('invite') === 'broker';
 
-      // If they registered as a broker, you'd likely want a backend call here to flag them
-      // For now, we proceed as normal
+      const res = await api.post('users/google-login/', { 
+        token: credentialResponse.credential,
+        is_broker: isBrokerInvite
+      });
 
       localStorage.setItem('access_token', res.data.access);
       localStorage.setItem('refresh_token', res.data.refresh);

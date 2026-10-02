@@ -612,6 +612,14 @@ class GoogleLoginView(APIView):
                 )
                 user.is_active = True
                 user.save()
+                
+                is_broker = request.data.get('is_broker', False)
+                UserProfile.objects.create(user=user, is_broker=is_broker)
+            else:
+                is_broker = request.data.get('is_broker', False)
+                if is_broker and hasattr(user, 'profile') and not user.profile.is_broker:
+                    user.profile.is_broker = True
+                    user.profile.save()
 
             # Generate tokens
             refresh = RefreshToken.for_user(user)
