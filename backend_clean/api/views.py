@@ -624,7 +624,8 @@ class GoogleLoginView(APIView):
                 else:
                     UserProfile.objects.create(user=user, is_broker=is_broker)
 
-            user.refresh_from_db()
+            # Ensure user object is completely fresh for serialization
+            user = User.objects.get(id=user.id)
 
             # Generate tokens
             refresh = RefreshToken.for_user(user)
