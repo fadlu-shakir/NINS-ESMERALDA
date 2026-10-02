@@ -17,7 +17,7 @@ import os
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 
-from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, OTPVerification, BlockedDate
+from .models import RoomCategory, Room, Gallery, ResortInformation, Booking, Payment, Review, Notification, NotificationRead, OTPVerification, BlockedDate, UserProfile
 from .serializers import (
     UserSerializer, RegisterSerializer, 
     RoomCategorySerializer, RoomSerializer, GallerySerializer, ResortInformationSerializer,
