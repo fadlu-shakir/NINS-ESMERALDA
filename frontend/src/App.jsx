@@ -28,6 +28,7 @@ function App() {
   if (isBroker) {
     return (
       <Router>
+        <div className="watermark-overlay"></div>
         <Routes>
           {isBrokerVerified ? (
             <Route path="*" element={<BrokerDashboard />} />
@@ -42,6 +43,7 @@ function App() {
 
   return (
     <Router>
+      <div className="watermark-overlay"></div>
       <Navbar />
       <div className="main-content" style={{ minHeight: 'calc(100vh - 300px)' }}>
         <Routes>
