@@ -34,6 +34,18 @@ function BrokersManager() {
     }
   };
 
+  const handleDeleteBroker = async (brokerId) => {
+    if (window.confirm('Are you sure you want to delete this broker? This action cannot be undone.')) {
+      try {
+        await api.delete(`brokers/${brokerId}/`);
+        toast.success('Broker deleted successfully');
+        fetchBrokers();
+      } catch (error) {
+        toast.error('Failed to delete broker');
+      }
+    }
+  };
+
   if (loading) return <div className="text-center p-5"><div className="spinner-border text-primary" role="status"></div></div>;
 
   return (
@@ -78,17 +90,24 @@ function BrokersManager() {
                       )}
                     </div>
                   </div>
-                  <div className="card-footer bg-white border-0 pt-0 pb-3">
+                  <div className="card-footer bg-white border-0 pt-0 pb-3 d-flex gap-2">
                     <button 
-                      className={`btn w-100 fw-bold shadow-sm ${verified ? 'btn-outline-danger' : 'btn-success'}`}
+                      className={`btn flex-grow-1 fw-bold shadow-sm ${verified ? 'btn-outline-danger' : 'btn-success'}`}
                       onClick={() => toggleVerification(broker)}
                       style={{ transition: 'all 0.3s ease' }}
                     >
                       {verified ? (
                         <><i className="bi bi-x-circle me-2"></i> Revoke Access</>
                       ) : (
-                        <><i className="bi bi-check-circle me-2"></i> Verify & Approve</>
+                        <><i className="bi bi-check-circle me-2"></i> Verify</>
                       )}
+                    </button>
+                    <button 
+                      className="btn btn-outline-danger fw-bold shadow-sm px-3"
+                      onClick={() => handleDeleteBroker(broker.id)}
+                      title="Delete Broker"
+                    >
+                      <i className="bi bi-trash"></i>
                     </button>
                   </div>
                 </div>

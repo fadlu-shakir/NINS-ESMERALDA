@@ -23,6 +23,18 @@ const UsersManager = () => {
     }
   };
 
+  const handleDeleteUser = async (userId) => {
+    if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      try {
+        await api.delete(`users/${userId}/delete/`);
+        toast.success('User deleted successfully');
+        fetchUsers();
+      } catch (error) {
+        toast.error(error.response?.data?.detail || 'Failed to delete user');
+      }
+    }
+  };
+
   // Removed early return to prevent layout shift
 
   const filteredUsers = users.filter(u => {
@@ -69,13 +81,14 @@ const UsersManager = () => {
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Role</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="7" className="text-center py-5"><div className="spinner-border text-primary-modern"></div><div className="mt-2 text-muted small">Loading users...</div></td></tr>
+                <tr><td colSpan="8" className="text-center py-5"><div className="spinner-border text-primary-modern"></div><div className="mt-2 text-muted small">Loading users...</div></td></tr>
               ) : filteredUsers.length === 0 ? (
-                <tr><td colSpan="7" className="text-center py-4 text-muted">No users found.</td></tr>
+                <tr><td colSpan="8" className="text-center py-4 text-muted">No users found.</td></tr>
               ) : filteredUsers.map(u => (
                 <tr key={u.id}>
                   <td><strong>#{u.id}</strong></td>
@@ -90,6 +103,15 @@ const UsersManager = () => {
                     ) : (
                       <span className="badge bg-secondary px-3 py-2">Customer</span>
                     )}
+                  </td>
+                  <td>
+                    <button 
+                      onClick={() => handleDeleteUser(u.id)}
+                      className="btn btn-sm btn-outline-danger"
+                      title="Delete User"
+                    >
+                      <i className="bi bi-trash"></i>
+                    </button>
                   </td>
                 </tr>
               ))}

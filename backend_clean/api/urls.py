@@ -6,7 +6,8 @@ from .views import (
     RegisterView, VerifyOTPView, ResendOTPView, UserProfileView, LogoutView, UserListView,
     VerifyPasswordView, ToggleAdminView, AnalyticsView, GoogleLoginView,
     RoomCategoryViewSet, RoomViewSet, GalleryViewSet, ResortInformationViewSet,
-    BookingViewSet, ReviewViewSet, NotificationViewSet, BlockedDateViewSet, BrokerViewSet
+    BookingViewSet, ReviewViewSet, NotificationViewSet, BlockedDateViewSet, BrokerViewSet,
+    UserDeleteView
 )
 
 router = DefaultRouter()
@@ -33,6 +34,7 @@ urlpatterns = [
     path('users/list/', UserListView.as_view(), name='user_list'),
     path('users/verify-password/', VerifyPasswordView.as_view(), name='verify_password'),
     path('users/<int:pk>/toggle-admin/', ToggleAdminView.as_view(), name='toggle_admin'),
+    path('users/<int:pk>/delete/', UserDeleteView.as_view(), name='user_delete'),
     path('analytics/', AnalyticsView.as_view(), name='analytics'),
 
     # ViewSet Routes (Rooms, Bookings, Reviews)

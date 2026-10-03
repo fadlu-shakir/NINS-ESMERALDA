@@ -301,6 +301,20 @@ class ToggleAdminView(APIView):
         except User.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
+class UserDeleteView(APIView):
+    permission_classes = [permissions.IsAdminUser]
+
+    def delete(self, request, pk):
+        try:
+            target_user = User.objects.get(pk=pk)
+            if target_user == request.user:
+                return Response({'detail': 'Cannot delete your own account'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            target_user.delete()
+            return Response({'status': 'User deleted successfully'})
+        except User.DoesNotExist:
+            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
 # --- ROOM VIEWS ---
 class RoomCategoryViewSet(viewsets.ModelViewSet):
     queryset = RoomCategory.objects.all()
