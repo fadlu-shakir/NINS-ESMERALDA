@@ -137,12 +137,12 @@ const CustomCalendar = ({ checkInDate, checkOutDate, onDateChange, bookedDates =
       <div className="custom-calendar card shadow-sm border rounded-4 overflow-hidden mx-auto" style={{ borderColor: '#eef2f6', maxWidth: '450px' }}>
         
         {/* Navigation */}
-        <div className="calendar-nav d-flex justify-content-between position-absolute w-100 px-4 pt-4" style={{ zIndex: 10, top: 0, left: 0 }}>
+        <div className="calendar-nav d-flex justify-content-between position-absolute w-100 px-3 pt-4" style={{ zIndex: 10, top: 0, left: 0 }}>
           <button className="btn btn-nav shadow-sm rounded-circle" onClick={(e) => { e.preventDefault(); handlePrevMonth(); }}><i className="fas fa-chevron-left"></i></button>
           <button className="btn btn-nav shadow-sm rounded-circle" onClick={(e) => { e.preventDefault(); handleNextMonth(); }}><i className="fas fa-chevron-right"></i></button>
         </div>
 
-        <div className="calendar-body p-4 pt-5">
+        <div className="calendar-body calendar-mobile-padding">
           {renderMonth(0)}
         </div>
         
@@ -284,6 +284,31 @@ const CustomCalendar = ({ checkInDate, checkOutDate, onDateChange, bookedDates =
           height: 8px;
           border-radius: 50%;
           margin-right: 6px;
+        }
+
+        .calendar-mobile-padding {
+          padding: 1.5rem;
+          padding-top: 3rem !important;
+        }
+
+        @media (max-width: 480px) {
+          .calendar-day {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+          }
+          .calendar-mobile-padding {
+            padding: 0.75rem;
+            padding-top: 3.5rem !important;
+          }
+          .calendar-footer {
+            padding: 0.75rem !important;
+          }
+          .calendar-footer .d-flex {
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem !important;
+          }
         }
       `}</style>
     </div>

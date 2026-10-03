@@ -2233,4 +2233,13 @@ a:hover {
   .watermark-overlay {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200'><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' transform='rotate(-35 150 100)' font-family='system-ui, sans-serif' font-size='24' font-weight='900' fill='%23000' fill-opacity='0.12' letter-spacing='2'>CURRENTLY TESTING</text></svg>");
   }
+  .border-mobile-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .border-desktop-end {
+    border-right: 1px solid #dee2e6 !important;
+  }
 }

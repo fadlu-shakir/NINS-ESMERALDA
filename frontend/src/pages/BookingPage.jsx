@@ -239,7 +239,7 @@ const BookingPage = () => {
             
             <form onSubmit={handleSubmit}>
               <div className="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
-                <div className="card-body p-4 p-md-5">
+                <div className="card-body p-3 p-md-5">
                   <CustomCalendar 
                     checkInDate={formData.check_in_date}
                     checkOutDate={formData.check_out_date}
@@ -249,12 +249,12 @@ const BookingPage = () => {
                   />
                   
                   <div className="row mt-4 pt-4 border-top">
-                    <div className="col-6 border-end">
+                    <div className="col-12 col-md-6 border-mobile-bottom pb-3 mb-3 pb-md-0 mb-md-0 border-desktop-end">
                       <small className="text-muted d-block text-uppercase letter-spacing-1 fw-bold mb-1" style={{ fontSize: '0.7rem' }}>Check-in</small>
                       <div className="fw-bold text-dark fs-5">{formData.check_in_date || 'Select date'}</div>
                       <small className="text-muted">From {room.check_in_time}</small>
                     </div>
-                    <div className="col-6 ps-4">
+                    <div className="col-12 col-md-6 ps-md-4">
                       <small className="text-muted d-block text-uppercase letter-spacing-1 fw-bold mb-1" style={{ fontSize: '0.7rem' }}>Check-out</small>
                       <div className="fw-bold text-dark fs-5">{formData.check_out_date || 'Select date'}</div>
                       <small className="text-muted">Until {room.check_out_time}</small>
@@ -269,7 +269,7 @@ const BookingPage = () => {
               </div>
 
               <div className="card shadow-sm border-0 rounded-4 mb-5">
-                <div className="card-body p-4 p-md-5">
+                <div className="card-body p-3 p-md-5">
                   
                   {/* Adults Selector */}
                   <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-4">
