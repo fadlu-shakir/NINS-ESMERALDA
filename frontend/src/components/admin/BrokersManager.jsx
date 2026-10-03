@@ -107,7 +107,7 @@ function BrokersManager() {
                       onClick={() => handleDeleteBroker(broker.id)}
                       title="Delete Broker"
                     >
-                      <i className="bi bi-trash"></i>
+                      <i className="fas fa-trash"></i>
                     </button>
                   </div>
                 </div>

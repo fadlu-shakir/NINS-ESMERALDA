@@ -110,7 +110,7 @@ const UsersManager = () => {
                       className="btn btn-sm btn-outline-danger"
                       title="Delete User"
                     >
-                      <i className="bi bi-trash"></i>
+                      <i className="fas fa-trash"></i>
                     </button>
                   </td>
                 </tr>
