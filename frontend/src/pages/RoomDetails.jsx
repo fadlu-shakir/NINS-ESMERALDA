@@ -171,11 +171,18 @@ const RoomDetails = () => {
             </div>
           )}
           
-          {images.length > 0 && (
-            <button className="btn-gallery-view-all" onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}>
-              <i className="far fa-images me-2"></i> View All Photos ({images.length})
-            </button>
-          )}
+          <div className="gallery-buttons-container">
+            {images.length > 0 && (
+              <button className="btn-gallery-view-all" onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}>
+                <i className="far fa-images me-2"></i> View All Photos ({images.length})
+              </button>
+            )}
+            {room.is_available && (
+              <Link to={`/booking/${room.id}`} className="btn-gallery-book-slot">
+                <i className="fas fa-calendar-check me-2"></i> Book My Slot
+              </Link>
+            )}
+          </div>
         </div>
       </div>
 

@@ -1193,10 +1193,26 @@ a:hover {
   transform: scale(1.05);
 }
 
-.btn-gallery-view-all {
+.gallery-buttons-container {
   position: absolute;
   bottom: 24px;
   right: 24px;
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .gallery-buttons-container {
+    bottom: 12px;
+    right: 12px;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end;
+  }
+}
+
+.btn-gallery-view-all {
   background: rgba(28, 25, 23, 0.75);
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1208,13 +1224,40 @@ a:hover {
   font-size: 0.85rem;
   transition: all 0.3s ease;
   cursor: pointer;
-  z-index: 5;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
 }
 
 .btn-gallery-view-all:hover {
   background: #fff;
   color: var(--color-primary);
+  border-color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.btn-gallery-book-slot {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--color-primary);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 10px 24px;
+  border-radius: 30px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.btn-gallery-book-slot:hover {
+  background: #fff;
+  color: var(--color-accent);
   border-color: #fff;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
