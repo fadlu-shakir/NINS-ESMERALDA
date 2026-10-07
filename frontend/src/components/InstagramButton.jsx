@@ -11,12 +11,12 @@ const InstagramButton = () => {
     return null;
   }
 
-  // Replace with your actual Instagram profile username
-  const username = 'instagram'; 
+  // Instagram profile URL
+  const instagramUrl = 'https://www.instagram.com/esmeraldaresort_?igsh=MXNxNzExZ3M2cm5tcw%3D%3D'; 
   
   return (
     <a
-      href={`https://instagram.com/${username}`}
+      href={instagramUrl}
       className="instagram-button"
       target="_blank"
       rel="noopener noreferrer"
