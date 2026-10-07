@@ -2286,3 +2286,49 @@ a:hover {
     border-right: 1px solid #dee2e6 !important;
   }
 }
+
+
+/* Global Responsive & Fluid Scaling Adjustments */
+html {
+  overflow-x: hidden;
+  width: 100vw;
+}
+
+/* Fluid Typography for Headers */
+h1, .hero-title, .display-5 {
+  font-size: clamp(2rem, 5vw, 3.5rem) !important;
+}
+h2 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem) !important;
+}
+h3 {
+  font-size: clamp(1.5rem, 3vw, 2rem) !important;
+}
+
+/* Fluid Padding for Sections */
+.section-padding {
+  padding: clamp(30px, 6vw, 80px) 0 !important;
+}
+
+/* Universal Media Scaling */
+img, video, canvas, svg {
+  max-width: 100%;
+}
+
+/* Container Constraints for ultra-wide monitors (TVs/Large Screens) */
+@media (min-width: 1600px) {
+  .container {
+    max-width: 1400px !important;
+  }
+}
+
+/* Touch targets for mobile */
+@media (max-width: 768px) {
+  button, .btn, .nav-link {
+    min-height: 44px; /* Recommended touch target size */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
