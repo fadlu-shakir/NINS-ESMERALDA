@@ -1255,13 +1255,7 @@ a:hover {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-.btn-gallery-book-slot:hover {
-  background: #fff;
-  color: var(--color-accent);
-  border-color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-}
+/* Hover effect removed per user request */
 
 /* Lightbox Modal */
 .premium-lightbox {
