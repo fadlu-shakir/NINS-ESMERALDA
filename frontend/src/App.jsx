@@ -15,6 +15,7 @@ import AdminRoute from './components/AdminRoute';
 import BrokerRoute from './components/BrokerRoute';
 import NotFound from './pages/NotFound';
 import WhatsAppButton from './components/WhatsAppButton';
+import InstagramButton from './components/InstagramButton';
 import BrokerPending from './pages/BrokerPending';
 import BrokerDashboard from './pages/BrokerDashboard';
 import { useContext } from 'react';
@@ -66,6 +67,7 @@ function App() {
         </Routes>
       </div>
       <WhatsAppButton />
+      <InstagramButton />
       <Footer />
       <ToastContainer position="top-right" autoClose={3000} />
     </Router>
