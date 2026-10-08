@@ -168,6 +168,11 @@ const Home = () => {
       </section>
 
 
+      {/* Rooms Section */}
+      <div id="rooms" className="section-wrapper">
+        <Rooms />
+      </div>
+
       {/* About Resort Section */}
       <div id="about" className="section-wrapper">
         <AboutResort />
@@ -176,11 +181,6 @@ const Home = () => {
       {/* Reviews Section */}
       <div id="reviews" className="section-wrapper">
         <Reviews />
-      </div>
-
-      {/* Rooms Section */}
-      <div id="rooms" className="section-wrapper">
-        <Rooms />
       </div>
 
       {/* Gallery Section */}
