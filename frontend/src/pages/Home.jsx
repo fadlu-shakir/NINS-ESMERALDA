@@ -174,14 +174,14 @@ const Home = () => {
         <Rooms />
       </div>
 
-      {/* Reviews Section */}
-      <div id="reviews" className="section-wrapper">
-        <Reviews />
-      </div>
-
       {/* About Resort Section */}
       <div id="about" className="section-wrapper">
         <AboutResort />
+      </div>
+
+      {/* Reviews Section */}
+      <div id="reviews" className="section-wrapper">
+        <Reviews />
       </div>
 
       {/* Gallery Section */}
