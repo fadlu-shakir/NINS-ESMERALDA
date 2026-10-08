@@ -2318,11 +2318,8 @@ img, video, canvas, svg {
 
 /* Touch targets for mobile */
 @media (max-width: 768px) {
-  button, .btn, .nav-link {
+  .btn, .nav-link {
     min-height: 44px; /* Recommended touch target size */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
   }
 }
 
