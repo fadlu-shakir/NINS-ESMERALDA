@@ -7,6 +7,7 @@ const Rooms = () => {
   const [rooms, setRooms] = useState([]);
   const [categories, setCategories] = useState([]);
   const [activeCategory, setActiveCategory] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchRooms();
@@ -20,6 +21,7 @@ const Rooms = () => {
   }, [activeCategory]);
 
   const fetchRooms = async () => {
+    setLoading(true);
     try {
       let url = 'rooms/list/?';
       if (activeCategory) url += `category=${activeCategory}&`;
@@ -27,6 +29,8 @@ const Rooms = () => {
       setRooms(res.data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,20 +79,29 @@ const Rooms = () => {
 
       <div className="container">
         <div className="row g-5">
-          {rooms.map((room, index) => (
-            <div 
-              key={room.id} 
-              className="col-lg-4 col-md-6 slide-in-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <RoomCard room={room} />
+          {loading ? (
+            <div className="col-12 text-center py-5 my-5">
+              <div className="spinner-border text-accent mb-4" role="status" style={{ width: '3rem', height: '3rem' }}>
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <h4 className="text-muted font-serif-luxury">Waking up server & fetching rooms...</h4>
+              <p className="text-muted">Please wait a few seconds</p>
             </div>
-          ))}
-          {rooms.length === 0 && (
+          ) : rooms.length === 0 ? (
             <div className="col-12 text-center py-5">
               <i className="fas fa-search fs-1 text-muted mb-3"></i>
               <h4 className="text-muted font-serif-luxury">No rooms found in this category.</h4>
             </div>
+          ) : (
+            rooms.map((room, index) => (
+              <div 
+                key={room.id} 
+                className="col-lg-4 col-md-6 slide-in-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <RoomCard room={room} />
+              </div>
+            ))
           )}
         </div>
       </div>

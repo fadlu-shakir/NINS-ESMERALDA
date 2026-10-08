@@ -96,14 +96,15 @@ const Home = () => {
               <div 
                 key={index}
                 className={`carousel-item ${index === 0 ? 'active' : ''}`} 
-                style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}
+                style={{ height: '100vh', position: 'relative', overflow: 'hidden', backgroundColor: '#1c1917' }}
               >
                 {/* Background Video */}
                 <video 
                   autoPlay 
                   loop 
                   muted 
-                  playsInline 
+                  playsInline
+                  preload="metadata"
                   style={{ 
                     position: 'absolute', 
                     top: 0, 
