@@ -1,9 +1,23 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getImageUrl } from '../utils/formatImage';
 
 const RoomCard = ({ room }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (e) => {
+    // Don't navigate if clicking the 'Book Now' or 'Details' buttons/links directly
+    if (e.target.closest('a') || e.target.closest('button')) {
+      return;
+    }
+    navigate(`/rooms/${room.id}`);
+  };
+
   return (
-    <div className="luxury-card shadow-sm h-100 d-flex flex-column rounded-3 border-0 bg-white">
+    <div 
+      className="luxury-card shadow-sm h-100 d-flex flex-column rounded-3 border-0 bg-white"
+      onClick={handleCardClick}
+      style={{ cursor: 'pointer' }}
+    >
       {/* Image with Zoom effect */}
       <Link to={`/rooms/${room.id}`} className="luxury-card-img-wrapper rounded-top-3 d-block text-decoration-none">
         <img 
