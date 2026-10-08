@@ -1255,7 +1255,13 @@ a:hover {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
 }
 
-/* Hover effect removed per user request */
+.btn-gallery-book-slot:hover,
+.btn-gallery-book-slot:active,
+.btn-gallery-book-slot:focus {
+  background: rgba(220, 220, 220, 0.95);
+  color: #666666 !important;
+  border-color: rgba(200, 200, 200, 0.9);
+}
 
 /* Lightbox Modal */
 .premium-lightbox {
