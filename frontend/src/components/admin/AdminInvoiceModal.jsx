@@ -1,4 +1,5 @@
-import { useState, useId } from 'react';
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const AdminInvoiceModal = ({ booking, onClose }) => {
   const [step, setStep] = useState('form'); // 'form' or 'invoice'
@@ -41,40 +42,119 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
     year: 'numeric'
   });
 
-  return (
+  const modalContent = (
     <>
       <style>{`
         @media print {
-          body * {
-            visibility: hidden !important;
+          @page {
+            size: A4 portrait;
+            margin: 8mm 10mm;
           }
-          #admin-invoice-print-area, #admin-invoice-print-area * {
-            visibility: visible !important;
-          }
-          #admin-invoice-print-area {
-            position: fixed !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
+
+          html, body {
             margin: 0 !important;
-            padding: 25px !important;
+            padding: 0 !important;
+            height: 100% !important;
+            max-height: 100% !important;
+            overflow: hidden !important;
             background: #ffffff !important;
-            color: #111111 !important;
-            font-size: 13px !important;
-            z-index: 99999 !important;
+            color: #111827 !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
-          .d-print-none, .modal-backdrop {
+
+          /* Completely isolate print content: eliminate #root and all background elements */
+          #root, 
+          .modal-backdrop, 
+          .navbar, 
+          nav, 
+          footer, 
+          .watermark-overlay, 
+          .d-print-none {
             display: none !important;
+          }
+
+          /* Reset portal modal container */
+          #admin-invoice-modal-portal {
+            position: static !important;
+            display: block !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            overflow: visible !important;
+          }
+
+          #admin-invoice-modal-portal .modal-dialog {
+            position: static !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            transform: none !important;
+          }
+
+          #admin-invoice-modal-portal .modal-content {
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            background: #ffffff !important;
+            padding: 0 !important;
+            margin: 0 !important;
+          }
+
+          #admin-invoice-print-area {
+            position: static !important;
+            display: block !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #111827 !important;
+            font-size: 11px !important;
+            line-height: 1.35 !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+            page-break-after: avoid !important;
+            break-after: avoid !important;
+          }
+
+          #admin-invoice-print-area * {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+
+          #admin-invoice-print-area table {
+            width: 100% !important;
+            margin-bottom: 10px !important;
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
+          }
+
+          #admin-invoice-print-area th,
+          #admin-invoice-print-area td {
+            padding: 5px 8px !important;
+            font-size: 11px !important;
+          }
+
+          #admin-invoice-print-area .badge {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
           }
         }
       `}</style>
 
       <div
+        id="admin-invoice-modal-portal"
         className="modal fade show d-block"
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.65)', zIndex: 1055 }}
         tabIndex="-1"
         role="dialog"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
       >
         <div
           className={`modal-dialog modal-dialog-centered ${step === 'invoice' ? 'modal-lg' : 'modal-md'}`}
@@ -184,27 +264,27 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
                   <button type="button" className="btn-close" onClick={onClose} aria-label="Close"></button>
                 </div>
 
-                <div className="modal-body p-4 p-md-5" id="admin-invoice-print-area" style={{ backgroundColor: '#ffffff' }}>
+                <div className="modal-body p-4 p-md-4" id="admin-invoice-print-area" style={{ backgroundColor: '#ffffff' }}>
                   
                   {/* Resort Header & Invoice Header */}
-                  <div className="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+                  <div className="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
                     <div>
-                      <h2 className="fw-bold mb-1 font-serif-luxury" style={{ color: '#111827', letterSpacing: '1px' }}>
+                      <h3 className="fw-bold mb-1 font-serif-luxury" style={{ color: '#111827', letterSpacing: '1px' }}>
                         Esmeralda
-                      </h2>
-                      <p className="text-uppercase small fw-bold text-muted letter-spacing-2 mb-2">Boutique Resort</p>
-                      <div className="small text-muted" style={{ lineHeight: '1.4' }}>
+                      </h3>
+                      <p className="text-uppercase small fw-bold text-muted letter-spacing-2 mb-1" style={{ fontSize: '0.75rem' }}>Boutique Resort</p>
+                      <div className="small text-muted" style={{ lineHeight: '1.35', fontSize: '0.8rem' }}>
                         <div>Thusharagiri, Kozhikode, Kerala 673580</div>
                         <div>Phone: +91 85901 30953</div>
                         <div>Email: ninsesmeralda@gmail.com</div>
                       </div>
                     </div>
                     <div className="text-end">
-                      <h3 className="fw-bold text-uppercase letter-spacing-2 text-dark mb-2">Invoice</h3>
-                      <div className="badge bg-light text-dark border font-monospace px-3 py-2 fs-6 mb-2">
+                      <h4 className="fw-bold text-uppercase letter-spacing-2 text-dark mb-1">Invoice</h4>
+                      <div className="badge bg-light text-dark border font-monospace px-2 py-1 fs-6 mb-1">
                         {invoiceNumber}
                       </div>
-                      <div className="small text-muted">
+                      <div className="small text-muted" style={{ fontSize: '0.8rem', lineHeight: '1.35' }}>
                         <div>Date Issued: <strong className="text-dark">{todayFormatted}</strong></div>
                         <div>Booking Ref: <strong className="text-dark font-monospace">{booking.booking_key || `#${booking.id}`}</strong></div>
                       </div>
@@ -212,41 +292,41 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
                   </div>
 
                   {/* Billed To & Stay Details */}
-                  <div className="row g-4 mb-4 pb-4 border-bottom">
+                  <div className="row g-3 mb-3 pb-3 border-bottom">
                     <div className="col-6">
-                      <h6 className="text-uppercase small fw-bold letter-spacing-1 text-muted mb-2">Billed To</h6>
-                      <h5 className="fw-bold text-dark mb-1">{formData.name}</h5>
-                      <div className="text-muted small mb-1">
-                        <i className="fas fa-phone me-2 text-muted"></i>{formData.phone}
+                      <h6 className="text-uppercase small fw-bold letter-spacing-1 text-muted mb-1" style={{ fontSize: '0.75rem' }}>Billed To</h6>
+                      <h5 className="fw-bold text-dark mb-1 fs-6">{formData.name}</h5>
+                      <div className="text-muted small mb-1" style={{ fontSize: '0.8rem' }}>
+                        <i className="fas fa-phone me-1 text-muted"></i>{formData.phone}
                       </div>
                       {formData.address ? (
-                        <div className="text-muted small">
-                          <i className="fas fa-map-marker-alt me-2 text-muted"></i>{formData.address}
+                        <div className="text-muted small" style={{ fontSize: '0.8rem' }}>
+                          <i className="fas fa-map-marker-alt me-1 text-muted"></i>{formData.address}
                         </div>
                       ) : (
-                        <div className="text-muted small fst-italic">Address: Not specified</div>
+                        <div className="text-muted small fst-italic" style={{ fontSize: '0.8rem' }}>Address: Not specified</div>
                       )}
                     </div>
                     <div className="col-6 text-end">
-                      <h6 className="text-uppercase small fw-bold letter-spacing-1 text-muted mb-2">Stay Details</h6>
+                      <h6 className="text-uppercase small fw-bold letter-spacing-1 text-muted mb-1" style={{ fontSize: '0.75rem' }}>Stay Details</h6>
                       <div className="mb-1">
                         <strong className="text-dark fs-6">{booking.room_details?.category_name}</strong>
                         {booking.room_details?.room_number && (
-                          <span className="badge bg-dark text-white ms-2">Room {booking.room_details.room_number}</span>
+                          <span className="badge bg-dark text-white ms-2" style={{ fontSize: '0.75rem' }}>Room {booking.room_details.room_number}</span>
                         )}
                       </div>
-                      <div className="small text-muted mb-1">
+                      <div className="small text-muted mb-1" style={{ fontSize: '0.8rem' }}>
                         <span>Check-in: <strong className="text-dark">{booking.check_in_date}</strong></span>
                         <span className="mx-2">|</span>
                         <span>Check-out: <strong className="text-dark">{booking.check_out_date}</strong></span>
                       </div>
-                      <div className="small text-muted mb-2">
+                      <div className="small text-muted mb-2" style={{ fontSize: '0.8rem' }}>
                         <span>{nights} Night{nights > 1 ? 's' : ''}</span>
                         <span className="mx-2">•</span>
                         <span>{booking.adults} Adults{booking.kids > 0 ? `, ${booking.kids} Kids` : ''}</span>
                       </div>
                       <div>
-                        <span className="badge bg-success px-3 py-2 text-uppercase fw-bold letter-spacing-1">
+                        <span className="badge bg-success px-2 py-1 text-uppercase fw-bold letter-spacing-1" style={{ fontSize: '0.75rem' }}>
                           {booking.status}
                         </span>
                       </div>
@@ -254,37 +334,37 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
                   </div>
 
                   {/* Charges Table */}
-                  <div className="table-responsive mb-4">
+                  <div className="table-responsive mb-3">
                     <table className="table table-bordered mb-0 align-middle">
                       <thead className="table-light">
                         <tr>
-                          <th className="py-3 px-3 text-uppercase small fw-bold text-muted">Item / Description</th>
-                          <th className="py-3 px-3 text-center text-uppercase small fw-bold text-muted" style={{ width: '120px' }}>Duration</th>
-                          <th className="py-3 px-3 text-end text-uppercase small fw-bold text-muted" style={{ width: '160px' }}>Total Amount</th>
+                          <th className="py-2 px-3 text-uppercase small fw-bold text-muted" style={{ fontSize: '0.75rem' }}>Item / Description</th>
+                          <th className="py-2 px-3 text-center text-uppercase small fw-bold text-muted" style={{ width: '110px', fontSize: '0.75rem' }}>Duration</th>
+                          <th className="py-2 px-3 text-end text-uppercase small fw-bold text-muted" style={{ width: '150px', fontSize: '0.75rem' }}>Total Amount</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td className="p-3">
+                          <td className="p-2 px-3">
                             <div className="fw-bold text-dark">{booking.room_details?.category_name || 'Resort Stay'}</div>
-                            <small className="text-muted">
+                            <small className="text-muted" style={{ fontSize: '0.75rem' }}>
                               Stay from {booking.check_in_date} to {booking.check_out_date} for {booking.adults} adult(s)
                             </small>
                           </td>
-                          <td className="p-3 text-center fw-semibold">
+                          <td className="p-2 px-3 text-center fw-semibold">
                             {nights} Night{nights > 1 ? 's' : ''}
                           </td>
-                          <td className="p-3 text-end fw-bold fs-6 text-dark">
+                          <td className="p-2 px-3 text-end fw-bold text-dark">
                             ₹{formattedTotal}
                           </td>
                         </tr>
                       </tbody>
                       <tfoot>
                         <tr className="table-light">
-                          <td colSpan="2" className="text-end py-3 px-3 fw-bold text-uppercase small letter-spacing-1">
+                          <td colSpan="2" className="text-end py-2 px-3 fw-bold text-uppercase small letter-spacing-1" style={{ fontSize: '0.75rem' }}>
                             Grand Total (INR)
                           </td>
-                          <td className="text-end py-3 px-3 fw-bold fs-5 text-dark">
+                          <td className="text-end py-2 px-3 fw-bold fs-6 text-dark">
                             ₹{formattedTotal}
                           </td>
                         </tr>
@@ -293,22 +373,22 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
                   </div>
 
                   {/* Payment Note & Signatures */}
-                  <div className="row mt-4 pt-4 border-top">
+                  <div className="row mt-3 pt-3 border-top">
                     <div className="col-7">
-                      <h6 className="fw-bold small text-dark mb-1">Reservation Policy & Notes</h6>
-                      <p className="text-muted small mb-0" style={{ fontSize: '0.8rem', lineHeight: '1.4' }}>
+                      <h6 className="fw-bold small text-dark mb-1" style={{ fontSize: '0.8rem' }}>Reservation Policy & Notes</h6>
+                      <p className="text-muted small mb-0" style={{ fontSize: '0.75rem', lineHeight: '1.35' }}>
                         This is an official confirmation invoice issued by Nins Esmeralda Boutique Resort, Thusharagiri. 
                         Check-in time is 2:00 PM and check-out is 11:00 AM.
                       </p>
                     </div>
                     <div className="col-5 text-end">
-                      <div className="small text-muted mb-4">Authorized Signature</div>
-                      <div className="fw-bold text-dark font-serif-luxury" style={{ letterSpacing: '1px' }}>Esmeralda Retreat</div>
-                      <small className="text-muted d-block" style={{ fontSize: '0.75rem' }}>Management & Guest Relations</small>
+                      <div className="small text-muted mb-3" style={{ fontSize: '0.75rem' }}>Authorized Signature</div>
+                      <div className="fw-bold text-dark font-serif-luxury" style={{ letterSpacing: '1px', fontSize: '0.95rem' }}>Esmeralda Retreat</div>
+                      <small className="text-muted d-block" style={{ fontSize: '0.7rem' }}>Management & Guest Relations</small>
                     </div>
                   </div>
 
-                  <div className="text-center mt-4 pt-3 border-top text-muted small" style={{ fontSize: '0.75rem' }}>
+                  <div className="text-center mt-3 pt-2 border-top text-muted small" style={{ fontSize: '0.72rem' }}>
                     Thank you for choosing Esmeralda Boutique Resort. We look forward to hosting you!
                   </div>
 
@@ -344,6 +424,10 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
       </div>
     </>
   );
+
+  return typeof document !== 'undefined'
+    ? createPortal(modalContent, document.body)
+    : modalContent;
 };
 
 export default AdminInvoiceModal;
