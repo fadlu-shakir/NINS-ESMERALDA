@@ -13,7 +13,9 @@ const BookingPage = () => {
     check_in_date: '',
     check_out_date: '',
     adults: 1,
-    kids: 0
+    kids: 0,
+    guest_name: '',
+    guest_phone: ''
   });
   const [bookedDates, setBookedDates] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,20 @@ const BookingPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    try {
+      const stored = localStorage.getItem('user');
+      if (stored) {
+        const u = JSON.parse(stored);
+        const name = [u.first_name, u.last_name].filter(Boolean).join(' ') || u.username;
+        if (name) {
+          setFormData(prev => ({
+            ...prev,
+            guest_name: prev.guest_name || name,
+            guest_phone: prev.guest_phone || u.phone_number || ''
+          }));
+        }
+      }
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -146,9 +162,10 @@ const BookingPage = () => {
     setProcessing(true);
     try {
       // 1. Create Booking in database (Method 1: Holds dates immediately on calendar)
+      const { guest_name, guest_phone, ...bookingPayload } = formData;
       const res = await api.post('bookings/', {
         room: id,
-        ...formData
+        ...bookingPayload
       });
       const newBooking = res.data;
       const bookingRef = newBooking.booking_key || `#${newBooking.id}`;
@@ -163,6 +180,8 @@ const BookingPage = () => {
       const message = `🌿 *Esmeralda Boutique Resort Stay Reservation* 🌿\n\n` +
         `Hello, I would like to book a stay with the following details:\n\n` +
         `📌 *Booking Ref:* ${bookingRef}\n` +
+        (formData.guest_name ? `👤 *Guest Name:* ${formData.guest_name}\n` : '') +
+        (formData.guest_phone ? `📞 *Contact Phone:* ${formData.guest_phone}\n` : '') +
         `🏨 *Room:* ${room.category_name}${room.room_number ? ` (Room ${room.room_number})` : ''}\n` +
         `📅 *Check-in:* ${inDateFormatted}\n` +
         `📅 *Check-out:* ${outDateFormatted}\n` +
@@ -339,6 +358,34 @@ const BookingPage = () => {
               <div className="card shadow-sm border-0 rounded-4 mb-5">
                 <div className="card-body p-3 p-md-5">
                   
+                  {/* Optional Guest Contact Details (No login required) */}
+                  <div className="row g-3 mb-4 pb-4 border-bottom">
+                    <div className="col-12 col-md-6">
+                      <label className="form-label small text-uppercase letter-spacing-1 fw-bold text-muted mb-1" style={{ fontSize: '0.75rem' }}>
+                        Your Name <span className="text-muted fw-normal">(Optional)</span>
+                      </label>
+                      <input 
+                        type="text" 
+                        className="form-control rounded-3 py-2 px-3 fs-6" 
+                        placeholder="e.g. Rahul Sharma"
+                        value={formData.guest_name || ''}
+                        onChange={(e) => setFormData({ ...formData, guest_name: e.target.value })}
+                      />
+                    </div>
+                    <div className="col-12 col-md-6">
+                      <label className="form-label small text-uppercase letter-spacing-1 fw-bold text-muted mb-1" style={{ fontSize: '0.75rem' }}>
+                        Contact Phone <span className="text-muted fw-normal">(Optional)</span>
+                      </label>
+                      <input 
+                        type="tel" 
+                        className="form-control rounded-3 py-2 px-3 fs-6" 
+                        placeholder="e.g. 9876543210"
+                        value={formData.guest_phone || ''}
+                        onChange={(e) => setFormData({ ...formData, guest_phone: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
                   {/* Adults Selector */}
                   <div className="d-flex justify-content-between align-items-center mb-4 border-bottom pb-4">
                     <div>

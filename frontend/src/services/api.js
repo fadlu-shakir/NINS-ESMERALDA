@@ -24,8 +24,11 @@ api.interceptors.response.use(
     // Don't intercept 401 errors if the request was to the login endpoint itself
     if (error.response && error.response.status === 401 && !originalRequest._retry && !originalRequest.url.includes('users/login/')) {
       originalRequest._retry = true;
+      const refresh_token = localStorage.getItem('refresh_token');
+      if (!refresh_token) {
+        return Promise.reject(error);
+      }
       try {
-        const refresh_token = localStorage.getItem('refresh_token');
         const response = await axios.post(`${API_URL}users/login/refresh/`, {
           refresh: refresh_token
         });

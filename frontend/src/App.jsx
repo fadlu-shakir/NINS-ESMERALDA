@@ -52,9 +52,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Login />} />
           <Route path="/rooms/:id" element={<RoomDetails />} />
+          <Route path="/booking/:id" element={<BookingPage />} />
           
           <Route element={<ProtectedRoute />}>
-            <Route path="/booking/:id" element={<BookingPage />} />
             <Route path="/payment/:id" element={<PaymentPage />} />
             <Route path="/dashboard" element={<UserDashboard />} />
           </Route>
