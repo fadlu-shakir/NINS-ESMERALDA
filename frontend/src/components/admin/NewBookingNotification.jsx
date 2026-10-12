@@ -30,7 +30,9 @@ const NewBookingNotification = () => {
       }
     };
 
-    fetchInitialBookings();
+    // Stagger initial check by 2.5s to let main dashboard load first without queue congestion
+    const timer = setTimeout(fetchInitialBookings, 2500);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

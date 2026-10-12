@@ -5,8 +5,19 @@ import { toast } from 'react-toastify';
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    const token = localStorage.getItem('access_token');
+    const stored = localStorage.getItem('user');
+    return !!token && !stored;
+  });
 
   useEffect(() => {
     const checkUser = async () => {
@@ -15,6 +26,7 @@ export const AuthProvider = ({ children }) => {
         try {
           const res = await api.get('users/profile/');
           setUser(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
         } catch (error) {
           console.error("Auth check failed", error);
         }

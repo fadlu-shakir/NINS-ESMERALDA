@@ -30,7 +30,9 @@ const NewBrokerNotification = () => {
       }
     };
 
-    fetchInitialBrokers();
+    // Stagger initial check by 4s to let main dashboard load first without queue congestion
+    const timer = setTimeout(fetchInitialBrokers, 4000);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

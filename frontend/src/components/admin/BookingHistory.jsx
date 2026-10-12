@@ -3,8 +3,18 @@ import api from '../../services/api';
 import { toast } from 'react-toastify';
 
 const BookingHistory = () => {
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [bookings, setBookings] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('admin_cached_bookings');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    const cached = sessionStorage.getItem('admin_cached_bookings');
+    return !cached;
+  });
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
@@ -12,10 +22,13 @@ const BookingHistory = () => {
   }, []);
 
   const fetchBookings = async () => {
-    setLoading(true);
+    if (!sessionStorage.getItem('admin_cached_bookings')) {
+      setLoading(true);
+    }
     try {
       const res = await api.get('bookings/');
       setBookings(res.data);
+      sessionStorage.setItem('admin_cached_bookings', JSON.stringify(res.data));
     } catch (error) {
       toast.error('Failed to load booking history');
     } finally {

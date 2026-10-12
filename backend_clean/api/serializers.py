@@ -86,7 +86,13 @@ class BookingSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     user_email = serializers.CharField(source='user.email', read_only=True)
     user_phone = serializers.CharField(source='user.phone_number', read_only=True)
-    is_broker = serializers.BooleanField(source='user.profile.is_broker', read_only=True)
+    is_broker = serializers.SerializerMethodField()
+
+    def get_is_broker(self, obj):
+        try:
+            return bool(obj.user and hasattr(obj.user, 'profile') and obj.user.profile.is_broker)
+        except Exception:
+            return False
 
     class Meta:
         model = Booking

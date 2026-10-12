@@ -258,7 +258,7 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user
 
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.all().select_related('profile').order_by('-date_joined')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 
@@ -322,7 +322,7 @@ class RoomCategoryViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
 
 class RoomViewSet(viewsets.ModelViewSet):
-    queryset = Room.objects.all()
+    queryset = Room.objects.all().select_related('category')
     serializer_class = RoomSerializer
     permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -406,10 +406,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
+        qs = Booking.objects.select_related('user', 'user__profile', 'room', 'room__category', 'payment')
         if self.request.user.is_staff:
-            return Booking.objects.all().order_by('-created_at')
+            return qs.order_by('-created_at')
         if self.request.user.is_authenticated:
-            return Booking.objects.filter(user=self.request.user).order_by('-created_at')
+            return qs.filter(user=self.request.user).order_by('-created_at')
         return Booking.objects.none()
 
     def perform_create(self, serializer):
@@ -681,7 +682,7 @@ class BrokerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser]
 
     def get_queryset(self):
-        return User.objects.filter(profile__is_broker=True).order_by('-date_joined')
+        return User.objects.filter(profile__is_broker=True).select_related('profile').order_by('-date_joined')
 
     @action(detail=True, methods=['post'])
     def verify(self, request, pk=None):
