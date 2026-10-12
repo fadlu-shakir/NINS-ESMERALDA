@@ -18,7 +18,9 @@ const BookingPage = () => {
   const [bookedDates, setBookedDates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [redirectingToWhatsApp, setRedirectingToWhatsApp] = useState(false);
+  const [bookingDetails, setBookingDetails] = useState(null);
+  const [whatsappLink, setWhatsappLink] = useState('');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -124,6 +126,16 @@ const BookingPage = () => {
     return diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 1;
   };
 
+  const formatDisplayDate = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.check_in_date || !formData.check_out_date) {
@@ -133,29 +145,57 @@ const BookingPage = () => {
     
     setProcessing(true);
     try {
-      // 1. Create Booking
+      // 1. Create Booking in database (Method 1: Holds dates immediately on calendar)
       const res = await api.post('bookings/', {
         room: id,
         ...formData
       });
-      const newBookingId = res.data.id;
+      const newBooking = res.data;
+      const bookingRef = newBooking.booking_key || `#${newBooking.id}`;
+      const nights = calculateDays();
+      const totalAmount = newBooking.total_amount 
+        ? Number(newBooking.total_amount).toLocaleString('en-IN')
+        : calculateTotal().toLocaleString('en-IN');
+      const inDateFormatted = formatDisplayDate(formData.check_in_date);
+      const outDateFormatted = formatDisplayDate(formData.check_out_date);
 
-      // 2. Simulate Payment Delay for UX
-      setTimeout(async () => {
-        try {
-          await api.post(`bookings/${newBookingId}/pay/`);
-          setPaymentSuccess(true);
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 2000);
-        } catch (paymentErr) {
-          toast.error("Booking created, but payment simulation failed.");
-          navigate('/dashboard'); // Still navigate to dashboard so they can pay manually
-        }
-      }, 1500);
+      // 2. Prepare pre-filled WhatsApp message
+      const message = `🌿 *Esmeralda Boutique Resort Stay Reservation* 🌿\n\n` +
+        `Hello, I would like to book a stay with the following details:\n\n` +
+        `📌 *Booking Ref:* ${bookingRef}\n` +
+        `🏨 *Room:* ${room.category_name}${room.room_number ? ` (Room ${room.room_number})` : ''}\n` +
+        `📅 *Check-in:* ${inDateFormatted}\n` +
+        `📅 *Check-out:* ${outDateFormatted}\n` +
+        `🌙 *Duration:* ${nights} Night${nights > 1 ? 's' : ''}\n` +
+        `👥 *Guests:* ${formData.adults} Adult${formData.adults > 1 ? 's' : ''}${formData.kids > 0 ? `, ${formData.kids} Child${formData.kids > 1 ? 'ren' : ''}` : ''}\n` +
+        `💰 *Estimated Total:* ₹${totalAmount}\n\n` +
+        `Please confirm my reservation and share payment details. Thank you!`;
+
+      const phone = "918590130953";
+      const targetUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+      setBookingDetails({
+        ref: bookingRef,
+        inDate: inDateFormatted,
+        outDate: outDateFormatted,
+        nights,
+        total: totalAmount
+      });
+      setWhatsappLink(targetUrl);
+      setRedirectingToWhatsApp(true);
+
+      // Refresh booked dates so calendar instantly reflects the hold
+      api.get(`rooms/list/${id}/booked_dates/`)
+        .then(bookedRes => setBookedDates(bookedRes.data))
+        .catch(() => {});
+
+      // 3. Open WhatsApp
+      setTimeout(() => {
+        window.open(targetUrl, '_blank') || (window.location.href = targetUrl);
+      }, 1200);
 
     } catch (error) {
-      toast.error(error.response?.data?.non_field_errors?.[0] || 'Booking failed. Please try again.');
+      toast.error(error.response?.data?.non_field_errors?.[0] || error.response?.data?.detail || 'Booking failed. These dates may have just been reserved.');
       setProcessing(false);
     }
   };
@@ -173,14 +213,38 @@ const BookingPage = () => {
   return (
     <div className="container-fluid p-0 bg-light" style={{ marginTop: '70px', minHeight: '100vh' }}>
       
-      {/* Payment Success Overlay */}
-      {paymentSuccess && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white" style={{ zIndex: 9999 }}>
-          <div className="text-success mb-4 animate__animated animate__zoomIn">
-            <i className="fas fa-check-circle" style={{ fontSize: '6rem' }}></i>
+      {/* WhatsApp Redirect / Confirmation Overlay */}
+      {redirectingToWhatsApp && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex flex-column align-items-center justify-content-center bg-white px-3" style={{ zIndex: 9999 }}>
+          <div className="mb-4 animate__animated animate__bounceIn" style={{ color: '#25D366' }}>
+            <i className="fab fa-whatsapp" style={{ fontSize: '5.5rem' }}></i>
           </div>
-          <h2 className="fw-bold font-serif-luxury animate__animated animate__fadeInUp">Booking Confirmed!</h2>
-          <p className="text-muted animate__animated animate__fadeInUp animate__delay-1s">Redirecting to your dashboard...</p>
+          <h2 className="fw-bold font-serif-luxury animate__animated animate__fadeInUp mb-2 text-center">Dates Held Successfully!</h2>
+          <div className="badge bg-light text-dark border font-monospace px-3 py-2 fs-6 mb-3 animate__animated animate__fadeInUp">
+            Ref: {bookingDetails?.ref}
+          </div>
+          <p className="text-muted text-center mb-4 animate__animated animate__fadeInUp" style={{ maxWidth: '480px' }}>
+            Your stay from <strong>{bookingDetails?.inDate}</strong> to <strong>{bookingDetails?.outDate}</strong> is now reserved on our calendar. Opening WhatsApp with all details...
+          </p>
+          
+          <div className="d-flex flex-column align-items-center gap-3 animate__animated animate__fadeInUp">
+            <a 
+              href={whatsappLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn text-white px-4 py-3 rounded-pill fw-bold shadow d-inline-flex align-items-center"
+              style={{ backgroundColor: '#25D366', fontSize: '1.05rem', boxShadow: '0 8px 25px rgba(37, 211, 102, 0.35)' }}
+            >
+              <i className="fab fa-whatsapp me-2 fs-4"></i> Continue to WhatsApp
+            </a>
+            <button 
+              type="button" 
+              onClick={() => navigate('/#rooms')} 
+              className="btn btn-link text-muted text-decoration-none small"
+            >
+              Back to Resort Stays
+            </button>
+          </div>
         </div>
       )}
 
@@ -212,9 +276,13 @@ const BookingPage = () => {
                <span className="text-muted">Nights</span>
                <span className="fw-bold">{calculateDays()}</span>
             </div>
-            <div className="d-flex justify-content-between align-items-center mt-4">
+            <div className="d-flex justify-content-between align-items-center mt-4 border-bottom pb-3">
                <span className="fw-bold fs-5 text-dark">Total</span>
                <span className="fw-bold fs-3 text-accent">₹{calculateTotal().toFixed(2)}</span>
+            </div>
+            <div className="mt-4 p-3 rounded-3 bg-light text-muted small d-flex align-items-center">
+               <i className="fab fa-whatsapp text-success fs-3 me-3"></i>
+               <span>Instant booking & date lock via WhatsApp on +91 85901 30953</span>
             </div>
           </div>
         </div>
@@ -354,24 +422,36 @@ const BookingPage = () => {
               {/* Submit Button */}
               <button 
                 type="submit" 
-                className={`btn btn-primary-modern w-100 py-4 rounded-pill fs-5 fw-bold shadow-lg d-flex justify-content-center align-items-center ${processing ? 'disabled' : ''}`}
-                style={{ letterSpacing: '1px', transition: 'all 0.3s' }}
-                disabled={processing}
+                className="btn w-100 py-3 py-md-4 rounded-pill fs-5 fw-bold shadow-lg d-flex justify-content-center align-items-center text-white border-0"
+                style={{ 
+                  backgroundColor: '#25D366', 
+                  letterSpacing: '0.5px', 
+                  transition: 'all 0.3s',
+                  boxShadow: '0 8px 25px rgba(37, 211, 102, 0.35)'
+                }}
+                disabled={processing || redirectingToWhatsApp}
               >
                 {processing ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>
-                    Processing Payment...
+                    Holding Dates & Opening WhatsApp...
                   </>
                 ) : (
                   <>
-                    Confirm & Pay <i className="fas fa-arrow-right ms-3"></i>
+                    <i className="fab fa-whatsapp me-3 fs-3"></i>
+                    Book the Room via WhatsApp
                   </>
                 )}
               </button>
               
-              <div className="text-center mt-4">
-                <p className="text-muted small"><i className="fas fa-lock me-2"></i>Secure dummy payment processing powered by Esmeralda.</p>
+              <div className="text-center mt-3">
+                <p className="text-muted small mb-1">
+                  <i className="fas fa-calendar-check me-2 text-success"></i>
+                  Your selected dates will be held immediately on our calendar.
+                </p>
+                <small className="text-muted opacity-75">
+                  Direct WhatsApp: <a href="tel:+918590130953" className="text-muted text-decoration-none fw-semibold">+91 85901 30953</a>
+                </small>
               </div>
 
             </form>

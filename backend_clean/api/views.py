@@ -400,13 +400,31 @@ class BookingViewSet(viewsets.ModelViewSet):
     serializer_class = BookingSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_permissions(self):
+        if self.action == 'create':
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
+
     def get_queryset(self):
         if self.request.user.is_staff:
             return Booking.objects.all().order_by('-created_at')
-        return Booking.objects.filter(user=self.request.user).order_by('-created_at')
+        if self.request.user.is_authenticated:
+            return Booking.objects.filter(user=self.request.user).order_by('-created_at')
+        return Booking.objects.none()
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        if self.request.user and self.request.user.is_authenticated:
+            serializer.save(user=self.request.user)
+        else:
+            guest_user, _ = User.objects.get_or_create(
+                username='guest_whatsapp',
+                defaults={
+                    'email': 'guest@esmeraldaresort.com',
+                    'first_name': 'Guest',
+                    'last_name': 'Inquiry'
+                }
+            )
+            serializer.save(user=guest_user)
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def pay(self, request, pk=None):
@@ -442,6 +460,11 @@ class BookingViewSet(viewsets.ModelViewSet):
         if booking.user != request.user and not request.user.is_staff:
             return Response({'detail': 'Not authorized'}, status=status.HTTP_403_FORBIDDEN)
         
+        if request.user.is_staff:
+            booking.status = 'Cancelled'
+            booking.save()
+            return Response({'status': 'Booking cancelled by admin'})
+
         booking.status = 'Cancellation Requested'
         booking.save()
         return Response({'status': 'Cancellation requested'})
