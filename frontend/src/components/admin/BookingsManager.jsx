@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
+import AdminInvoiceModal from './AdminInvoiceModal';
 
 const BookingsManager = () => {
   const [bookings, setBookings] = useState(() => {
@@ -17,6 +18,7 @@ const BookingsManager = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [approvedBroker, setApprovedBroker] = useState(null);
+  const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -47,9 +49,12 @@ const BookingsManager = () => {
   const approveBooking = async (booking) => {
     try {
       await api.post(`bookings/${booking.id}/approve/`);
-      toast.success('Booking approved');
+      toast.success('Booking approved!');
       if (booking.is_broker) {
         setApprovedBroker(booking);
+      } else {
+        // Automatically prompt to generate invoice for newly approved booking
+        setSelectedInvoiceBooking({ ...booking, status: 'Confirmed' });
       }
       fetchBookings();
     } catch (error) {
@@ -224,6 +229,14 @@ const BookingsManager = () => {
                           {booking.status === 'Pending' && (
                             <button className="btn btn-sm btn-success" onClick={() => approveBooking(booking)}>Approve</button>
                           )}
+                          {booking.status === 'Confirmed' && (
+                            <button 
+                              className="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
+                              onClick={() => setSelectedInvoiceBooking(booking)}
+                            >
+                              <i className="fas fa-file-invoice me-1"></i> Print Invoice
+                            </button>
+                          )}
                           {booking.status === 'Cancellation Requested' && (
                             <>
                               <button className="btn btn-sm btn-success" onClick={() => approveCancellation(booking.id)}>Approve Cancel</button>
@@ -274,6 +287,14 @@ const BookingsManager = () => {
             }
           `}</style>
         </div>
+      )}
+
+      {/* Admin Invoice Modal */}
+      {selectedInvoiceBooking && (
+        <AdminInvoiceModal 
+          booking={selectedInvoiceBooking} 
+          onClose={() => setSelectedInvoiceBooking(null)} 
+        />
       )}
 
     </>

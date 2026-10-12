@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { toast } from 'react-toastify';
+import AdminInvoiceModal from './AdminInvoiceModal';
 
 const BookingHistory = () => {
   const [bookings, setBookings] = useState(() => {
@@ -16,6 +17,7 @@ const BookingHistory = () => {
     return !cached;
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedInvoiceBooking, setSelectedInvoiceBooking] = useState(null);
 
   useEffect(() => {
     fetchBookings();
@@ -84,13 +86,14 @@ const BookingHistory = () => {
                 <th>Dates</th>
                 <th>Total</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="5" className="text-center py-5"><div className="spinner-border text-primary-modern"></div><div className="mt-2 text-muted small">Loading history...</div></td></tr>
+                <tr><td colSpan="7" className="text-center py-5"><div className="spinner-border text-primary-modern"></div><div className="mt-2 text-muted small">Loading history...</div></td></tr>
               ) : filteredHistory.length === 0 ? (
-                <tr><td colSpan="5" className="text-center py-4 text-muted">No booking history matches your search.</td></tr>
+                <tr><td colSpan="7" className="text-center py-4 text-muted">No booking history matches your search.</td></tr>
               ) : (
                 filteredHistory.map(booking => (
                   <tr key={booking.id}>
@@ -111,6 +114,16 @@ const BookingHistory = () => {
                         {booking.status === 'Cancelled' ? 'Cancelled' : 'Arrived'}
                       </span>
                     </td>
+                    <td>
+                      {booking.status !== 'Cancelled' && (
+                        <button 
+                          className="btn btn-sm btn-outline-primary d-inline-flex align-items-center"
+                          onClick={() => setSelectedInvoiceBooking(booking)}
+                        >
+                          <i className="fas fa-file-invoice me-1"></i> Print Invoice
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))
               )}
@@ -118,6 +131,14 @@ const BookingHistory = () => {
           </table>
         </div>
       </div>
+
+      {/* Admin Invoice Modal */}
+      {selectedInvoiceBooking && (
+        <AdminInvoiceModal 
+          booking={selectedInvoiceBooking} 
+          onClose={() => setSelectedInvoiceBooking(null)} 
+        />
+      )}
     </div>
   );
 };
