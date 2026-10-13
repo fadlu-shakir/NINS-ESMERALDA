@@ -133,6 +133,23 @@ function BrokerDashboard() {
     }
   };
 
+  const formatDisplayDate = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const [year, month, day] = dateStr.split('-');
+      const date = new Date(year, month - 1, day);
+      return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const calculateDays = (inDate, outDate) => {
+    if (!inDate || !outDate) return 1;
+    const diffTime = Math.abs(new Date(outDate) - new Date(inDate));
+    return Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+  };
+
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     if (!bookingFormData.check_in_date || !bookingFormData.check_out_date) {
@@ -141,13 +158,56 @@ function BrokerDashboard() {
     }
     setSubmitting(true);
     try {
-      await api.post('bookings/', {
+      const res = await api.post('bookings/', {
         room: selectedRoom.id,
         ...bookingFormData
       });
-      toast.success('Booking request submitted! Awaiting admin approval.');
+
+      const newBooking = res.data;
+      const bookingRef = newBooking.booking_key || `#${newBooking.id}`;
+      const nights = calculateDays(bookingFormData.check_in_date, bookingFormData.check_out_date);
+      const totalAmount = newBooking.total_amount 
+        ? Number(newBooking.total_amount).toLocaleString('en-IN')
+        : (Number(selectedRoom.price_per_night || 0) * nights).toLocaleString('en-IN');
+      const inDateFormatted = formatDisplayDate(bookingFormData.check_in_date);
+      const outDateFormatted = formatDisplayDate(bookingFormData.check_out_date);
+
+      let brokerUser = {};
+      try {
+        brokerUser = JSON.parse(localStorage.getItem('user') || '{}');
+      } catch {}
+      const brokerName = brokerUser.first_name 
+        ? `${brokerUser.first_name} ${brokerUser.last_name || ''}`.trim()
+        : (brokerUser.username || newBooking.username || 'Broker Partner');
+      const brokerPhone = brokerUser.profile?.phone || brokerUser.phone || newBooking.user_phone || '';
+
+      // Prepare pre-filled WhatsApp message
+      const message = `🌿 *Esmeralda Boutique Resort - Broker Booking Request* 🌿\n\n` +
+        `Hello Admin, I have submitted a new booking request as a Broker Partner:\n\n` +
+        `📌 *Booking Ref:* ${bookingRef}\n` +
+        `🤝 *Broker:* ${brokerName}${brokerPhone ? ` (${brokerPhone})` : ''}\n` +
+        `🏨 *Room:* ${selectedRoom.category_name}${selectedRoom.room_number ? ` (Room #${selectedRoom.room_number})` : ''}\n` +
+        `📅 *Check-in:* ${inDateFormatted}\n` +
+        `📅 *Check-out:* ${outDateFormatted}\n` +
+        `🌙 *Duration:* ${nights} Night${nights > 1 ? 's' : ''}\n` +
+        `👥 *Guests:* ${bookingFormData.adults} Adult${bookingFormData.adults > 1 ? 's' : ''}${bookingFormData.kids > 0 ? `, ${bookingFormData.kids} Child${bookingFormData.kids > 1 ? 'ren' : ''}` : ''}\n` +
+        `💰 *Broker Rate / Total:* ₹${totalAmount}\n` +
+        `⏳ *Status:* Pending Admin Approval\n\n` +
+        `Please review and approve this booking request. Thank you!`;
+
+      const phone = "918590130953";
+      const targetUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+      toast.success('Booking request submitted! Opening WhatsApp to notify admin...');
       setShowBookingModal(false);
       fetchMyBookings();
+      fetchRooms();
+
+      // Open WhatsApp
+      setTimeout(() => {
+        window.open(targetUrl, '_blank') || (window.location.href = targetUrl);
+      }, 500);
+
     } catch (error) {
       toast.error(error.response?.data?.non_field_errors?.[0] || 'Booking request failed');
     } finally {
@@ -502,8 +562,18 @@ function BrokerDashboard() {
                     <i className="bi bi-info-circle me-2"></i>
                     This booking request will be placed in a pending state. It must be approved by an administrator before it is confirmed.
                   </div>
-                  <button type="submit" className="btn btn-primary w-100 py-2 fw-bold" disabled={submitting}>
-                    {submitting ? 'Submitting...' : 'Submit Booking Request'}
+                  <button type="submit" className="btn btn-primary w-100 py-2 fw-bold d-inline-flex align-items-center justify-content-center" disabled={submitting}>
+                    {submitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Submitting & Opening WhatsApp...
+                      </>
+                    ) : (
+                      <>
+                        <i className="fab fa-whatsapp me-2 fs-5"></i>
+                        Submit Booking Request
+                      </>
+                    )}
                   </button>
                 </form>
               </div>
