@@ -53,7 +53,7 @@ const Gallery = () => {
 
     const handleScroll = () => {
       const firstCard = container.querySelector('.gallery-scroll-item');
-      const step = firstCard ? firstCard.offsetWidth + 20 : 380;
+      const step = firstCard ? firstCard.offsetWidth + 22 : 480;
       const index = Math.round(container.scrollLeft / step);
       setCurrentIndex(Math.min(Math.max(0, index), Math.max(0, images.length - 1)));
     };
@@ -64,9 +64,9 @@ const Gallery = () => {
 
   // Card step calculation helper
   const getCardStep = () => {
-    if (!trackRef.current) return 380;
+    if (!trackRef.current) return 480;
     const firstCard = trackRef.current.querySelector('.gallery-scroll-item');
-    return firstCard ? firstCard.offsetWidth + 20 : 380;
+    return firstCard ? firstCard.offsetWidth + 22 : 480;
   };
 
   const resetTimer = () => {
@@ -399,10 +399,10 @@ const Gallery = () => {
           100% { width: 100%; }
         }
 
-        /* Control buttons */
+        /* Control buttons - no color changing on touch or hover */
         .gallery-nav-pill-btn {
-          width: 36px;
-          height: 36px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
           background: #ffffff;
           border: 1px solid rgba(197, 168, 128, 0.4);
@@ -412,15 +412,20 @@ const Gallery = () => {
           justify-content: center;
           font-size: 0.85rem;
           cursor: pointer;
-          transition: all 0.25s ease;
+          transition: transform 0.2s ease, opacity 0.2s ease;
           box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
         }
-        .gallery-nav-pill-btn:hover {
-          background: var(--color-accent);
-          color: #ffffff;
-          border-color: var(--color-accent);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(197, 168, 128, 0.35);
+        .gallery-nav-pill-btn:hover,
+        .gallery-nav-pill-btn:active,
+        .gallery-nav-pill-btn:focus {
+          background: #ffffff;
+          color: var(--color-primary);
+          border-color: rgba(197, 168, 128, 0.4);
+          outline: none;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+          transform: scale(1.05);
         }
 
         /* Track outer container */
@@ -448,23 +453,37 @@ const Gallery = () => {
           display: none; /* Chrome, Safari, Opera */
         }
 
-        /* Each Gallery Item - strictly one line */
+        /* Each Gallery Item - enlarged luxury frame */
         .gallery-scroll-item {
-          flex: 0 0 360px;
-          height: 260px;
+          flex: 0 0 480px;
+          height: 350px;
           position: relative;
-          border-radius: 16px;
+          border-radius: 18px;
           overflow: hidden;
           cursor: pointer;
           background-color: #1c1917;
           border: 1px solid rgba(197, 168, 128, 0.25);
-          box-shadow: 0 10px 25px rgba(28, 25, 23, 0.08);
+          box-shadow: 0 12px 30px rgba(28, 25, 23, 0.08);
           transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, border-color 0.4s ease;
         }
         .gallery-scroll-item:hover {
           transform: translateY(-4px) scale(1.02);
-          box-shadow: 0 18px 38px rgba(28, 25, 23, 0.16);
+          box-shadow: 0 20px 42px rgba(28, 25, 23, 0.16);
           border-color: var(--color-accent);
+        }
+
+        @media (min-width: 1400px) {
+          .gallery-scroll-item {
+            flex: 0 0 520px;
+            height: 370px;
+          }
+        }
+
+        @media (max-width: 992px) {
+          .gallery-scroll-item {
+            flex: 0 0 420px;
+            height: 310px;
+          }
         }
 
         .gallery-card-inner {
@@ -535,16 +554,16 @@ const Gallery = () => {
           text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
         }
 
-        /* Floating side arrows */
+        /* Floating side arrows - no color changing on touch or hover */
         .gallery-floating-arrow {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
           z-index: 10;
-          width: 48px;
-          height: 48px;
+          width: 52px;
+          height: 52px;
           border-radius: 50%;
-          background: rgba(28, 25, 23, 0.82);
+          background: rgba(28, 25, 23, 0.85);
           backdrop-filter: blur(10px);
           -webkit-backdrop-filter: blur(10px);
           border: 1px solid rgba(197, 168, 128, 0.5);
@@ -552,17 +571,22 @@ const Gallery = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 1.1rem;
+          font-size: 1.15rem;
           cursor: pointer;
           box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
-          transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+          transition: transform 0.2s ease, opacity 0.2s ease;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
         }
-        .gallery-floating-arrow:hover {
-          background: var(--color-accent);
-          color: #1c1917;
-          border-color: #ffffff;
-          transform: translateY(-50%) scale(1.12);
-          box-shadow: 0 12px 30px rgba(197, 168, 128, 0.5);
+        .gallery-floating-arrow:hover,
+        .gallery-floating-arrow:active,
+        .gallery-floating-arrow:focus {
+          background: rgba(28, 25, 23, 0.85);
+          color: #ffffff;
+          border-color: rgba(197, 168, 128, 0.5);
+          outline: none;
+          transform: translateY(-50%) scale(1.06);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
         }
         .gallery-floating-arrow.prev {
           left: 14px;
@@ -646,13 +670,13 @@ const Gallery = () => {
         /* Responsive Adjustments */
         @media (max-width: 768px) {
           .gallery-scroll-item {
-            flex: 0 0 82vw;
-            max-width: 320px;
-            height: 220px;
+            flex: 0 0 85vw;
+            max-width: 380px;
+            height: 270px;
           }
           .gallery-floating-arrow {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             font-size: 0.95rem;
           }
           .gallery-floating-arrow.prev {
