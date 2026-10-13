@@ -166,9 +166,6 @@ const Gallery = () => {
         {/* Header with Title and Controls */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
           <div className="text-center text-md-start mb-3 mb-md-0">
-            <h6 className="text-accent text-uppercase fw-bold letter-spacing-2 mb-1">
-              Visual Journey
-            </h6>
             <h2 className="display-6 fw-bold font-serif-luxury mb-2">
               Resort Gallery
             </h2>
