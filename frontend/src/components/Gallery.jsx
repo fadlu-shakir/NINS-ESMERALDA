@@ -7,7 +7,6 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [activeIndex, setActiveIndex] = useState(null);
   const [isHovered, setIsHovered] = useState(false);
-  const [isAutoPlayPaused, setIsAutoPlayPaused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [timerKey, setTimerKey] = useState(0);
 
@@ -110,7 +109,7 @@ const Gallery = () => {
 
   // Auto-scroll every 7 seconds
   useEffect(() => {
-    if (loading || images.length <= 1 || isAutoPlayPaused || isHovered || activeIndex !== null) {
+    if (loading || images.length <= 1 || isHovered || activeIndex !== null) {
       return;
     }
 
@@ -129,7 +128,7 @@ const Gallery = () => {
     }, 7000);
 
     return () => clearInterval(interval);
-  }, [loading, images.length, isAutoPlayPaused, isHovered, activeIndex, timerKey]);
+  }, [loading, images.length, isHovered, activeIndex, timerKey]);
 
   // Mouse Drag to scroll handlers
   const handleMouseDown = (e) => {
@@ -182,20 +181,9 @@ const Gallery = () => {
             </p>
           </div>
 
-          {/* Controls: Prev/Next, 7s Auto-Scroll status, Counter */}
+          {/* Controls: Counter and Navigation buttons */}
           {images.length > 0 && (
             <div className="d-flex align-items-center justify-content-center justify-content-md-end gap-3">
-              {/* Auto-scroll badge with pause toggle */}
-              <button 
-                type="button"
-                className={`gallery-autoplay-badge ${isAutoPlayPaused ? 'paused' : 'active'}`}
-                onClick={() => setIsAutoPlayPaused(!isAutoPlayPaused)}
-                title={isAutoPlayPaused ? "Click to resume 7s auto-scroll" : "Click to pause 7s auto-scroll"}
-              >
-                <i className={`fas ${isAutoPlayPaused ? 'fa-play' : 'fa-clock'} me-1`}></i>
-                <span>{isAutoPlayPaused ? 'Paused' : 'Auto 7s'}</span>
-              </button>
-
               {/* Photo Counter */}
               <div className="gallery-counter text-muted small fw-semibold px-2">
                 <span className="text-dark fw-bold">{String(currentIndex + 1).padStart(2, '0')}</span>
@@ -231,7 +219,7 @@ const Gallery = () => {
           <div className="gallery-progress-track mb-3">
             <div 
               key={timerKey} 
-              className={`gallery-progress-bar-fill ${isHovered || isAutoPlayPaused || activeIndex !== null ? 'paused' : ''}`}
+              className={`gallery-progress-bar-fill ${isHovered || activeIndex !== null ? 'paused' : ''}`}
             ></div>
           </div>
         )}
@@ -411,31 +399,7 @@ const Gallery = () => {
           100% { width: 100%; }
         }
 
-        /* Control badges & buttons */
-        .gallery-autoplay-badge {
-          background: rgba(197, 168, 128, 0.12);
-          color: var(--color-primary);
-          border: 1px solid rgba(197, 168, 128, 0.4);
-          font-size: 0.75rem;
-          font-weight: 600;
-          padding: 6px 14px;
-          border-radius: 30px;
-          cursor: pointer;
-          transition: all 0.25s ease;
-          display: inline-flex;
-          align-items: center;
-        }
-        .gallery-autoplay-badge:hover {
-          background: var(--color-accent);
-          color: #fff;
-          border-color: var(--color-accent);
-        }
-        .gallery-autoplay-badge.paused {
-          background: rgba(120, 113, 108, 0.1);
-          border-color: rgba(120, 113, 108, 0.3);
-          color: #78716c;
-        }
-
+        /* Control buttons */
         .gallery-nav-pill-btn {
           width: 36px;
           height: 36px;
