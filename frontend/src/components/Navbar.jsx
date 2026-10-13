@@ -141,11 +141,11 @@ const Navbar = () => {
             <li className="nav-item">
               <a className="nav-link" href="/#" onClick={closeNavbar}>Home</a>
             </li>
-            <li className="nav-item nav-item-has-megamenu">
-              <a className="nav-link" href="/#rooms" onClick={closeNavbar}>Rooms & Suites <i className="fas fa-chevron-down ms-1 x-small" style={{ fontSize: '0.65rem' }}></i></a>
-            </li>
             <li className="nav-item">
               <a className="nav-link" href="/#gallery" onClick={closeNavbar}>Gallery</a>
+            </li>
+            <li className="nav-item nav-item-has-megamenu">
+              <a className="nav-link" href="/#rooms" onClick={closeNavbar}>Rooms & Suites <i className="fas fa-chevron-down ms-1 x-small" style={{ fontSize: '0.65rem' }}></i></a>
             </li>
             <li className="nav-item">
               <a className="nav-link" href="/#about" onClick={closeNavbar}>About Us</a>
