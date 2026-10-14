@@ -5,43 +5,21 @@ import { toast } from 'react-toastify';
 import api from '../services/api';
 import { GoogleLogin } from '@react-oauth/google';
 
-const BrokerStampButton = ({ onClick }) => {
-  const serratedPoints = "26.0,0.5 30.8,3.2 35.5,0.5 40.2,3.2 45.0,0.5 49.8,3.2 54.5,0.5 59.2,3.2 64.0,0.5 68.8,3.2 73.5,0.5 78.2,3.2 83.0,0.5 87.8,3.2 92.5,0.5 97.2,3.2 102.0,0.5 106.8,3.2 111.5,0.5 116.2,3.2 121.0,0.5 125.8,3.2 130.5,0.5 135.2,3.2 140.0,0.5 144.8,3.2 149.5,0.5 154.2,3.2 159.0,0.5 163.8,3.2 168.5,0.5 173.2,3.2 178.0,0.5 182.8,3.2 187.5,0.5 192.2,3.2 197.0,0.5 201.8,3.2 206.5,0.5 211.2,3.2 216.0,0.5 220.8,3.2 225.5,0.5 230.2,3.2 235.0,0.5 239.8,3.2 244.5,0.5 249.2,3.2 254.0,0.0 258.0,3.5 262.9,1.6 265.4,6.3 270.7,6.1 271.5,11.3 276.5,13.0 275.4,18.2 279.6,21.5 276.8,26.0 279.6,30.5 275.4,33.8 276.5,39.0 271.5,40.7 270.7,45.9 265.4,45.7 262.9,50.4 258.0,48.5 254.0,51.5 249.2,48.8 244.5,51.5 239.8,48.8 235.0,51.5 230.2,48.8 225.5,51.5 220.8,48.8 216.0,51.5 211.2,48.8 206.5,51.5 201.8,48.8 197.0,51.5 192.2,48.8 187.5,51.5 182.8,48.8 178.0,51.5 173.2,48.8 168.5,51.5 163.8,48.8 159.0,51.5 154.2,48.8 149.5,51.5 144.8,48.8 140.0,51.5 135.2,48.8 130.5,51.5 125.8,48.8 121.0,51.5 116.2,48.8 111.5,51.5 106.8,48.8 102.0,51.5 97.2,48.8 92.5,51.5 87.8,48.8 83.0,51.5 78.2,48.8 73.5,51.5 68.8,48.8 64.0,51.5 59.2,48.8 54.5,51.5 49.8,48.8 45.0,51.5 40.2,48.8 35.5,51.5 30.8,48.8 26.0,52.0 22.0,48.5 17.1,50.4 14.6,45.7 9.3,45.9 8.5,40.7 3.5,39.0 4.6,33.8 0.4,30.5 3.2,26.0 0.4,21.5 4.6,18.2 3.5,13.0 8.5,11.3 9.3,6.1 14.6,6.3 17.1,1.6 22.0,3.5";
-
+const BrokerStandardButton = ({ onClick }) => {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="vintage-broker-stamp-btn"
-      title="Broker Partner Access - Esmeralda Boutique Resort"
+      className="standard-broker-btn"
+      title="Broker Login - Esmeralda Boutique Resort"
       aria-label="Broker Partner Access"
     >
-      <div className="vintage-stamp-wrapper">
-        <svg 
-          className="vintage-stamp-svg" 
-          viewBox="0 0 280 52" 
-          width="280" 
-          height="52"
-        >
-          <polygon
-            points={serratedPoints}
-            fill="#ffffff"
-            stroke="#9ca3af"
-            strokeWidth="0.8"
-          />
-        </svg>
-
-        <div className="vintage-stamp-inner">
-          <div className="vintage-stamp-text-area">
-            <span className="vintage-stamp-title">
-              Esmeralda Boutique Resort
-            </span>
-          </div>
-          <div className="vintage-stamp-arrow-area">
-            <i className="fas fa-arrow-right"></i>
-          </div>
-        </div>
-      </div>
+      <span className="standard-broker-text">
+        Esmeralda Boutique Resort
+      </span>
+      <span className="standard-broker-arrow">
+        <i className="fas fa-arrow-right"></i>
+      </span>
     </button>
   );
 };
@@ -155,7 +133,7 @@ const AuthPage = () => {
 
                     {/* Button placed at the bottom of the image on the left side */}
                     <div className="broker-stamp-bottom-container">
-                      <BrokerStampButton onClick={() => navigate('/register?invite=broker')} />
+                      <BrokerStandardButton onClick={() => navigate('/register?invite=broker')} />
                     </div>
                   </div>
                 </div>
@@ -240,9 +218,9 @@ const AuthPage = () => {
                     )}
                   </div>
 
-                  {/* Mobile broker stamp button */}
+                  {/* Mobile broker standard button */}
                   <div className="d-md-none text-center mt-4 pt-2">
-                    <BrokerStampButton onClick={() => navigate('/register?invite=broker')} />
+                    <BrokerStandardButton onClick={() => navigate('/register?invite=broker')} />
                   </div>
                 </div>
               </div>
@@ -251,98 +229,75 @@ const AuthPage = () => {
         </div>
       </div>
 
-      {/* Scoped CSS for the Vintage Scalloped Stamp Button */}
+      {/* Scoped CSS for Standard Broker Button (Gray & White, 45% Opacity, No Hover Effects) */}
       <style>{`
-        .vintage-broker-stamp-btn {
-          background: transparent;
-          border: none;
-          padding: 0;
+        .standard-broker-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          background: #ffffff;
+          border: 1.5px solid #d1d5db;
+          border-radius: 9999px;
+          padding: 8px 10px 8px 18px;
           cursor: pointer;
-          display: inline-block;
-          opacity: 0.45;
-          transition: opacity 0.3s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
-          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+          opacity: 0.45 !important;
+          transition: none !important;
+          transform: none !important;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
           user-select: none;
           -webkit-tap-highlight-color: transparent;
           outline: none;
+          text-decoration: none;
         }
-        .vintage-broker-stamp-btn:hover {
-          opacity: 0.85;
-          transform: translateY(-2px) scale(1.03);
-          filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.35));
+
+        .standard-broker-btn:hover,
+        .standard-broker-btn:focus,
+        .standard-broker-btn:active {
+          background: #ffffff !important;
+          border: 1.5px solid #d1d5db !important;
+          opacity: 0.45 !important;
+          transform: none !important;
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18) !important;
+          color: inherit !important;
+          outline: none !important;
+          cursor: pointer;
         }
-        .vintage-broker-stamp-btn:active {
-          transform: translateY(1px) scale(0.98);
+
+        .standard-broker-btn:hover .standard-broker-arrow,
+        .standard-broker-btn:hover .standard-broker-arrow i,
+        .standard-broker-btn:active .standard-broker-arrow,
+        .standard-broker-btn:active .standard-broker-arrow i,
+        .standard-broker-btn:focus .standard-broker-arrow,
+        .standard-broker-btn:focus .standard-broker-arrow i {
+          transform: none !important;
+          transition: none !important;
         }
-        .vintage-stamp-wrapper {
-          position: relative;
-          width: 280px;
-          height: 52px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .vintage-stamp-svg {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          pointer-events: none;
-        }
-        .vintage-stamp-inner {
-          position: absolute;
-          top: 5px;
-          left: 6px;
-          right: 6px;
-          bottom: 5px;
-          border-radius: 22px;
-          border: 2px solid #4b5563;
-          display: flex;
-          overflow: hidden;
-          z-index: 1;
-          background: #ffffff;
-        }
-        .vintage-stamp-text-area {
-          flex: 1;
-          background: repeating-linear-gradient(
-            to bottom,
-            #ffffff,
-            #ffffff 3px,
-            #f3f4f6 3px,
-            #f3f4f6 4.5px
-          );
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding-left: 12px;
-          padding-right: 8px;
-        }
-        .vintage-stamp-title {
-          font-family: 'Dancing Script', 'Pacifico', cursive;
-          font-size: 1.15rem;
-          font-weight: 700;
+
+        .standard-broker-text {
+          font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 0.86rem;
+          font-weight: 600;
           color: #1f2937;
+          letter-spacing: 0.35px;
           white-space: nowrap;
-          letter-spacing: 0.2px;
         }
-        .vintage-stamp-arrow-area {
-          width: 44px;
-          background-color: #4b5563;
-          display: flex;
+
+        .standard-broker-arrow {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #4b5563;
+          color: #ffffff;
+          display: inline-flex;
           align-items: center;
           justify-content: center;
-          color: #ffffff;
-          font-size: 0.95rem;
-          border-top-right-radius: 19px;
-          border-bottom-right-radius: 19px;
+          font-size: 0.8rem;
+          flex-shrink: 0;
+          transition: none !important;
+          transform: none !important;
         }
-        .vintage-stamp-arrow-area i {
-          transition: transform 0.2s ease;
-        }
-        .vintage-broker-stamp-btn:hover .vintage-stamp-arrow-area i {
-          transform: translateX(3px);
-        }
+
         .broker-stamp-bottom-container {
           position: absolute;
           bottom: 22px;
