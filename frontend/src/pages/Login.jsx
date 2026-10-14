@@ -17,9 +17,6 @@ const BrokerStandardButton = ({ onClick }) => {
       <span className="standard-broker-text">
         Esmeralda Boutique Resort
       </span>
-      <span className="standard-broker-arrow">
-        <i className="fas fa-arrow-right"></i>
-      </span>
     </button>
   );
 };
@@ -234,12 +231,11 @@ const AuthPage = () => {
         .standard-broker-btn {
           display: inline-flex;
           align-items: center;
-          justify-content: space-between;
-          gap: 12px;
+          justify-content: center;
           background: #ffffff;
           border: 1.5px solid #d1d5db;
           border-radius: 9999px;
-          padding: 8px 10px 8px 18px;
+          padding: 9px 24px;
           cursor: pointer;
           opacity: 0.45 !important;
           transition: none !important;
@@ -264,38 +260,13 @@ const AuthPage = () => {
           cursor: pointer;
         }
 
-        .standard-broker-btn:hover .standard-broker-arrow,
-        .standard-broker-btn:hover .standard-broker-arrow i,
-        .standard-broker-btn:active .standard-broker-arrow,
-        .standard-broker-btn:active .standard-broker-arrow i,
-        .standard-broker-btn:focus .standard-broker-arrow,
-        .standard-broker-btn:focus .standard-broker-arrow i {
-          transform: none !important;
-          transition: none !important;
-        }
-
         .standard-broker-text {
           font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          font-size: 0.86rem;
+          font-size: 0.88rem;
           font-weight: 600;
           color: #1f2937;
           letter-spacing: 0.35px;
           white-space: nowrap;
-        }
-
-        .standard-broker-arrow {
-          width: 30px;
-          height: 30px;
-          border-radius: 50%;
-          background: #4b5563;
-          color: #ffffff;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0.8rem;
-          flex-shrink: 0;
-          transition: none !important;
-          transform: none !important;
         }
 
         .broker-stamp-bottom-container {
