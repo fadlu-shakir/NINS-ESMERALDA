@@ -25,8 +25,8 @@ const BrokerStampButton = ({ onClick }) => {
         >
           <polygon
             points={serratedPoints}
-            fill="#faf7f0"
-            stroke="#dfd7c7"
+            fill="#ffffff"
+            stroke="#9ca3af"
             strokeWidth="0.8"
           />
         </svg>
@@ -259,15 +259,17 @@ const AuthPage = () => {
           padding: 0;
           cursor: pointer;
           display: inline-block;
-          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
-          filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+          opacity: 0.45;
+          transition: opacity 0.3s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+          filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
           user-select: none;
           -webkit-tap-highlight-color: transparent;
           outline: none;
         }
         .vintage-broker-stamp-btn:hover {
+          opacity: 0.85;
           transform: translateY(-2px) scale(1.03);
-          filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+          filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.35));
         }
         .vintage-broker-stamp-btn:active {
           transform: translateY(1px) scale(0.98);
@@ -295,7 +297,7 @@ const AuthPage = () => {
           right: 6px;
           bottom: 5px;
           border-radius: 22px;
-          border: 2px solid #eb6c5a;
+          border: 2px solid #4b5563;
           display: flex;
           overflow: hidden;
           z-index: 1;
@@ -307,8 +309,8 @@ const AuthPage = () => {
             to bottom,
             #ffffff,
             #ffffff 3px,
-            #f5efe6 3px,
-            #f5efe6 4.5px
+            #f3f4f6 3px,
+            #f3f4f6 4.5px
           );
           display: flex;
           align-items: center;
@@ -320,13 +322,13 @@ const AuthPage = () => {
           font-family: 'Dancing Script', 'Pacifico', cursive;
           font-size: 1.15rem;
           font-weight: 700;
-          color: #2b2724;
+          color: #1f2937;
           white-space: nowrap;
           letter-spacing: 0.2px;
         }
         .vintage-stamp-arrow-area {
           width: 44px;
-          background-color: #eb6c5a;
+          background-color: #4b5563;
           display: flex;
           align-items: center;
           justify-content: center;
