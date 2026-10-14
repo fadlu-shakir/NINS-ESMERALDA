@@ -96,7 +96,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="auth-container py-5" style={{ marginTop: '50px' }}>
+    <div className="auth-container py-5" style={{ marginTop: isBrokerInvite ? '65px' : '50px' }}>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-8">
@@ -138,7 +138,15 @@ const AuthPage = () => {
                 {/* Right Side: Form */}
                 <div className="col-md-7 p-5">
                   <div className="text-center mb-4">
-                    <h3 className="mb-3">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Login' : 'Create Account')}</h3>
+                    <h3 className="mb-2">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Login' : 'Create Account')}</h3>
+                    {isBrokerInvite && (
+                      <div className="mb-2">
+                        <span className="badge bg-light text-dark border px-3 py-1.5 rounded-pill fw-bold shadow-sm" style={{ fontSize: '0.82rem', letterSpacing: '0.5px' }}>
+                          <span className="badge bg-dark text-white me-1.5" style={{ fontSize: '0.65rem', letterSpacing: '1px' }}>TAC</span>
+                          20% TAC per Bookings
+                        </span>
+                      </div>
+                    )}
                     <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : (isBrokerInvite ? 'Join our broker network securely using Google' : 'Join us to experience luxury using Google')}</p>
                   </div>
                   

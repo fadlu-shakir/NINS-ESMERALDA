@@ -5,10 +5,10 @@ import { IoDiamondOutline, IoNotificationsOutline } from "react-icons/io5";
 import api from '../services/api';
 import brandIcon from '../../resort_img/diamond_icon_only.png';
 
-const BrandLogo = ({ isMobile = false }) => (
+const BrandLogo = ({ isMobile = false, isBroker = false }) => (
   <div className="d-flex align-items-center">
     <img 
-      src={brandIcon} 
+      src={brandIcon || "/resort_img/diamond_icon_only.png"} 
       alt="Diamond Icon" 
       className="me-3" 
       style={{ 
@@ -20,7 +20,12 @@ const BrandLogo = ({ isMobile = false }) => (
     <div className="d-flex flex-column justify-content-center align-items-start text-start" style={{ color: 'inherit', marginTop: '2px' }}>
       <span style={{ fontSize: isMobile ? '0.45rem' : '0.55rem', letterSpacing: '0.3em', lineHeight: '1', fontWeight: '600' }}>NINS</span>
       <span className="font-serif-luxury" style={{ fontSize: isMobile ? '1.2rem' : '1.5rem', letterSpacing: '0.05em', lineHeight: '1', margin: '2px 0' }}>ESMERALDA</span>
-      <span style={{ fontSize: isMobile ? '0.4rem' : '0.45rem', letterSpacing: '0.25em', lineHeight: '1', fontWeight: '500', opacity: 0.8 }}>BOUTIQUE RESORT</span>
+      <div className="d-flex align-items-center gap-2">
+        <span style={{ fontSize: isMobile ? '0.4rem' : '0.45rem', letterSpacing: '0.25em', lineHeight: '1', fontWeight: '500', opacity: 0.8 }}>BOUTIQUE RESORT</span>
+        {isBroker && (
+          <span className="badge bg-dark text-white text-uppercase" style={{ fontSize: '0.5rem', letterSpacing: '1px', padding: '2px 5px', borderRadius: '3px' }}>BROKER PORTAL</span>
+        )}
+      </div>
     </div>
   </div>
 );
@@ -35,6 +40,7 @@ const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [categories, setCategories] = useState([]);
 
+  const isBroker = location.search.includes('invite=broker');
   const isHomePage = location.pathname === '/';
   const isTransparent = isHomePage && !isScrolled;
 
@@ -120,23 +126,24 @@ const Navbar = () => {
   };
 
   return (
-    <nav className={`navbar navbar-expand-lg fixed-top ${isTransparent ? 'transparent' : 'scrolled'}`}>
-      <div className="container-fluid px-3 px-md-4">
-        <Link className="navbar-brand p-0" to="/">
-          <BrandLogo />
-        </Link>
-        <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav">
-          <i className={`fas fa-bars fs-4 ${!isTransparent ? 'text-dark' : 'text-white'}`}></i>
-        </button>
+    <>
+      <nav className={`navbar navbar-expand-lg fixed-top ${isTransparent ? 'transparent' : 'scrolled'}`}>
+        <div className="container-fluid px-3 px-md-4">
+          <Link className="navbar-brand p-0" to="/">
+            <BrandLogo isBroker={isBroker} />
+          </Link>
+          <button className="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#navbarNav" aria-controls="navbarNav">
+            <i className={`fas fa-bars fs-4 ${!isTransparent ? 'text-dark' : 'text-white'}`}></i>
+          </button>
 
-        <div className="offcanvas-lg offcanvas-end flex-grow-1" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel">
-          <div className="offcanvas-header border-bottom">
-            <h5 className="offcanvas-title m-0" id="offcanvasNavbarLabel">
-              <BrandLogo isMobile={true} />
-            </h5>
-            <button type="button" className="btn-close shadow-none" onClick={closeNavbar} aria-label="Close"></button>
-          </div>
-          <div className="offcanvas-body">
+          <div className="offcanvas-lg offcanvas-end flex-grow-1" tabIndex="-1" id="navbarNav" aria-labelledby="offcanvasNavbarLabel">
+            <div className="offcanvas-header border-bottom">
+              <h5 className="offcanvas-title m-0" id="offcanvasNavbarLabel">
+                <BrandLogo isMobile={true} isBroker={isBroker} />
+              </h5>
+              <button type="button" className="btn-close shadow-none" onClick={closeNavbar} aria-label="Close"></button>
+            </div>
+            <div className="offcanvas-body">
             <ul className="navbar-nav ms-auto align-items-center">
             <li className="nav-item">
               <a className="nav-link" href="/#" onClick={closeNavbar}>Home</a>
@@ -229,6 +236,36 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
+
+    {/* Text below navbar: 20% TAC per Bookings for broker pages */}
+    {isBroker && (
+      <div 
+        className="broker-tac-floating-badge shadow-sm animate__animated animate__fadeInDown"
+        style={{
+          position: 'fixed',
+          top: '95px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1020,
+          background: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(10px)',
+          WebkitBackdropFilter: 'blur(10px)',
+          border: '1px solid rgba(0, 0, 0, 0.08)',
+          borderRadius: '50px',
+          padding: '6px 22px',
+          fontSize: '0.86rem',
+          fontWeight: '600',
+          letterSpacing: '0.5px',
+          color: '#1f2937',
+          boxShadow: '0 4px 15px rgba(0, 0, 0, 0.08)',
+          whiteSpace: 'nowrap'
+        }}
+      >
+        <span className="badge bg-dark text-white me-2" style={{ fontSize: '0.7rem', letterSpacing: '1px', padding: '3px 7px' }}>COMMISSION</span>
+        <span>20% TAC per Bookings</span>
+      </div>
+    )}
+    </>
   );
 };
 

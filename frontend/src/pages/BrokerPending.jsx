@@ -14,15 +14,26 @@ function BrokerPending() {
 
   return (
     <div className="bg-light min-vh-100">
-      <nav className="navbar navbar-expand-lg navbar-light bg-white mb-4 shadow-sm border-bottom sticky-top">
+      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm border-bottom sticky-top mb-0">
         <div className="container py-2">
           <div className="d-flex align-items-center">
-            <div className="rounded bg-dark text-white d-flex align-items-center justify-content-center me-3 shadow-sm" style={{ width: '45px', height: '45px' }}>
-              <i className="bi bi-briefcase-fill fs-5"></i>
-            </div>
-            <div>
-              <span className="navbar-brand fw-bold text-dark m-0 d-block lh-1" style={{ letterSpacing: '2px', fontFamily: 'var(--font-serif)' }}>NINS ESMERALDA</span>
-              <small className="text-muted fw-bold" style={{ fontSize: '0.7rem', letterSpacing: '2px' }}>BROKER PORTAL</small>
+            <img 
+              src="/resort_img/diamond_icon_only.png" 
+              alt="Diamond Icon" 
+              className="me-3" 
+              style={{ 
+                height: '42px', 
+                width: 'auto',
+                objectFit: 'contain' 
+              }} 
+            />
+            <div className="d-flex flex-column justify-content-center align-items-start text-start" style={{ color: '#111827', marginTop: '2px' }}>
+              <span style={{ fontSize: '0.55rem', letterSpacing: '0.3em', lineHeight: '1', fontWeight: '600' }}>NINS</span>
+              <span className="font-serif-luxury" style={{ fontSize: '1.45rem', letterSpacing: '0.05em', lineHeight: '1', margin: '2px 0' }}>ESMERALDA</span>
+              <div className="d-flex align-items-center gap-2">
+                <span style={{ fontSize: '0.42rem', letterSpacing: '0.25em', lineHeight: '1', fontWeight: '500', opacity: 0.8 }}>BOUTIQUE RESORT</span>
+                <span className="badge bg-dark text-white text-uppercase" style={{ fontSize: '0.55rem', letterSpacing: '1px', padding: '2px 6px', borderRadius: '4px' }}>BROKER PORTAL</span>
+              </div>
             </div>
           </div>
           <div className="d-flex align-items-center">
@@ -36,6 +47,24 @@ function BrokerPending() {
           </div>
         </div>
       </nav>
+
+      {/* Sub-bar below navbar: 20% TAC per Bookings */}
+      <div 
+        className="broker-tac-subbar py-2 text-center border-bottom shadow-sm mb-4" 
+        style={{ 
+          background: 'linear-gradient(90deg, #f9fafb 0%, #ffffff 50%, #f9fafb 100%)', 
+          borderTop: '1px solid #f3f4f6',
+          letterSpacing: '0.8px',
+          fontSize: '0.92rem',
+          fontWeight: '600',
+          color: '#1f2937'
+        }}
+      >
+        <div className="container d-flex align-items-center justify-content-center gap-2">
+          <span className="badge bg-dark text-white" style={{ fontSize: '0.72rem', letterSpacing: '1px', padding: '3px 8px' }}>COMMISSION</span>
+          <span>20% TAC per Bookings</span>
+        </div>
+      </div>
       <div className="container py-5 text-center">
         <div className="card shadow border-0 p-5 mx-auto" style={{ maxWidth: '600px', marginTop: '100px' }}>
           <i className="bi bi-hourglass-split display-1 text-warning mb-4"></i>
