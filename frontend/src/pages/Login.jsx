@@ -5,6 +5,47 @@ import { toast } from 'react-toastify';
 import api from '../services/api';
 import { GoogleLogin } from '@react-oauth/google';
 
+const BrokerStampButton = ({ onClick }) => {
+  const serratedPoints = "26.0,0.5 30.8,3.2 35.5,0.5 40.2,3.2 45.0,0.5 49.8,3.2 54.5,0.5 59.2,3.2 64.0,0.5 68.8,3.2 73.5,0.5 78.2,3.2 83.0,0.5 87.8,3.2 92.5,0.5 97.2,3.2 102.0,0.5 106.8,3.2 111.5,0.5 116.2,3.2 121.0,0.5 125.8,3.2 130.5,0.5 135.2,3.2 140.0,0.5 144.8,3.2 149.5,0.5 154.2,3.2 159.0,0.5 163.8,3.2 168.5,0.5 173.2,3.2 178.0,0.5 182.8,3.2 187.5,0.5 192.2,3.2 197.0,0.5 201.8,3.2 206.5,0.5 211.2,3.2 216.0,0.5 220.8,3.2 225.5,0.5 230.2,3.2 235.0,0.5 239.8,3.2 244.5,0.5 249.2,3.2 254.0,0.0 258.0,3.5 262.9,1.6 265.4,6.3 270.7,6.1 271.5,11.3 276.5,13.0 275.4,18.2 279.6,21.5 276.8,26.0 279.6,30.5 275.4,33.8 276.5,39.0 271.5,40.7 270.7,45.9 265.4,45.7 262.9,50.4 258.0,48.5 254.0,51.5 249.2,48.8 244.5,51.5 239.8,48.8 235.0,51.5 230.2,48.8 225.5,51.5 220.8,48.8 216.0,51.5 211.2,48.8 206.5,51.5 201.8,48.8 197.0,51.5 192.2,48.8 187.5,51.5 182.8,48.8 178.0,51.5 173.2,48.8 168.5,51.5 163.8,48.8 159.0,51.5 154.2,48.8 149.5,51.5 144.8,48.8 140.0,51.5 135.2,48.8 130.5,51.5 125.8,48.8 121.0,51.5 116.2,48.8 111.5,51.5 106.8,48.8 102.0,51.5 97.2,48.8 92.5,51.5 87.8,48.8 83.0,51.5 78.2,48.8 73.5,51.5 68.8,48.8 64.0,51.5 59.2,48.8 54.5,51.5 49.8,48.8 45.0,51.5 40.2,48.8 35.5,51.5 30.8,48.8 26.0,52.0 22.0,48.5 17.1,50.4 14.6,45.7 9.3,45.9 8.5,40.7 3.5,39.0 4.6,33.8 0.4,30.5 3.2,26.0 0.4,21.5 4.6,18.2 3.5,13.0 8.5,11.3 9.3,6.1 14.6,6.3 17.1,1.6 22.0,3.5";
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="vintage-broker-stamp-btn"
+      title="Broker Partner Access - Esmeralda Boutique Resort"
+      aria-label="Broker Partner Access"
+    >
+      <div className="vintage-stamp-wrapper">
+        <svg 
+          className="vintage-stamp-svg" 
+          viewBox="0 0 280 52" 
+          width="280" 
+          height="52"
+        >
+          <polygon
+            points={serratedPoints}
+            fill="#faf7f0"
+            stroke="#dfd7c7"
+            strokeWidth="0.8"
+          />
+        </svg>
+
+        <div className="vintage-stamp-inner">
+          <div className="vintage-stamp-text-area">
+            <span className="vintage-stamp-title">
+              Esmeralda Boutique Resort
+            </span>
+          </div>
+          <div className="vintage-stamp-arrow-area">
+            <i className="fas fa-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
+};
+
 const AuthPage = () => {
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(location.pathname !== '/register');
@@ -84,11 +125,42 @@ const AuthPage = () => {
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-8">
-            <div className="card auth-card shadow-lg border-0">
+            <div className="card auth-card shadow-lg border-0 overflow-hidden">
               <div className="row g-0">
-                <div className="col-md-5 d-none d-md-block">
-                  <div className="auth-image h-100" style={{ backgroundImage: `url(/resort_img/${isLogin ? '4' : '5'}.jpeg)`, backgroundSize: 'cover', backgroundPosition: 'center', transition: 'background-image 0.5s ease-in-out' }}></div>
+                {/* Left Side: Photo with Vintage Stamp Broker Button at bottom */}
+                <div className="col-md-5 d-none d-md-block position-relative">
+                  <div 
+                    className="auth-image h-100" 
+                    style={{ 
+                      backgroundImage: `url(/resort_img/${isLogin ? '4' : '5'}.jpeg)`, 
+                      backgroundSize: 'cover', 
+                      backgroundPosition: 'center', 
+                      transition: 'background-image 0.5s ease-in-out',
+                      position: 'relative',
+                      minHeight: '480px'
+                    }}
+                  >
+                    {/* Dark gradient behind button for high readability */}
+                    <div 
+                      style={{ 
+                        position: 'absolute', 
+                        bottom: 0, 
+                        left: 0, 
+                        right: 0, 
+                        height: '140px', 
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 65%, transparent 100%)', 
+                        pointerEvents: 'none' 
+                      }} 
+                    />
+
+                    {/* Button placed at the bottom of the image on the left side */}
+                    <div className="broker-stamp-bottom-container">
+                      <BrokerStampButton onClick={() => navigate('/register?invite=broker')} />
+                    </div>
+                  </div>
                 </div>
+
+                {/* Right Side: Form */}
                 <div className="col-md-7 p-5">
                   <div className="text-center mb-4">
                     <h3 className="mb-3">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Login' : 'Create Account')}</h3>
@@ -166,16 +238,11 @@ const AuthPage = () => {
                     ) : (
                       <>Already have an account? <span onClick={toggleAuthMode} className="text-accent fw-bold text-decoration-none" style={{ cursor: 'pointer' }}>Login</span></>
                     )}
-                    
-                    {!isLogin && (
-                       <span 
-                         onClick={() => navigate('/register?invite=broker')}
-                         style={{ position: 'absolute', right: '-15px', bottom: '-20px', opacity: 0.10, cursor: 'pointer', padding: '10px', fontSize: '10px', userSelect: 'none' }}
-                         title="b"
-                       >
-                         b
-                       </span>
-                    )}
+                  </div>
+
+                  {/* Mobile broker stamp button */}
+                  <div className="d-md-none text-center mt-4 pt-2">
+                    <BrokerStampButton onClick={() => navigate('/register?invite=broker')} />
                   </div>
                 </div>
               </div>
@@ -183,6 +250,109 @@ const AuthPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Scoped CSS for the Vintage Scalloped Stamp Button */}
+      <style>{`
+        .vintage-broker-stamp-btn {
+          background: transparent;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          display: inline-block;
+          transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.25s ease;
+          filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+          user-select: none;
+          -webkit-tap-highlight-color: transparent;
+          outline: none;
+        }
+        .vintage-broker-stamp-btn:hover {
+          transform: translateY(-2px) scale(1.03);
+          filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+        }
+        .vintage-broker-stamp-btn:active {
+          transform: translateY(1px) scale(0.98);
+        }
+        .vintage-stamp-wrapper {
+          position: relative;
+          width: 280px;
+          height: 52px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .vintage-stamp-svg {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+        }
+        .vintage-stamp-inner {
+          position: absolute;
+          top: 5px;
+          left: 6px;
+          right: 6px;
+          bottom: 5px;
+          border-radius: 22px;
+          border: 2px solid #eb6c5a;
+          display: flex;
+          overflow: hidden;
+          z-index: 1;
+          background: #ffffff;
+        }
+        .vintage-stamp-text-area {
+          flex: 1;
+          background: repeating-linear-gradient(
+            to bottom,
+            #ffffff,
+            #ffffff 3px,
+            #f5efe6 3px,
+            #f5efe6 4.5px
+          );
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding-left: 12px;
+          padding-right: 8px;
+        }
+        .vintage-stamp-title {
+          font-family: 'Dancing Script', 'Pacifico', cursive;
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: #2b2724;
+          white-space: nowrap;
+          letter-spacing: 0.2px;
+        }
+        .vintage-stamp-arrow-area {
+          width: 44px;
+          background-color: #eb6c5a;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-size: 0.95rem;
+          border-top-right-radius: 19px;
+          border-bottom-right-radius: 19px;
+        }
+        .vintage-stamp-arrow-area i {
+          transition: transform 0.2s ease;
+        }
+        .vintage-broker-stamp-btn:hover .vintage-stamp-arrow-area i {
+          transform: translateX(3px);
+        }
+        .broker-stamp-bottom-container {
+          position: absolute;
+          bottom: 22px;
+          left: 0;
+          right: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 0 10px;
+          z-index: 10;
+        }
+      `}</style>
     </div>
   );
 };
