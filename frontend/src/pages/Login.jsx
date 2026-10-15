@@ -96,7 +96,7 @@ const AuthPage = () => {
   };
 
   return (
-    <div className="auth-container py-5" style={{ marginTop: isBrokerInvite ? '65px' : '50px' }}>
+    <div className="auth-container py-5" style={{ marginTop: '50px' }}>
       <div className="container">
         <div className="row justify-content-center">
           <div className="col-lg-8">
