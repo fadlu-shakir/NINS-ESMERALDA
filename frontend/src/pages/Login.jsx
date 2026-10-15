@@ -25,10 +25,10 @@ const AuthPage = () => {
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(location.pathname !== '/register');
   const isBrokerInvite = new URLSearchParams(location.search).get('invite') === 'broker';
-  
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { login, setUser } = useContext(AuthContext);
@@ -42,20 +42,20 @@ const AuthPage = () => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
-    
+
     if (isLogin) {
       const success = await login(username, password);
       setIsSubmitting(false);
       if (success) {
-         const userStr = localStorage.getItem('user');
-         if (userStr) {
-             const usr = JSON.parse(userStr);
-             if (usr.profile?.is_broker) {
-                 navigate(usr.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
-                 return;
-             }
-         }
-         navigate('/');
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+          const usr = JSON.parse(userStr);
+          if (usr.profile?.is_broker) {
+            navigate(usr.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
+            return;
+          }
+        }
+        navigate('/');
       }
     }
   };
@@ -69,8 +69,8 @@ const AuthPage = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setIsSubmitting(true);
-      
-      const res = await api.post('users/google-login/', { 
+
+      const res = await api.post('users/google-login/', {
         token: credentialResponse.credential,
         is_broker: isBrokerInvite
       });
@@ -79,13 +79,13 @@ const AuthPage = () => {
       localStorage.setItem('refresh_token', res.data.refresh);
       setUser(res.data.user);
       localStorage.setItem('user', JSON.stringify(res.data.user));
-      
+
       if (res.data.user?.profile?.is_broker) {
-          toast.success('Logged in as Broker successfully!');
-          navigate(res.data.user.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
+        toast.success('Logged in as Broker successfully!');
+        navigate(res.data.user.profile.is_broker_verified ? '/broker-dashboard' : '/broker-pending');
       } else {
-          toast.success('Logged in with Google successfully!');
-          navigate('/');
+        toast.success('Logged in with Google successfully!');
+        navigate('/');
       }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Google login failed.');
@@ -104,28 +104,28 @@ const AuthPage = () => {
               <div className="row g-0">
                 {/* Left Side: Photo with Vintage Stamp Broker Button at bottom */}
                 <div className="col-md-5 d-none d-md-block position-relative">
-                  <div 
-                    className="auth-image h-100" 
-                    style={{ 
-                      backgroundImage: `url(/resort_img/${isLogin ? '4' : '5'}.jpeg)`, 
-                      backgroundSize: 'cover', 
-                      backgroundPosition: 'center', 
+                  <div
+                    className="auth-image h-100"
+                    style={{
+                      backgroundImage: `url(/resort_img/${isLogin ? '4' : '5'}.jpeg)`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
                       transition: 'background-image 0.5s ease-in-out',
                       position: 'relative',
                       minHeight: '480px'
                     }}
                   >
                     {/* Dark gradient behind button for high readability */}
-                    <div 
-                      style={{ 
-                        position: 'absolute', 
-                        bottom: 0, 
-                        left: 0, 
-                        right: 0, 
-                        height: '140px', 
-                        background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 65%, transparent 100%)', 
-                        pointerEvents: 'none' 
-                      }} 
+                    <div
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        height: '140px',
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.2) 65%, transparent 100%)',
+                        pointerEvents: 'none'
+                      }}
                     />
 
                     {/* Button placed at the bottom of the image on the left side */}
@@ -139,38 +139,31 @@ const AuthPage = () => {
                 <div className="col-md-7 p-5">
                   <div className="text-center mb-4">
                     <h3 className="mb-2">{isLogin ? 'Welcome Back' : (isBrokerInvite ? 'Broker Login' : 'Create Account')}</h3>
-                    {isBrokerInvite && (
-                      <div className="mb-2">
-                        <span className="badge bg-light text-dark border px-3 py-1.5 rounded-pill fw-bold shadow-sm" style={{ fontSize: '0.82rem', letterSpacing: '0.5px' }}>
-                          <span className="badge bg-dark text-white me-1.5" style={{ fontSize: '0.65rem', letterSpacing: '1px' }}>TAC</span>
-                          20% TAC per Bookings
-                        </span>
-                      </div>
-                    )}
+
                     <p className="text-muted">{isLogin ? 'Sign in to manage your bookings' : (isBrokerInvite ? 'Join our broker network securely using Google' : 'Join us to experience luxury using Google')}</p>
                   </div>
-                  
+
                   {isLogin ? (
                     <form onSubmit={handleSubmit} className="animate__animated animate__fadeIn">
                       <div className="mb-3">
                         <label className="form-label text-muted small fw-bold text-uppercase">Username</label>
-                        <input 
-                          type="text" 
-                          className="form-control bg-light form-control-lg border-0" 
-                          value={username} 
-                          onChange={(e) => setUsername(e.target.value)} 
-                          required 
+                        <input
+                          type="text"
+                          className="form-control bg-light form-control-lg border-0"
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          required
                         />
                       </div>
-                      
+
                       <div className="mb-4">
                         <label className="form-label text-muted small fw-bold text-uppercase">Password</label>
-                        <input 
-                          type="password" 
-                          className="form-control bg-light form-control-lg border-0" 
-                          value={password} 
-                          onChange={(e) => setPassword(e.target.value)} 
-                          required 
+                        <input
+                          type="password"
+                          className="form-control bg-light form-control-lg border-0"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
                         />
                       </div>
 
@@ -198,7 +191,7 @@ const AuthPage = () => {
                   ) : (
                     <div className="animate__animated animate__fadeIn text-center">
                       <p className="mb-4 text-muted">
-                        {isBrokerInvite 
+                        {isBrokerInvite
                           ? "You are registering as a broker. You can now securely create an account using your Google account in one click!"
                           : "We have simplified registration. You can now securely create an account using your Google account in one click!"}
                       </p>
@@ -214,7 +207,7 @@ const AuthPage = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className="text-center mt-4 text-muted position-relative">
                     {isLogin ? (
                       <>Don't have an account? <span onClick={toggleAuthMode} className="text-accent fw-bold text-decoration-none" style={{ cursor: 'pointer' }}>Register Now</span></>
