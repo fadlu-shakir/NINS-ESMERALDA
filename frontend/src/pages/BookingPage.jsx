@@ -124,14 +124,16 @@ const BookingPage = () => {
     }
   };
 
+  const hasPrice = room?.price_per_night !== null && room?.price_per_night !== undefined && Number(room?.price_per_night) > 0;
+
   const calculateTotal = () => {
-    if (!formData.check_in_date || !formData.check_out_date || !room) return 0;
+    if (!formData.check_in_date || !formData.check_out_date || !room || !hasPrice) return 0;
     const start = new Date(formData.check_in_date + 'T00:00:00');
     const end = new Date(formData.check_out_date + 'T00:00:00');
     const diffTime = end - start;
-    if (diffTime <= 0) return room.price_per_night;
+    if (diffTime <= 0) return Number(room.price_per_night);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays * room.price_per_night;
+    return diffDays * Number(room.price_per_night);
   };
 
   const calculateDays = () => {
@@ -187,7 +189,7 @@ const BookingPage = () => {
         `📅 *Check-out:* ${outDateFormatted}\n` +
         `🌙 *Duration:* ${nights} Night${nights > 1 ? 's' : ''}\n` +
         `👥 *Guests:* ${formData.adults} Adult${formData.adults > 1 ? 's' : ''}${formData.kids > 0 ? `, ${formData.kids} Child${formData.kids > 1 ? 'ren' : ''}` : ''}\n` +
-        `💰 *Estimated Total:* ₹${totalAmount}\n\n` +
+        (hasPrice ? `💰 *Estimated Total:* ₹${totalAmount}\n\n` : '\n') +
         `Please confirm my reservation and share payment details. Thank you!`;
 
       const phone = "918138011207";
@@ -198,7 +200,7 @@ const BookingPage = () => {
         inDate: inDateFormatted,
         outDate: outDateFormatted,
         nights,
-        total: totalAmount
+        total: hasPrice ? totalAmount : null
       });
       setWhatsappLink(targetUrl);
       setRedirectingToWhatsApp(true);
@@ -287,18 +289,22 @@ const BookingPage = () => {
           
           <div className="p-5 bg-white">
             <h5 className="text-uppercase letter-spacing-1 small text-muted fw-bold mb-4">Summary</h5>
-            <div className="d-flex justify-content-between mb-3 border-bottom pb-3">
-               <span className="text-muted">Rate per night</span>
-               <span className="fw-bold">₹{room.price_per_night}</span>
-            </div>
+            {hasPrice && (
+              <div className="d-flex justify-content-between mb-3 border-bottom pb-3">
+                 <span className="text-muted">Rate per night</span>
+                 <span className="fw-bold">₹{room.price_per_night}</span>
+              </div>
+            )}
             <div className="d-flex justify-content-between mb-3 border-bottom pb-3">
                <span className="text-muted">Nights</span>
                <span className="fw-bold">{calculateDays()}</span>
             </div>
-            <div className="d-flex justify-content-between align-items-center mt-4 border-bottom pb-3">
-               <span className="fw-bold fs-5 text-dark">Total</span>
-               <span className="fw-bold fs-3 text-accent">₹{calculateTotal().toFixed(2)}</span>
-            </div>
+            {hasPrice && (
+              <div className="d-flex justify-content-between align-items-center mt-4 border-bottom pb-3">
+                 <span className="fw-bold fs-5 text-dark">Total</span>
+                 <span className="fw-bold fs-3 text-accent">₹{calculateTotal().toFixed(2)}</span>
+              </div>
+            )}
             <div className="mt-4 p-3 rounded-3 bg-light text-muted small d-flex align-items-center">
                <i className="fab fa-whatsapp text-success fs-3 me-3"></i>
                <span>Instant booking & date lock via WhatsApp on +91 81380 11207</span>
@@ -316,7 +322,9 @@ const BookingPage = () => {
                 <i className="fas fa-arrow-left me-2"></i> Back
               </button>
               <h2 className="font-serif-luxury fw-bold mb-1">{room.category_name}</h2>
-              <p className="text-accent fw-bold mb-0">₹{room.price_per_night} / night</p>
+              {hasPrice && (
+                <p className="text-accent fw-bold mb-0">₹{room.price_per_night} / night</p>
+              )}
             </div>
 
             <div className="d-flex align-items-center gap-3 mb-5">
@@ -454,17 +462,19 @@ const BookingPage = () => {
               </div>
 
               {/* Mobile Total Price (Hidden on Desktop) */}
-              <div className="d-lg-none card shadow-sm border-0 rounded-4 mb-5 bg-dark text-white">
-                <div className="card-body p-4 d-flex justify-content-between align-items-center">
-                  <div>
-                    <span className="d-block text-white-50 text-uppercase letter-spacing-1 small mb-1">Total Amount</span>
-                    <h3 className="mb-0 fw-bold">₹{calculateTotal().toFixed(2)}</h3>
-                  </div>
-                  <div className="text-end text-white-50 small">
-                    {calculateDays()} Nights
+              {hasPrice && (
+                <div className="d-lg-none card shadow-sm border-0 rounded-4 mb-5 bg-dark text-white">
+                  <div className="card-body p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                      <span className="d-block text-white-50 text-uppercase letter-spacing-1 small mb-1">Total Amount</span>
+                      <h3 className="mb-0 fw-bold">₹{calculateTotal().toFixed(2)}</h3>
+                    </div>
+                    <div className="text-end text-white-50 small">
+                      {calculateDays()} Nights
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Submit Button */}
               <button 

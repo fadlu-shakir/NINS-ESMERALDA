@@ -253,10 +253,12 @@ const RoomDetails = () => {
           {/* Booking Sidebar */}
           <div className="col-lg-4">
             <div className="glass-booking-card position-sticky" style={{ top: '100px', zIndex: '10' }}>
-              <div className="text-center mb-4">
-                <span className="text-muted small text-uppercase letter-spacing-1 d-block mb-1">Rates starting from</span>
-                <h2 className="text-accent fw-bold mb-0" style={{ fontSize: '2.2rem' }}>₹{room.price_per_night} <span className="fs-6 text-muted fw-normal">/ night</span></h2>
-              </div>
+              {room.price_per_night !== null && room.price_per_night !== undefined && Number(room.price_per_night) > 0 && (
+                <div className="text-center mb-4">
+                  <span className="text-muted small text-uppercase letter-spacing-1 d-block mb-1">Rates starting from</span>
+                  <h2 className="text-accent fw-bold mb-0" style={{ fontSize: '2.2rem' }}>₹{room.price_per_night} <span className="fs-6 text-muted fw-normal">/ night</span></h2>
+                </div>
+              )}
               
               <div className="py-3 border-top border-bottom my-4">
                 <div className="booking-card-item">

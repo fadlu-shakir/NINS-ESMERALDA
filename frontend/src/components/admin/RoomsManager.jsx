@@ -517,7 +517,7 @@ const RoomsManager = () => {
                     <tr key={r.id}>
                       <td><strong>{r.room_number || <span className="text-muted fst-italic">Unnumbered</span>}</strong></td>
                       <td>{r.category_name}</td>
-                      <td>₹{r.price_per_night ? r.price_per_night : '0.00'}</td>
+                      <td>{r.price_per_night && Number(r.price_per_night) > 0 ? `₹${r.price_per_night}` : <span className="text-muted fst-italic">Not set</span>}</td>
                       <td>
                         <div>
                           {r.adult_capacity > 0 || r.child_capacity > 0

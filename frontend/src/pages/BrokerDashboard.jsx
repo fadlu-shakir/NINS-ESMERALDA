@@ -181,6 +181,8 @@ function BrokerDashboard() {
         : (brokerUser.username || newBooking.username || 'Broker Partner');
       const brokerPhone = brokerUser.profile?.phone || brokerUser.phone || newBooking.user_phone || '';
 
+      const hasBrokerPrice = selectedRoom?.price_per_night !== null && selectedRoom?.price_per_night !== undefined && Number(selectedRoom?.price_per_night) > 0;
+
       // Prepare pre-filled WhatsApp message
       const message = `🌿 *Esmeralda Boutique Resort - Broker Booking Request* 🌿\n\n` +
         `Hello Admin, I have submitted a new booking request as a Broker Partner:\n\n` +
@@ -191,7 +193,7 @@ function BrokerDashboard() {
         `📅 *Check-out:* ${outDateFormatted}\n` +
         `🌙 *Duration:* ${nights} Night${nights > 1 ? 's' : ''}\n` +
         `👥 *Guests:* ${bookingFormData.adults} Adult${bookingFormData.adults > 1 ? 's' : ''}${bookingFormData.kids > 0 ? `, ${bookingFormData.kids} Child${bookingFormData.kids > 1 ? 'ren' : ''}` : ''}\n` +
-        `💰 *Broker Rate / Total:* ₹${totalAmount}\n` +
+        (hasBrokerPrice ? `💰 *Broker Rate / Total:* ₹${totalAmount}\n` : '') +
         `⏳ *Status:* Pending Admin Approval\n\n` +
         `Please review and approve this booking request. Thank you!`;
 
@@ -325,12 +327,18 @@ function BrokerDashboard() {
                   <div className="mb-4">
                     <p className="mb-2 text-muted">
                       <i className="bi bi-people-fill text-primary me-2"></i> 
-                      Capacity: <span className="text-dark fw-medium">{room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` (${room.extra_capacity})` : ''}</span>
+                      Capacity: <span className="text-dark fw-medium">
+                        {room.adult_capacity > 0 || room.child_capacity > 0 
+                          ? `${room.adult_capacity || 0} Adults, ${room.child_capacity || 0} Kids${room.extra_capacity ? ` (${room.extra_capacity})` : ''}`
+                          : (room.extra_capacity || 'Flexible')}
+                      </span>
                     </p>
-                    <p className="mb-0 text-muted">
-                      <i className="bi bi-tag-fill text-primary me-2"></i> 
-                      Broker Rate: <span className="text-dark fw-bold fs-5">₹{room.price_per_night}</span> <small>/ night</small>
-                    </p>
+                    {room.price_per_night !== null && room.price_per_night !== undefined && Number(room.price_per_night) > 0 && (
+                      <p className="mb-0 text-muted">
+                        <i className="bi bi-tag-fill text-primary me-2"></i> 
+                        Broker Rate: <span className="text-dark fw-bold fs-5">₹{room.price_per_night}</span> <small>/ night</small>
+                      </p>
+                    )}
                   </div>
                   
                   <div className="mt-auto pt-3">
