@@ -1338,11 +1338,12 @@ a:hover {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: var(--shadow-lg, 0 15px 40px rgba(0,0,0,0.1));
+  background-color: #12100e;
 }
 
 .luxury-mosaic-grid-5 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.25fr 1fr;
   gap: 10px;
   height: 480px;
 }
@@ -1361,7 +1362,7 @@ a:hover {
 
 .luxury-mosaic-grid-4 {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.25fr 1fr;
   gap: 10px;
   height: 480px;
 }
@@ -1380,7 +1381,7 @@ a:hover {
 
 .luxury-mosaic-grid-3 {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1.3fr 1fr;
   gap: 10px;
   height: 480px;
 }
@@ -1394,7 +1395,7 @@ a:hover {
 
 .luxury-mosaic-grid-2 {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1.2fr 1fr;
   gap: 10px;
   height: 480px;
 }
@@ -1404,33 +1405,100 @@ a:hover {
   height: 480px;
 }
 
-/* Mosaic Cell */
-.mosaic-cell {
+/* Mosaic & Bento Cells */
+.mosaic-cell,
+.bento-cell {
   position: relative;
   overflow: hidden;
   cursor: pointer;
-  background-color: #1a1715;
+  background-color: #12100e;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
 }
 
-.mosaic-cell img {
+/* Ambient Blurred Backdrop for Cells */
+.mosaic-cell-backdrop {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(28px) brightness(0.32) saturate(1.25);
+  transform: scale(1.18);
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+/* Image Wrappers */
+.mosaic-cell-img-wrap {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mosaic-cell-img-wrap.is-contain {
+  padding: 8px;
+}
+
+.mosaic-cell-img-wrap.is-cover {
+  padding: 0;
+}
+
+/* Foreground Images - Full Photo / Contain */
+.mosaic-cell-img.fit-contain {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.42);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease, filter 0.3s ease;
+}
+
+/* Foreground Images - Fill Grid / Cover */
+.mosaic-cell-img.fit-cover {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s ease;
 }
 
-.mosaic-cell:hover img {
-  transform: scale(1.025);
-  filter: brightness(0.93);
+/* Hover effects - crisp, never zoomed */
+.mosaic-cell:hover .mosaic-cell-img.fit-contain,
+.bento-cell:hover .mosaic-cell-img.fit-contain {
+  transform: translateY(-2px);
+  filter: brightness(1.04);
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55);
+}
+
+.mosaic-cell:hover .mosaic-cell-img.fit-cover,
+.bento-cell:hover .mosaic-cell-img.fit-cover {
+  filter: brightness(0.95);
+}
+
+/* Legacy fallback if bare img is placed */
+.mosaic-cell > img,
+.bento-cell > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
 .mosaic-cover-badge {
   position: absolute;
   top: 14px;
   left: 14px;
-  background: rgba(28, 25, 23, 0.85);
+  background: rgba(28, 25, 23, 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   color: #f59e0b;
@@ -1439,15 +1507,15 @@ a:hover {
   padding: 5px 12px;
   border-radius: 20px;
   letter-spacing: 0.5px;
-  z-index: 2;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.35);
 }
 
 .mosaic-hover-hint {
   position: absolute;
   bottom: 14px;
   left: 14px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   color: #1c1917;
   font-size: 0.72rem;
   font-weight: 600;
@@ -1456,7 +1524,7 @@ a:hover {
   opacity: 0;
   transform: translateY(6px);
   transition: all 0.3s ease;
-  z-index: 2;
+  z-index: 5;
 }
 
 .mosaic-cell:hover .mosaic-hover-hint {
@@ -1469,6 +1537,7 @@ a:hover {
   border-radius: 20px;
   overflow: hidden;
   box-shadow: var(--shadow-lg, 0 15px 40px rgba(0,0,0,0.1));
+  background-color: #12100e;
 }
 
 .luxury-bento-grid {
@@ -1476,27 +1545,6 @@ a:hover {
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: 240px 240px;
   gap: 12px;
-}
-
-.bento-cell {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  background: #181513;
-  border-radius: 14px;
-}
-
-.bento-cell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
-}
-
-.bento-cell:hover img {
-  transform: scale(1.03);
-  filter: brightness(0.92);
 }
 
 .bento-hero {
@@ -1510,8 +1558,8 @@ a:hover {
   left: 0;
   width: 100%;
   padding: 24px;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
-  z-index: 2;
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+  z-index: 5;
 }
 
 .bento-hover-hint {
@@ -1531,13 +1579,14 @@ a:hover {
   opacity: 0;
   transform: scale(0.85);
   transition: all 0.3s ease;
-  z-index: 2;
+  z-index: 5;
 }
 
 .bento-cell:hover .bento-hover-hint {
   opacity: 1;
   transform: scale(1);
 }
+
 
 .gallery-buttons-container {
   position: absolute;

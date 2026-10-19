@@ -16,6 +16,7 @@ const RoomDetails = () => {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [galleryLayout, setGalleryLayout] = useState('mosaic'); // 'mosaic' | 'bento' | 'stage'
+  const [imageFit, setImageFit] = useState('contain'); // 'contain' (Full Photo, No Zoom) | 'cover' (Fill Grid)
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -70,6 +71,48 @@ const RoomDetails = () => {
   const nextImage = (e) => {
     e.stopPropagation();
     setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  // Render individual cell content with ambient blurred backdrop + uncropped photo
+  const renderCellContent = (imgUrl, altText, isCover = false) => (
+    <>
+      {imageFit === 'contain' && (
+        <div 
+          className="mosaic-cell-backdrop"
+          style={{ backgroundImage: `url(${imgUrl})` }}
+        />
+      )}
+      <div className={`mosaic-cell-img-wrap ${imageFit === 'contain' ? 'is-contain' : 'is-cover'}`}>
+        <img 
+          src={imgUrl} 
+          alt={altText}
+          className={`mosaic-cell-img ${imageFit === 'contain' ? 'fit-contain' : 'fit-cover'}`}
+        />
+      </div>
+      {isCover && (
+        <span className="mosaic-cover-badge">
+          <i className="fas fa-crown me-1"></i>Cover
+        </span>
+      )}
+      <div className="mosaic-hover-hint">
+        <i className="fas fa-expand me-1"></i>View Full
+      </div>
+    </>
+  );
+
+  const renderMosaicCell = (index, extraClass = '', isCover = false) => {
+    const imgUrl = images[index];
+    if (!imgUrl) return null;
+    return (
+      <div 
+        key={index}
+        className={`mosaic-cell ${extraClass}`}
+        onClick={() => { setActiveImageIndex(index); setLightboxOpen(true); }}
+        title="Click to view full photo"
+      >
+        {renderCellContent(imgUrl, `${room.category_name} photo ${index + 1}`, isCover)}
+      </div>
+    );
   };
 
   const getFacilityIcon = (facilityName) => {
@@ -140,32 +183,55 @@ const RoomDetails = () => {
             <i className="fas fa-chevron-left me-2" style={{ fontSize: '0.75rem' }}></i> Back to stay collections
           </Link>
 
-          {/* Grid Layout Switcher */}
-          <div className="gallery-layout-switcher">
-            <button 
-              type="button" 
-              className={`layout-pill-btn ${galleryLayout === 'mosaic' ? 'active' : ''}`}
-              onClick={() => setGalleryLayout('mosaic')}
-              title="Classic 5-Photo Luxury Grid"
-            >
-              <i className="fas fa-th-large me-1"></i> Mosaic Grid
-            </button>
-            <button 
-              type="button" 
-              className={`layout-pill-btn ${galleryLayout === 'bento' ? 'active' : ''}`}
-              onClick={() => setGalleryLayout('bento')}
-              title="Modern Bento Grid"
-            >
-              <i className="fas fa-layer-group me-1"></i> Bento Grid
-            </button>
-            <button 
-              type="button" 
-              className={`layout-pill-btn ${galleryLayout === 'stage' ? 'active' : ''}`}
-              onClick={() => setGalleryLayout('stage')}
-              title="Stage Showcase Viewer"
-            >
-              <i className="fas fa-image me-1"></i> Stage
-            </button>
+          {/* Gallery Controls */}
+          <div className="d-flex flex-wrap align-items-center gap-2">
+            {/* Photo Fit Mode (Full Photo vs Fill Grid) */}
+            <div className="gallery-layout-switcher" title="Photo View Mode">
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${imageFit === 'contain' ? 'active' : ''}`}
+                onClick={() => setImageFit('contain')}
+                title="Full Photo (Natural, Uncropped)"
+              >
+                <i className="fas fa-expand-arrows-alt me-1"></i> Full Photo
+              </button>
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${imageFit === 'cover' ? 'active' : ''}`}
+                onClick={() => setImageFit('cover')}
+                title="Fill Grid (Edge to Edge)"
+              >
+                <i className="fas fa-th-large me-1"></i> Fill Grid
+              </button>
+            </div>
+
+            {/* Grid Layout Switcher */}
+            <div className="gallery-layout-switcher" title="Gallery Layout">
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${galleryLayout === 'mosaic' ? 'active' : ''}`}
+                onClick={() => setGalleryLayout('mosaic')}
+                title="Classic 5-Photo Luxury Grid"
+              >
+                <i className="fas fa-border-all me-1"></i> Mosaic Grid
+              </button>
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${galleryLayout === 'bento' ? 'active' : ''}`}
+                onClick={() => setGalleryLayout('bento')}
+                title="Modern Bento Grid"
+              >
+                <i className="fas fa-layer-group me-1"></i> Bento Grid
+              </button>
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${galleryLayout === 'stage' ? 'active' : ''}`}
+                onClick={() => setGalleryLayout('stage')}
+                title="Stage Showcase Viewer"
+              >
+                <i className="fas fa-image me-1"></i> Stage
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -176,119 +242,39 @@ const RoomDetails = () => {
           <div className="luxury-mosaic-wrapper position-relative">
             {images.length >= 5 ? (
               <div className="luxury-mosaic-grid-5">
-                <div 
-                  className="mosaic-cell mosaic-main"
-                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
-                >
-                  <img src={images[0]} alt={`${room.category_name} 1`} />
-                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
-                  <div className="mosaic-hover-hint"><i className="fas fa-expand me-1"></i>View Full</div>
-                </div>
+                {renderMosaicCell(0, 'mosaic-main', true)}
                 <div className="mosaic-side-grid">
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
-                  >
-                    <img src={images[1]} alt={`${room.category_name} 2`} />
-                  </div>
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(2); setLightboxOpen(true); }}
-                  >
-                    <img src={images[2]} alt={`${room.category_name} 3`} />
-                  </div>
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(3); setLightboxOpen(true); }}
-                  >
-                    <img src={images[3]} alt={`${room.category_name} 4`} />
-                  </div>
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(4); setLightboxOpen(true); }}
-                  >
-                    <img src={images[4]} alt={`${room.category_name} 5`} />
-                  </div>
+                  {renderMosaicCell(1)}
+                  {renderMosaicCell(2)}
+                  {renderMosaicCell(3)}
+                  {renderMosaicCell(4)}
                 </div>
               </div>
             ) : images.length === 4 ? (
               <div className="luxury-mosaic-grid-4">
-                <div 
-                  className="mosaic-cell mosaic-main"
-                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
-                >
-                  <img src={images[0]} alt={`${room.category_name} 1`} />
-                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
-                </div>
+                {renderMosaicCell(0, 'mosaic-main', true)}
                 <div className="mosaic-side-grid-3">
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
-                  >
-                    <img src={images[1]} alt={`${room.category_name} 2`} />
-                  </div>
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(2); setLightboxOpen(true); }}
-                  >
-                    <img src={images[2]} alt={`${room.category_name} 3`} />
-                  </div>
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(3); setLightboxOpen(true); }}
-                  >
-                    <img src={images[3]} alt={`${room.category_name} 4`} />
-                  </div>
+                  {renderMosaicCell(1)}
+                  {renderMosaicCell(2)}
+                  {renderMosaicCell(3)}
                 </div>
               </div>
             ) : images.length === 3 ? (
               <div className="luxury-mosaic-grid-3">
-                <div 
-                  className="mosaic-cell mosaic-main"
-                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
-                >
-                  <img src={images[0]} alt={`${room.category_name} 1`} />
-                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
-                </div>
+                {renderMosaicCell(0, 'mosaic-main', true)}
                 <div className="mosaic-side-stack">
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
-                  >
-                    <img src={images[1]} alt={`${room.category_name} 2`} />
-                  </div>
-                  <div 
-                    className="mosaic-cell"
-                    onClick={() => { setActiveImageIndex(2); setLightboxOpen(true); }}
-                  >
-                    <img src={images[2]} alt={`${room.category_name} 3`} />
-                  </div>
+                  {renderMosaicCell(1)}
+                  {renderMosaicCell(2)}
                 </div>
               </div>
             ) : images.length === 2 ? (
               <div className="luxury-mosaic-grid-2">
-                <div 
-                  className="mosaic-cell mosaic-main"
-                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
-                >
-                  <img src={images[0]} alt={`${room.category_name} 1`} />
-                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
-                </div>
-                <div 
-                  className="mosaic-cell"
-                  onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
-                >
-                  <img src={images[1]} alt={`${room.category_name} 2`} />
-                </div>
+                {renderMosaicCell(0, 'mosaic-main', true)}
+                {renderMosaicCell(1)}
               </div>
             ) : (
               <div className="luxury-mosaic-grid-1">
-                <div 
-                  className="mosaic-cell"
-                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
-                >
-                  <img src={images[0]} alt={`${room.category_name}`} />
-                </div>
+                {renderMosaicCell(0, 'mosaic-main', true)}
               </div>
             )}
 
@@ -325,8 +311,21 @@ const RoomDetails = () => {
                     key={idx}
                     className={`bento-cell ${isHero ? 'bento-hero' : `bento-item-${idx}`}`}
                     onClick={() => { setActiveImageIndex(idx); setLightboxOpen(true); }}
+                    title="Click to view full photo"
                   >
-                    <img src={img} alt={`${room.category_name} ${idx + 1}`} />
+                    {imageFit === 'contain' && (
+                      <div 
+                        className="mosaic-cell-backdrop"
+                        style={{ backgroundImage: `url(${img})` }}
+                      />
+                    )}
+                    <div className={`mosaic-cell-img-wrap ${imageFit === 'contain' ? 'is-contain' : 'is-cover'}`}>
+                      <img 
+                        src={img} 
+                        alt={`${room.category_name} ${idx + 1}`} 
+                        className={`mosaic-cell-img ${imageFit === 'contain' ? 'fit-contain' : 'fit-cover'}`}
+                      />
+                    </div>
                     {isHero && (
                       <div className="bento-hero-overlay">
                         <span className="badge bg-accent text-white mb-1"><i className="fas fa-crown me-1"></i>Cover</span>
