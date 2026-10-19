@@ -15,8 +15,14 @@ const RoomsManager = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [roomForm, setRoomForm] = useState({
+    room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [],
+    check_in_time: '03:30 PM', check_out_time: '02:30 PM'
+  });
   const [newFacilityInput, setNewFacilityInput] = useState('');
   const [customFacilities, setCustomFacilities] = useState([]);
+  const [editingRoom, setEditingRoom] = useState(null);
+  const fileInputRef = useRef(null);
 
   const dynamicFacilities = useMemo(() => {
     const facilitiesSet = new Set(BASE_FACILITIES);
@@ -37,13 +43,6 @@ const RoomsManager = () => {
     }
     return Array.from(facilitiesSet).sort();
   }, [rooms, customFacilities, roomForm.facilities]);
-  
-  const [roomForm, setRoomForm] = useState({
-    room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [],
-    check_in_time: '03:30 PM', check_out_time: '02:30 PM'
-  });
-  const [editingRoom, setEditingRoom] = useState(null);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchData();
