@@ -35,6 +35,7 @@ class Room(models.Model):
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0.00)
     adult_capacity = models.IntegerField(default=2)
     child_capacity = models.IntegerField(default=0)
+    extra_capacity = models.CharField(max_length=255, blank=True, default='')
     facilities = models.TextField(help_text="Comma separated facilities e.g., WiFi, AC, TV")
     is_available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='rooms/', null=True, blank=True)

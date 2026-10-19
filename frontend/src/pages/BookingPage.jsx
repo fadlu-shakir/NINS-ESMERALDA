@@ -447,7 +447,7 @@ const BookingPage = () => {
                   {/* Capacity Warnings */}
                   <div className="mt-4 px-3 py-2 bg-light rounded text-muted small text-center">
                     <i className="fas fa-info-circle me-2"></i>
-                    Maximum capacity: {room.adult_capacity} Adults, {room.child_capacity} Kids
+                    Maximum capacity: {room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` • ${room.extra_capacity}` : ''}
                   </div>
 
                 </div>

@@ -29,7 +29,7 @@ const RoomsManager = () => {
   }, [rooms]);
   
   const [roomForm, setRoomForm] = useState({
-    room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, facilities: '', images: [],
+    room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [],
     check_in_time: '03:30 PM', check_out_time: '02:30 PM'
   });
   const [editingRoom, setEditingRoom] = useState(null);
@@ -62,7 +62,7 @@ const RoomsManager = () => {
       if (key !== 'images') {
         if (roomForm[key] !== null && roomForm[key] !== '') {
           formData.append(key, roomForm[key]);
-        } else if (key === 'description' || key === 'room_number') {
+        } else if (key === 'description' || key === 'room_number' || key === 'extra_capacity') {
           formData.append(key, '');
         } else if (key === 'price_per_night') {
           formData.append(key, '0.00');
@@ -89,7 +89,7 @@ const RoomsManager = () => {
         });
         toast.success('Room added successfully');
       }
-      setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
+      setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
       setEditingRoom(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       fetchData();
@@ -115,6 +115,7 @@ const RoomsManager = () => {
       price_per_night: room.price_per_night !== null && room.price_per_night !== undefined ? room.price_per_night : '',
       adult_capacity: room.adult_capacity ?? 2,
       child_capacity: room.child_capacity ?? 0,
+      extra_capacity: room.extra_capacity || '',
       facilities: room.facilities || '',
       check_in_time: room.check_in_time || '03:30 PM',
       check_out_time: room.check_out_time || '02:30 PM',
@@ -124,7 +125,7 @@ const RoomsManager = () => {
   };
 
   const handleCancelRoomEdit = () => {
-    setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
+    setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
     setEditingRoom(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -340,6 +341,17 @@ const RoomsManager = () => {
               </div>
             </div>
             <div className="mb-3">
+              <label className="form-label text-muted small fw-bold">Additional Capacity / Guest Notes <span className="text-muted fw-normal">(Optional)</span></label>
+              <input 
+                type="text" 
+                className="form-control" 
+                placeholder="e.g. +1 Extra bed on request, Infants free, Max 5 total..." 
+                value={roomForm.extra_capacity || ''} 
+                onChange={e => setRoomForm({...roomForm, extra_capacity: e.target.value})} 
+              />
+              <small className="text-muted" style={{ fontSize: '0.78rem' }}>Add custom capacity notes (e.g. extra bed rules, infant policy, or overall capacity limits).</small>
+            </div>
+            <div className="mb-3">
               <label className="form-label text-muted small fw-bold mb-2">Facilities</label>
               <div className="d-flex flex-wrap gap-2">
                 {dynamicFacilities.map(facility => {
@@ -438,7 +450,14 @@ const RoomsManager = () => {
                       <td><strong>{r.room_number || <span className="text-muted fst-italic">Unnumbered</span>}</strong></td>
                       <td>{r.category_name}</td>
                       <td>₹{r.price_per_night ? r.price_per_night : '0.00'}</td>
-                      <td>{r.adult_capacity}A, {r.child_capacity}K</td>
+                      <td>
+                        <div>{r.adult_capacity}A, {r.child_capacity}K</div>
+                        {r.extra_capacity && (
+                          <div className="text-muted fst-italic" style={{ fontSize: '0.75rem', lineHeight: '1.2', marginTop: '2px' }}>
+                            {r.extra_capacity}
+                          </div>
+                        )}
+                      </td>
                       <td>
                         <select 
                           className={`form-select form-select-sm border-0 ${r.is_available ? 'bg-success text-white' : 'bg-danger text-white'}`}

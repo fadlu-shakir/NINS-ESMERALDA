@@ -203,7 +203,7 @@ const RoomDetails = () => {
             <div className="room-spec-bar">
               <div className="room-spec-item">
                 <i className="fas fa-users"></i>
-                <span>Up to {room.adult_capacity} Adults, {room.child_capacity} Kids</span>
+                <span>Up to {room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` • ${room.extra_capacity}` : ''}</span>
               </div>
               <div className="room-spec-item">
                 <i className="fas fa-bed"></i>
@@ -257,7 +257,7 @@ const RoomDetails = () => {
               <div className="py-3 border-top border-bottom my-4">
                 <div className="booking-card-item">
                   <span className="text-muted"><i className="fas fa-users me-2 text-accent"></i>Capacity</span>
-                  <span className="fw-bold">{room.adult_capacity} Adults, {room.child_capacity} Kids</span>
+                  <span className="fw-bold">{room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` (${room.extra_capacity})` : ''}</span>
                 </div>
                 <div className="booking-card-item">
                   <span className="text-muted"><i className="fas fa-info-circle me-2 text-accent"></i>Status</span>

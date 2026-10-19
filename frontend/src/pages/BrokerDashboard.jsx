@@ -325,7 +325,7 @@ function BrokerDashboard() {
                   <div className="mb-4">
                     <p className="mb-2 text-muted">
                       <i className="bi bi-people-fill text-primary me-2"></i> 
-                      Capacity: <span className="text-dark fw-medium">{room.adult_capacity} Adults, {room.child_capacity} Kids</span>
+                      Capacity: <span className="text-dark fw-medium">{room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` (${room.extra_capacity})` : ''}</span>
                     </p>
                     <p className="mb-0 text-muted">
                       <i className="bi bi-tag-fill text-primary me-2"></i> 

@@ -63,6 +63,7 @@ class RoomSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     description = serializers.CharField(required=False, allow_blank=True, default='')
     price_per_night = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True, default=0.00)
+    extra_capacity = serializers.CharField(required=False, allow_blank=True, default='')
 
     class Meta:
         model = Room
@@ -77,6 +78,8 @@ class RoomSerializer(serializers.ModelSerializer):
             data['price_per_night'] = '0.00'
         if 'description' in data and data['description'] is None:
             data['description'] = ''
+        if 'extra_capacity' in data and data['extra_capacity'] is None:
+            data['extra_capacity'] = ''
         return super().to_internal_value(data)
 
 class GallerySerializer(serializers.ModelSerializer):
