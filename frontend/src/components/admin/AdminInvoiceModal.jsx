@@ -275,7 +275,7 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
                       <p className="text-uppercase small fw-bold text-muted letter-spacing-2 mb-1" style={{ fontSize: '0.75rem' }}>Boutique Resort</p>
                       <div className="small text-muted" style={{ lineHeight: '1.35', fontSize: '0.8rem' }}>
                         <div>Thusharagiri, Kozhikode, Kerala 673580</div>
-                        <div>Phone: +91 85901 30953</div>
+                        <div>Phone: +91 81380 11207</div>
                         <div>Email: ninsesmeralda@gmail.com</div>
                       </div>
                     </div>

@@ -190,7 +190,7 @@ const BookingPage = () => {
         `💰 *Estimated Total:* ₹${totalAmount}\n\n` +
         `Please confirm my reservation and share payment details. Thank you!`;
 
-      const phone = "918590130953";
+      const phone = "918138011207";
       const targetUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
       setBookingDetails({
@@ -301,7 +301,7 @@ const BookingPage = () => {
             </div>
             <div className="mt-4 p-3 rounded-3 bg-light text-muted small d-flex align-items-center">
                <i className="fab fa-whatsapp text-success fs-3 me-3"></i>
-               <span>Instant booking & date lock via WhatsApp on +91 85901 30953</span>
+               <span>Instant booking & date lock via WhatsApp on +91 81380 11207</span>
             </div>
           </div>
         </div>
@@ -497,7 +497,7 @@ const BookingPage = () => {
                   Your selected dates will be held immediately on our calendar.
                 </p>
                 <small className="text-muted opacity-75">
-                  Direct WhatsApp: <a href="tel:+918590130953" className="text-muted text-decoration-none fw-semibold">+91 85901 30953</a>
+                  Direct WhatsApp: <a href="tel:+918138011207" className="text-muted text-decoration-none fw-semibold">+91 81380 11207</a>
                 </small>
               </div>
 
