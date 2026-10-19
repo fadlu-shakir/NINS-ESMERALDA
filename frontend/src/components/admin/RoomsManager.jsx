@@ -59,8 +59,14 @@ const RoomsManager = () => {
     e.preventDefault();
     const formData = new FormData();
     for (const key in roomForm) {
-      if (key !== 'images' && roomForm[key] !== null && roomForm[key] !== '') {
-        formData.append(key, roomForm[key]);
+      if (key !== 'images') {
+        if (roomForm[key] !== null && roomForm[key] !== '') {
+          formData.append(key, roomForm[key]);
+        } else if (key === 'description' || key === 'room_number') {
+          formData.append(key, '');
+        } else if (key === 'price_per_night') {
+          formData.append(key, '0.00');
+        }
       }
     }
     
@@ -103,13 +109,13 @@ const RoomsManager = () => {
 
   const handleEditRoom = (room) => {
     setRoomForm({
-      room_number: room.room_number,
-      category: room.category,
-      description: room.description,
-      price_per_night: room.price_per_night,
-      adult_capacity: room.adult_capacity,
-      child_capacity: room.child_capacity,
-      facilities: room.facilities,
+      room_number: room.room_number || '',
+      category: room.category || '',
+      description: room.description || '',
+      price_per_night: room.price_per_night !== null && room.price_per_night !== undefined ? room.price_per_night : '',
+      adult_capacity: room.adult_capacity ?? 2,
+      child_capacity: room.child_capacity ?? 0,
+      facilities: room.facilities || '',
       check_in_time: room.check_in_time || '03:30 PM',
       check_out_time: room.check_out_time || '02:30 PM',
       images: []
@@ -118,7 +124,7 @@ const RoomsManager = () => {
   };
 
   const handleCancelRoomEdit = () => {
-    setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', capacity: 2, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
+    setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
     setEditingRoom(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -320,8 +326,8 @@ const RoomsManager = () => {
               </select>
             </div>
             <div className="mb-3">
-              <label className="form-label text-muted small fw-bold">Price / Night (₹)</label>
-              <input type="number" step="0.01" className="form-control" required value={roomForm.price_per_night} onChange={e => setRoomForm({...roomForm, price_per_night: e.target.value})} />
+              <label className="form-label text-muted small fw-bold">Price / Night (₹) <span className="text-muted fw-normal">(Optional)</span></label>
+              <input type="number" step="0.01" className="form-control" placeholder="0.00 (Optional)" value={roomForm.price_per_night} onChange={e => setRoomForm({...roomForm, price_per_night: e.target.value})} />
             </div>
             <div className="row mb-3">
               <div className="col-md-6">
@@ -359,8 +365,8 @@ const RoomsManager = () => {
               </div>
             </div>
             <div className="mb-3">
-              <label className="form-label text-muted small fw-bold">Description</label>
-              <textarea className="form-control" rows="3" required value={roomForm.description} onChange={e => setRoomForm({...roomForm, description: e.target.value})}></textarea>
+              <label className="form-label text-muted small fw-bold">Description <span className="text-muted fw-normal">(Optional)</span></label>
+              <textarea className="form-control" rows="3" placeholder="Optional room description..." value={roomForm.description} onChange={e => setRoomForm({...roomForm, description: e.target.value})}></textarea>
             </div>
             <div className="row">
               <div className="col-md-6 mb-3">
@@ -431,7 +437,7 @@ const RoomsManager = () => {
                     <tr key={r.id}>
                       <td><strong>{r.room_number || <span className="text-muted fst-italic">Unnumbered</span>}</strong></td>
                       <td>{r.category_name}</td>
-                      <td>₹{r.price_per_night}</td>
+                      <td>₹{r.price_per_night ? r.price_per_night : '0.00'}</td>
                       <td>{r.adult_capacity}A, {r.child_capacity}K</td>
                       <td>
                         <select 

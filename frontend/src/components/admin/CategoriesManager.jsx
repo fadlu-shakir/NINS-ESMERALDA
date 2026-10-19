@@ -45,7 +45,7 @@ const CategoriesManager = () => {
   };
 
   const handleEditCategory = (category) => {
-    setCategoryForm({ name: category.name, description: category.description });
+    setCategoryForm({ name: category.name || '', description: category.description || '' });
     setEditingCategory(category.id);
   };
 
@@ -85,8 +85,8 @@ const CategoriesManager = () => {
               <input type="text" className="form-control" required value={categoryForm.name} onChange={e => setCategoryForm({...categoryForm, name: e.target.value})} placeholder="e.g. Deluxe Suite" />
             </div>
             <div className="mb-4">
-              <label className="form-label text-muted small fw-bold">Description</label>
-              <textarea className="form-control" rows="4" required value={categoryForm.description} onChange={e => setCategoryForm({...categoryForm, description: e.target.value})}></textarea>
+              <label className="form-label text-muted small fw-bold">Description <span className="text-muted fw-normal">(Optional)</span></label>
+              <textarea className="form-control" rows="4" value={categoryForm.description} onChange={e => setCategoryForm({...categoryForm, description: e.target.value})} placeholder="Optional category description..."></textarea>
             </div>
             <div className="d-flex gap-2">
               <button type="submit" className="btn btn-primary-modern flex-grow-1">

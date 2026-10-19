@@ -22,7 +22,7 @@ class UserProfile(models.Model):
 # --- ROOM MODELS ---
 class RoomCategory(models.Model):
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = models.TextField(blank=True, default='')
     image = models.ImageField(upload_to='categories/', null=True, blank=True)
 
     def __str__(self):
@@ -31,8 +31,8 @@ class RoomCategory(models.Model):
 class Room(models.Model):
     category = models.ForeignKey(RoomCategory, related_name='rooms', on_delete=models.CASCADE)
     room_number = models.CharField(max_length=100, null=True, blank=True)
-    description = models.TextField()
-    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.TextField(blank=True, default='')
+    price_per_night = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, default=0.00)
     adult_capacity = models.IntegerField(default=2)
     child_capacity = models.IntegerField(default=0)
     facilities = models.TextField(help_text="Comma separated facilities e.g., WiFi, AC, TV")
@@ -97,7 +97,8 @@ class Booking(models.Model):
             days = (self.check_out_date - self.check_in_date).days
             if days <= 0:
                 days = 1
-            self.total_amount = days * self.room.price_per_night
+            room_price = self.room.price_per_night if self.room.price_per_night is not None else 0
+            self.total_amount = days * room_price
             
         super().save(*args, **kwargs)
         

@@ -53,16 +53,31 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 # --- ROOM SERIALIZERS ---
 class RoomCategorySerializer(serializers.ModelSerializer):
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+
     class Meta:
         model = RoomCategory
         fields = '__all__'
 
 class RoomSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
+    description = serializers.CharField(required=False, allow_blank=True, default='')
+    price_per_night = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True, default=0.00)
 
     class Meta:
         model = Room
         fields = '__all__'
+
+    def to_internal_value(self, data):
+        if hasattr(data, 'copy'):
+            data = data.copy()
+        elif isinstance(data, dict):
+            data = data.copy()
+        if 'price_per_night' in data and (data['price_per_night'] == '' or data['price_per_night'] is None):
+            data['price_per_night'] = '0.00'
+        if 'description' in data and data['description'] is None:
+            data['description'] = ''
+        return super().to_internal_value(data)
 
 class GallerySerializer(serializers.ModelSerializer):
     class Meta:
