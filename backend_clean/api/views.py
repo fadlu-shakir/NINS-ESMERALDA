@@ -330,6 +330,57 @@ class RoomViewSet(viewsets.ModelViewSet):
     search_fields = ['room_number', 'description', 'facilities']
     ordering_fields = ['price_per_night']
 
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', True)
+        instance = self.get_object()
+
+        # Cache existing image fields before serializer executes
+        orig_images = {
+            'image': instance.image,
+            'image2': instance.image2,
+            'image3': instance.image3,
+            'image4': instance.image4,
+            'image5': instance.image5,
+        }
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        images_meta_raw = request.data.get('images_meta')
+        if images_meta_raw:
+            import json
+            try:
+                images_meta = json.loads(images_meta_raw) if isinstance(images_meta_raw, str) else images_meta_raw
+            except Exception:
+                images_meta = None
+
+            if isinstance(images_meta, list):
+                slot_fields = ['image', 'image2', 'image3', 'image4', 'image5']
+                for idx, field_name in enumerate(slot_fields):
+                    if idx < len(images_meta) and images_meta[idx]:
+                        item = images_meta[idx]
+                        item_type = item.get('type')
+                        if item_type == 'existing':
+                            src_field = item.get('field')
+                            orig_file = orig_images.get(src_field)
+                            if orig_file and getattr(orig_file, 'name', None):
+                                setattr(instance, field_name, orig_file.name)
+                            else:
+                                setattr(instance, field_name, None)
+                        elif item_type == 'new':
+                            file_key = item.get('file_key')
+                            new_file = request.FILES.get(file_key)
+                            if new_file:
+                                setattr(instance, field_name, new_file)
+                            else:
+                                setattr(instance, field_name, None)
+                    else:
+                        setattr(instance, field_name, None)
+                instance.save()
+
+        return Response(self.get_serializer(instance).data)
+
     @action(detail=True, methods=['get'], permission_classes=[permissions.AllowAny])
     def booked_dates(self, request, pk=None):
         room = self.get_object()

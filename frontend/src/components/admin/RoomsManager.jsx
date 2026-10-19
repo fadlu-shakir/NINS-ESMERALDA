@@ -22,6 +22,7 @@ const RoomsManager = () => {
   const [newFacilityInput, setNewFacilityInput] = useState('');
   const [customFacilities, setCustomFacilities] = useState([]);
   const [editingRoom, setEditingRoom] = useState(null);
+  const [roomImages, setRoomImages] = useState([]);
   const fileInputRef = useRef(null);
 
   const dynamicFacilities = useMemo(() => {
@@ -80,27 +81,41 @@ const RoomsManager = () => {
         }
       }
     }
-    
-    if (roomForm.images && roomForm.images.length > 0) {
-      roomForm.images.forEach((file, index) => {
-        const fieldName = index === 0 ? 'image' : `image${index + 1}`;
-        formData.append(fieldName, file);
-      });
-    }
 
     try {
       if (editingRoom) {
+        const imagesMeta = [];
+        let newCounter = 0;
+        roomImages.slice(0, 5).forEach((item) => {
+          if (item.type === 'existing') {
+            imagesMeta.push({ type: 'existing', field: item.field });
+          } else if (item.type === 'new') {
+            const fileKey = `new_image_${newCounter++}`;
+            imagesMeta.push({ type: 'new', file_key: fileKey });
+            formData.append(fileKey, item.file);
+          }
+        });
+        formData.append('images_meta', JSON.stringify(imagesMeta));
+
         await api.put(`rooms/list/${editingRoom}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Room updated successfully');
       } else {
+        roomImages.slice(0, 5).forEach((item, index) => {
+          const fieldName = index === 0 ? 'image' : `image${index + 1}`;
+          if (item.file) {
+            formData.append(fieldName, item.file);
+          }
+        });
+
         await api.post('rooms/list/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Room added successfully');
       }
       setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
+      setRoomImages([]);
       setEditingRoom(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
       fetchData();
@@ -132,7 +147,21 @@ const RoomsManager = () => {
       check_out_time: room.check_out_time || '02:30 PM',
       images: []
     });
+
+    const existing = [];
+    ['image', 'image2', 'image3', 'image4', 'image5'].forEach((field) => {
+      if (room[field]) {
+        existing.push({
+          id: `existing-${field}`,
+          type: 'existing',
+          field: field,
+          url: getImageUrl(room[field])
+        });
+      }
+    });
+    setRoomImages(existing);
     setEditingRoom(room.id);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleAddCustomFacility = (e) => {
@@ -158,6 +187,7 @@ const RoomsManager = () => {
 
   const handleCancelRoomEdit = () => {
     setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
+    setRoomImages([]);
     setEditingRoom(null);
     setNewFacilityInput('');
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -195,79 +225,47 @@ const RoomsManager = () => {
     return matchNo || matchCat;
   });
 
-  const handleRemoveImage = (indexToRemove) => {
-    const newImages = roomForm.images.filter((_, index) => index !== indexToRemove);
-    setRoomForm({ ...roomForm, images: newImages });
-    if (newImages.length === 0 && fileInputRef.current) {
-      fileInputRef.current.value = '';
+  const handleAddFiles = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+    const remainingSlots = 5 - roomImages.length;
+    if (remainingSlots <= 0) {
+      toast.error('Maximum 5 images allowed per room.');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+    const toAdd = files.slice(0, remainingSlots).map((file, i) => ({
+      id: `new-${Date.now()}-${i}-${Math.random()}`,
+      type: 'new',
+      file: file,
+      url: URL.createObjectURL(file)
+    }));
+    setRoomImages(prev => [...prev, ...toAdd]);
+    if (files.length > remainingSlots) {
+      toast.warning(`Only ${remainingSlots} photo(s) added (max 5 photos per room).`);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleDeleteImage = (index) => {
+    const isCover = index === 0;
+    setRoomImages(prev => prev.filter((_, idx) => idx !== index));
+    if (isCover && roomImages.length > 1) {
+      toast.info('Cover image removed. Next photo became cover. Click "Update Room" to save.', { autoClose: 2500 });
+    } else {
+      toast.info('Photo removed. Click "Update Room" to save.', { autoClose: 2000 });
     }
   };
 
-  const handleSetCover = (indexToCover) => {
-    if (indexToCover === 0) return;
-    const newImages = [...roomForm.images];
-    const coverImage = newImages.splice(indexToCover, 1)[0];
-    newImages.unshift(coverImage);
-    setRoomForm({ ...roomForm, images: newImages });
-  };
-
-  const renderImagePreviews = () => {
-    if (roomForm.images && roomForm.images.length > 0) {
-      return (
-        <div className="d-flex flex-wrap gap-2 mt-3">
-          {roomForm.images.map((file, index) => (
-            <div key={index} className="position-relative border rounded p-1 bg-white shadow-sm" style={{ width: '90px', height: '90px' }}>
-              <img src={URL.createObjectURL(file)} alt={`preview-${index}`} className="w-100 h-100 object-fit-cover rounded" />
-              
-              <button 
-                type="button" 
-                className="btn btn-sm btn-danger rounded-circle position-absolute d-flex align-items-center justify-content-center p-0 shadow" 
-                style={{ top: '-6px', right: '-6px', width: '22px', height: '22px' }}
-                onClick={() => handleRemoveImage(index)}
-                title="Remove image"
-              >
-                <i className="fas fa-times" style={{ fontSize: '0.6rem' }}></i>
-              </button>
-
-              {index === 0 ? (
-                <span className="position-absolute bottom-0 start-50 translate-middle-x badge bg-primary shadow-sm" style={{ fontSize: '0.55rem', zIndex: 1, bottom: '-8px' }}>Cover</span>
-              ) : (
-                <button 
-                  type="button" 
-                  className="btn btn-sm btn-dark position-absolute bottom-0 start-50 translate-middle-x badge text-white px-2 shadow-sm" 
-                  style={{ fontSize: '0.5rem', zIndex: 1, whiteSpace: 'nowrap', opacity: 0.9, bottom: '-8px', border: 'none' }}
-                  onClick={() => handleSetCover(index)}
-                  title="Set as cover image"
-                >
-                  Set Cover
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      );
-    } else if (editingRoom) {
-      const room = rooms.find(r => r.id === editingRoom);
-      if (room) {
-        const existingImages = [room.image, room.image2, room.image3, room.image4, room.image5].filter(Boolean);
-        if (existingImages.length > 0) {
-          return (
-            <div className="mt-3">
-              <small className="text-muted fw-bold d-block mb-2">Current Images:</small>
-              <div className="d-flex flex-wrap gap-2">
-                {existingImages.map((imgUrl, index) => (
-                  <div key={index} className="position-relative border rounded p-1 bg-white shadow-sm" style={{ width: '80px', height: '80px' }}>
-                    <img src={getImageUrl(imgUrl)} alt={`current-${index}`} className="w-100 h-100 object-fit-cover rounded" />
-                    {index === 0 && <span className="position-absolute bottom-0 start-50 translate-middle-x badge bg-secondary" style={{ fontSize: '0.55rem', zIndex: 1 }}>Cover</span>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        }
-      }
-    }
-    return null;
+  const handleSetCover = (index) => {
+    if (index === 0) return;
+    setRoomImages(prev => {
+      const updated = [...prev];
+      const [selected] = updated.splice(index, 1);
+      updated.unshift(selected);
+      return updated;
+    });
+    toast.success('Cover image changed! Click "Update Room" to save.', { autoClose: 2000 });
   };
 
   return (
@@ -459,13 +457,108 @@ const RoomsManager = () => {
               </div>
             </div>
             <div className="mb-4">
-              <label className="form-label text-muted small fw-bold">Images (Up to 5)</label>
-              <input type="file" ref={fileInputRef} className="form-control" multiple accept="image/*" onChange={e => {
-                const files = Array.from(e.target.files).slice(0, 5);
-                setRoomForm({...roomForm, images: files});
-              }} />
-              <small className="text-muted d-block mt-1">First image will be the primary cover image.</small>
-              {renderImagePreviews()}
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="form-label text-muted small fw-bold mb-0">
+                  Room Photos ({roomImages.length}/5)
+                </label>
+                {roomImages.length < 5 && (
+                  <span className="badge bg-light text-secondary border" style={{ fontSize: '0.75rem' }}>
+                    {5 - roomImages.length} slot{5 - roomImages.length > 1 ? 's' : ''} left
+                  </span>
+                )}
+              </div>
+
+              {/* Upload Input */}
+              {roomImages.length < 5 ? (
+                <div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="form-control" 
+                    multiple 
+                    accept="image/*" 
+                    onChange={handleAddFiles} 
+                  />
+                  <small className="text-muted d-block mt-1" style={{ fontSize: '0.78rem' }}>
+                    Photo 1 is the <strong>Primary Cover Image</strong>. You can change cover or delete anytime below.
+                  </small>
+                </div>
+              ) : (
+                <div className="alert alert-secondary py-2 px-3 small text-muted mb-0 d-flex align-items-center justify-content-between rounded-3">
+                  <span><i className="fas fa-check-circle text-success me-2"></i>Max 5 photos reached</span>
+                  <small>Delete a photo to add a new one</small>
+                </div>
+              )}
+
+              {/* Previews / Management Grid */}
+              {roomImages.length > 0 && (
+                <div className="mt-3">
+                  <div className="row g-2">
+                    {roomImages.map((imgItem, index) => {
+                      const isCover = index === 0;
+                      return (
+                        <div key={imgItem.id} className="col-6 col-sm-4">
+                          <div 
+                            className={`card h-100 border shadow-sm position-relative overflow-hidden ${isCover ? 'border-warning border-2' : ''}`}
+                            style={{ borderRadius: '10px' }}
+                          >
+                            {/* Badges Bar */}
+                            <div className="position-absolute top-0 start-0 w-100 p-1 d-flex justify-content-between align-items-center" style={{ zIndex: 2 }}>
+                              {isCover ? (
+                                <span className="badge bg-warning text-dark fw-bold shadow-sm" style={{ fontSize: '0.65rem' }}>
+                                  <i className="fas fa-crown me-1"></i>Cover
+                                </span>
+                              ) : (
+                                <span className="badge bg-dark bg-opacity-75 text-white" style={{ fontSize: '0.65rem' }}>
+                                  #{index + 1}
+                                </span>
+                              )}
+
+                              <button 
+                                type="button" 
+                                className="btn btn-sm btn-danger rounded-circle p-0 shadow-sm d-flex align-items-center justify-content-center"
+                                style={{ width: '22px', height: '22px' }}
+                                onClick={() => handleDeleteImage(index)}
+                                title="Delete image"
+                              >
+                                <i className="fas fa-times" style={{ fontSize: '0.65rem' }}></i>
+                              </button>
+                            </div>
+
+                            {/* Image Thumbnail */}
+                            <div style={{ height: '90px', backgroundColor: '#f8f9fa' }}>
+                              <img 
+                                src={imgItem.url} 
+                                alt={`photo-${index}`} 
+                                className="w-100 h-100 object-fit-cover" 
+                              />
+                            </div>
+
+                            {/* Action Bar */}
+                            <div className="p-1 bg-white border-top text-center">
+                              {isCover ? (
+                                <span className="text-warning-emphasis fw-bold d-block" style={{ fontSize: '0.7rem' }}>
+                                  <i className="fas fa-star me-1 text-warning"></i>Cover Image
+                                </span>
+                              ) : (
+                                <button 
+                                  type="button" 
+                                  className="btn btn-xs btn-outline-primary w-100 py-1 fw-bold"
+                                  style={{ fontSize: '0.68rem', borderRadius: '6px' }}
+                                  onClick={() => handleSetCover(index)}
+                                  title="Make this the Cover Image"
+                                >
+                                  <i className="fas fa-star text-warning me-1"></i>Set Cover
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
             <div className="d-flex gap-2">
               <button type="submit" className="btn btn-primary-modern flex-grow-1">
@@ -515,7 +608,17 @@ const RoomsManager = () => {
                     <tr><td colSpan="6" className="text-center py-4 text-muted">No rooms found.</td></tr>
                   ) : filteredRooms.map(r => (
                     <tr key={r.id}>
-                      <td><strong>{r.room_number || <span className="text-muted fst-italic">Unnumbered</span>}</strong></td>
+                      <td>
+                        <div className="d-flex align-items-center gap-2">
+                          <img 
+                            src={getImageUrl(r.image) || '/resort_img/7.jpeg'} 
+                            alt="Cover" 
+                            className="rounded object-fit-cover border shadow-sm" 
+                            style={{ width: '38px', height: '38px' }} 
+                          />
+                          <strong>{r.room_number || <span className="text-muted fst-italic">Unnumbered</span>}</strong>
+                        </div>
+                      </td>
                       <td>{r.category_name}</td>
                       <td>{r.price_per_night && Number(r.price_per_night) > 0 ? `₹${r.price_per_night}` : <span className="text-muted fst-italic">Not set</span>}</td>
                       <td>
