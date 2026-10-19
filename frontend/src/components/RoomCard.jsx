@@ -26,12 +26,6 @@ const RoomCard = ({ room }) => {
           alt={room.room_number} 
         />
         
-        {/* Price Badge */}
-        <div className="position-absolute top-0 start-0 m-3 p-2 bg-dark bg-opacity-75 text-white rounded px-3 shadow-sm animate__animated animate__fadeIn">
-          <span className="fw-bold small">₹{room.price_per_night}</span>
-          <small className="opacity-75 ms-1">/night</small>
-        </div>
-
         {/* Availability Badge */}
         <div className="position-absolute top-0 end-0 m-3">
           <span className={`badge rounded-1 px-3 py-2 ${room.is_available ? 'bg-success' : 'bg-danger'} shadow-sm`}>
