@@ -563,27 +563,26 @@ function BrokerDashboard() {
                       />
                     </div>
                     <div className="col-6">
-                      <label className="form-label small text-muted fw-bold">Adults (Max: {selectedRoom.adult_capacity})</label>
+                      <label className="form-label small text-muted fw-bold">Adults {selectedRoom.adult_capacity > 0 ? `(Max: ${selectedRoom.adult_capacity})` : ''}</label>
                       <input 
                         type="number" 
                         className="form-control" 
                         value={bookingFormData.adults}
                         min="1"
-                        max={selectedRoom.adult_capacity}
+                        {...(selectedRoom.adult_capacity > 0 ? { max: selectedRoom.adult_capacity } : {})}
                         onChange={(e) => setBookingFormData({...bookingFormData, adults: parseInt(e.target.value) || 1})}
                         required
                       />
                     </div>
                     <div className="col-6">
-                      <label className="form-label small text-muted fw-bold">Kids (Max: {selectedRoom.child_capacity})</label>
+                      <label className="form-label small text-muted fw-bold">Kids {selectedRoom.child_capacity > 0 ? `(Max: ${selectedRoom.child_capacity})` : ''}</label>
                       <input 
                         type="number" 
                         className="form-control" 
                         value={bookingFormData.kids}
                         min="0"
-                        max={selectedRoom.child_capacity}
+                        {...(selectedRoom.child_capacity > 0 ? { max: selectedRoom.child_capacity } : {})}
                         onChange={(e) => setBookingFormData({...bookingFormData, kids: parseInt(e.target.value) || 0})}
-                        required
                       />
                     </div>
                   </div>

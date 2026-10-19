@@ -58,7 +58,12 @@ const RoomCard = ({ room }) => {
         {/* Dynamic details */}
         <div className="d-flex justify-content-between align-items-center mb-4 py-2 border-top border-bottom border-light">
           <div className="d-flex gap-3 text-muted small">
-            <span><i className="fas fa-users me-1 text-accent"></i> {room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` • ${room.extra_capacity}` : ''}</span>
+            <span>
+              <i className="fas fa-users me-1 text-accent"></i> 
+              {room.adult_capacity > 0 || room.child_capacity > 0
+                ? `${room.adult_capacity || 0} Adults, ${room.child_capacity || 0} Kids${room.extra_capacity ? ` • ${room.extra_capacity}` : ''}`
+                : (room.extra_capacity || 'Flexible Stay')}
+            </span>
             <span><i className="fas fa-compress-arrows-alt me-1 text-accent"></i> Premium Stay</span>
           </div>
           <span className="text-muted-50 small"><i className="far fa-clock me-1"></i> {room.check_in_time}</span>

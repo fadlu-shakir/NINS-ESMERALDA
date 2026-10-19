@@ -66,6 +66,8 @@ const RoomsManager = () => {
           formData.append(key, '');
         } else if (key === 'price_per_night') {
           formData.append(key, '0.00');
+        } else if (key === 'adult_capacity' || key === 'child_capacity') {
+          formData.append(key, '0');
         }
       }
     }
@@ -113,8 +115,8 @@ const RoomsManager = () => {
       category: room.category || '',
       description: room.description || '',
       price_per_night: room.price_per_night !== null && room.price_per_night !== undefined ? room.price_per_night : '',
-      adult_capacity: room.adult_capacity ?? 2,
-      child_capacity: room.child_capacity ?? 0,
+      adult_capacity: room.adult_capacity !== null && room.adult_capacity !== undefined ? room.adult_capacity : '',
+      child_capacity: room.child_capacity !== null && room.child_capacity !== undefined ? room.child_capacity : '',
       extra_capacity: room.extra_capacity || '',
       facilities: room.facilities || '',
       check_in_time: room.check_in_time || '03:30 PM',
@@ -332,12 +334,12 @@ const RoomsManager = () => {
             </div>
             <div className="row mb-3">
               <div className="col-md-6">
-                <label className="form-label text-muted small fw-bold">Adult Capacity</label>
-                <input type="number" className="form-control" required value={roomForm.adult_capacity} onChange={e => setRoomForm({...roomForm, adult_capacity: e.target.value})} />
+                <label className="form-label text-muted small fw-bold">Adult Capacity <span className="text-muted fw-normal">(Optional)</span></label>
+                <input type="number" className="form-control" placeholder="2 (Optional)" value={roomForm.adult_capacity} onChange={e => setRoomForm({...roomForm, adult_capacity: e.target.value})} />
               </div>
               <div className="col-md-6">
-                <label className="form-label text-muted small fw-bold">Kids Capacity</label>
-                <input type="number" className="form-control" required value={roomForm.child_capacity} onChange={e => setRoomForm({...roomForm, child_capacity: e.target.value})} />
+                <label className="form-label text-muted small fw-bold">Kids Capacity <span className="text-muted fw-normal">(Optional)</span></label>
+                <input type="number" className="form-control" placeholder="0 (Optional)" value={roomForm.child_capacity} onChange={e => setRoomForm({...roomForm, child_capacity: e.target.value})} />
               </div>
             </div>
             <div className="mb-3">
@@ -451,7 +453,11 @@ const RoomsManager = () => {
                       <td>{r.category_name}</td>
                       <td>₹{r.price_per_night ? r.price_per_night : '0.00'}</td>
                       <td>
-                        <div>{r.adult_capacity}A, {r.child_capacity}K</div>
+                        <div>
+                          {r.adult_capacity > 0 || r.child_capacity > 0
+                            ? `${r.adult_capacity || 0}A, ${r.child_capacity || 0}K`
+                            : (r.extra_capacity ? '-' : <span className="text-muted fst-italic">Optional</span>)}
+                        </div>
                         {r.extra_capacity && (
                           <div className="text-muted fst-italic" style={{ fontSize: '0.75rem', lineHeight: '1.2', marginTop: '2px' }}>
                             {r.extra_capacity}

@@ -407,8 +407,8 @@ const BookingPage = () => {
                         type="button" 
                         className="btn btn-sm btn-white bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center text-dark" 
                         style={{ width: '38px', height: '38px', border: '1px solid #dee2e6' }} 
-                        onClick={() => setFormData({...formData, adults: Math.min(room.adult_capacity, formData.adults + 1)})}
-                        disabled={formData.adults >= room.adult_capacity}
+                        onClick={() => setFormData({...formData, adults: room.adult_capacity > 0 ? Math.min(room.adult_capacity, formData.adults + 1) : formData.adults + 1})}
+                        disabled={room.adult_capacity > 0 && formData.adults >= room.adult_capacity}
                       >
                         <i className="fas fa-plus"></i>
                       </button>
@@ -436,8 +436,8 @@ const BookingPage = () => {
                         type="button" 
                         className="btn btn-sm btn-white bg-white rounded-circle shadow-sm d-flex align-items-center justify-content-center text-dark" 
                         style={{ width: '38px', height: '38px', border: '1px solid #dee2e6' }} 
-                        onClick={() => setFormData({...formData, kids: Math.min(room.child_capacity, formData.kids + 1)})}
-                        disabled={formData.kids >= room.child_capacity}
+                        onClick={() => setFormData({...formData, kids: room.child_capacity > 0 ? Math.min(room.child_capacity, formData.kids + 1) : formData.kids + 1})}
+                        disabled={room.child_capacity > 0 && formData.kids >= room.child_capacity}
                       >
                         <i className="fas fa-plus"></i>
                       </button>
@@ -447,7 +447,7 @@ const BookingPage = () => {
                   {/* Capacity Warnings */}
                   <div className="mt-4 px-3 py-2 bg-light rounded text-muted small text-center">
                     <i className="fas fa-info-circle me-2"></i>
-                    Maximum capacity: {room.adult_capacity} Adults, {room.child_capacity} Kids{room.extra_capacity ? ` • ${room.extra_capacity}` : ''}
+                    Maximum capacity: {room.adult_capacity > 0 || room.child_capacity > 0 ? `${room.adult_capacity || 0} Adults, ${room.child_capacity || 0} Kids` : 'Flexible'}{room.extra_capacity ? ` • ${room.extra_capacity}` : ''}
                   </div>
 
                 </div>
