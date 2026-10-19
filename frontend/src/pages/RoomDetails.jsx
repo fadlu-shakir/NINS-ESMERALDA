@@ -15,8 +15,8 @@ const RoomDetails = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
-  const [galleryLayout, setGalleryLayout] = useState('mosaic'); // 'mosaic' | 'bento' | 'stage'
-  const [imageFit, setImageFit] = useState('contain'); // 'contain' (Full Photo, No Zoom) | 'cover' (Fill Grid)
+  const [galleryLayout, setGalleryLayout] = useState('bento'); // 'bento' (default) | 'mosaic' | 'stage'
+  const [imageFit, setImageFit] = useState('cover'); // 'cover' (Fill Grid - default) | 'contain' (Full Photo)
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -185,16 +185,8 @@ const RoomDetails = () => {
 
           {/* Gallery Controls */}
           <div className="d-flex flex-wrap align-items-center gap-2">
-            {/* Photo Fit Mode (Full Photo vs Fill Grid) */}
+            {/* Photo Fit Mode (Fill Grid vs Full Photo) */}
             <div className="gallery-layout-switcher" title="Photo View Mode">
-              <button 
-                type="button" 
-                className={`layout-pill-btn ${imageFit === 'contain' ? 'active' : ''}`}
-                onClick={() => setImageFit('contain')}
-                title="Full Photo (Natural, Uncropped)"
-              >
-                <i className="fas fa-expand-arrows-alt me-1"></i> Full Photo
-              </button>
               <button 
                 type="button" 
                 className={`layout-pill-btn ${imageFit === 'cover' ? 'active' : ''}`}
@@ -203,18 +195,18 @@ const RoomDetails = () => {
               >
                 <i className="fas fa-th-large me-1"></i> Fill Grid
               </button>
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${imageFit === 'contain' ? 'active' : ''}`}
+                onClick={() => setImageFit('contain')}
+                title="Full Photo (Natural, Uncropped)"
+              >
+                <i className="fas fa-expand-arrows-alt me-1"></i> Full Photo
+              </button>
             </div>
 
             {/* Grid Layout Switcher */}
             <div className="gallery-layout-switcher" title="Gallery Layout">
-              <button 
-                type="button" 
-                className={`layout-pill-btn ${galleryLayout === 'mosaic' ? 'active' : ''}`}
-                onClick={() => setGalleryLayout('mosaic')}
-                title="Classic 5-Photo Luxury Grid"
-              >
-                <i className="fas fa-border-all me-1"></i> Mosaic Grid
-              </button>
               <button 
                 type="button" 
                 className={`layout-pill-btn ${galleryLayout === 'bento' ? 'active' : ''}`}
@@ -222,6 +214,14 @@ const RoomDetails = () => {
                 title="Modern Bento Grid"
               >
                 <i className="fas fa-layer-group me-1"></i> Bento Grid
+              </button>
+              <button 
+                type="button" 
+                className={`layout-pill-btn ${galleryLayout === 'mosaic' ? 'active' : ''}`}
+                onClick={() => setGalleryLayout('mosaic')}
+                title="Classic 5-Photo Luxury Grid"
+              >
+                <i className="fas fa-border-all me-1"></i> Mosaic Grid
               </button>
               <button 
                 type="button" 
@@ -303,7 +303,7 @@ const RoomDetails = () => {
 
         {galleryLayout === 'bento' && (
           <div className="luxury-bento-wrapper position-relative">
-            <div className="luxury-bento-grid">
+            <div className={`luxury-bento-grid bento-count-${Math.min(images.length, 5)}`}>
               {images.map((img, idx) => {
                 const isHero = idx === 0;
                 return (

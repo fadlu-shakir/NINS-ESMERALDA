@@ -1547,6 +1547,57 @@ a:hover {
   gap: 12px;
 }
 
+.luxury-bento-grid.bento-count-1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 480px;
+}
+.luxury-bento-grid.bento-count-1 .bento-hero {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+
+.luxury-bento-grid.bento-count-2 {
+  grid-template-columns: 1.25fr 1fr;
+  grid-template-rows: 480px;
+}
+.luxury-bento-grid.bento-count-2 .bento-hero {
+  grid-column: span 1;
+  grid-row: span 1;
+}
+.luxury-bento-grid.bento-count-2 .bento-cell {
+  height: 100%;
+}
+
+.luxury-bento-grid.bento-count-3 {
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: 234px 234px;
+}
+.luxury-bento-grid.bento-count-3 .bento-hero {
+  grid-column: 1;
+  grid-row: span 2;
+}
+
+.luxury-bento-grid.bento-count-4 {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 234px 234px;
+}
+.luxury-bento-grid.bento-count-4 .bento-hero {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.luxury-bento-grid.bento-count-4 .bento-item-1 {
+  grid-column: span 2;
+}
+
+.luxury-bento-grid.bento-count-5 {
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 234px 234px;
+}
+.luxury-bento-grid.bento-count-5 .bento-hero {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
 .bento-hero {
   grid-column: span 2;
   grid-row: span 2;
