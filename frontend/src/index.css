@@ -1298,6 +1298,247 @@ a:hover {
   text-transform: uppercase;
 }
 
+/* Gallery Layout Switcher */
+.gallery-layout-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  padding: 4px;
+  border-radius: 30px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.layout-pill-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+}
+
+.layout-pill-btn:hover {
+  color: #111;
+}
+
+.layout-pill-btn.active {
+  background: var(--color-primary, #1c1917);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Luxury Mosaic Grid (5-photo hotel standard) */
+.luxury-mosaic-wrapper {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg, 0 15px 40px rgba(0,0,0,0.1));
+}
+
+.luxury-mosaic-grid-5 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  height: 480px;
+}
+
+.luxury-mosaic-grid-5 .mosaic-main {
+  height: 100%;
+}
+
+.luxury-mosaic-grid-5 .mosaic-side-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  height: 100%;
+}
+
+.luxury-mosaic-grid-4 {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 10px;
+  height: 480px;
+}
+
+.luxury-mosaic-grid-4 .mosaic-side-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  height: 100%;
+}
+
+.luxury-mosaic-grid-4 .mosaic-side-grid-3 .mosaic-cell:first-child {
+  grid-column: 1 / -1;
+}
+
+.luxury-mosaic-grid-3 {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 10px;
+  height: 480px;
+}
+
+.luxury-mosaic-grid-3 .mosaic-side-stack {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 10px;
+  height: 100%;
+}
+
+.luxury-mosaic-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  height: 480px;
+}
+
+.luxury-mosaic-grid-1 {
+  display: block;
+  height: 480px;
+}
+
+/* Mosaic Cell */
+.mosaic-cell {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: #1a1715;
+  height: 100%;
+}
+
+.mosaic-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+
+.mosaic-cell:hover img {
+  transform: scale(1.025);
+  filter: brightness(0.93);
+}
+
+.mosaic-cover-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  background: rgba(28, 25, 23, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #f59e0b;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  z-index: 2;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.mosaic-hover-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1c1917;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.mosaic-cell:hover .mosaic-hover-hint {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Luxury Bento Grid */
+.luxury-bento-wrapper {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg, 0 15px 40px rgba(0,0,0,0.1));
+}
+
+.luxury-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 240px 240px;
+  gap: 12px;
+}
+
+.bento-cell {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  background: #181513;
+  border-radius: 14px;
+}
+
+.bento-cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+
+.bento-cell:hover img {
+  transform: scale(1.03);
+  filter: brightness(0.92);
+}
+
+.bento-hero {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.bento-hero-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 24px;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+  z-index: 2;
+}
+
+.bento-hover-hint {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(28, 25, 23, 0.75);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  opacity: 0;
+  transform: scale(0.85);
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.bento-cell:hover .bento-hover-hint {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .gallery-buttons-container {
   position: absolute;
   bottom: 24px;
@@ -1603,12 +1844,62 @@ a:hover {
   .room-showcase-stage {
     height: 440px;
   }
+  .luxury-mosaic-grid-5,
+  .luxury-mosaic-grid-4,
+  .luxury-mosaic-grid-3,
+  .luxury-mosaic-grid-2,
+  .luxury-mosaic-grid-1 {
+    height: 400px;
+  }
+  .luxury-bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto;
+  }
+  .bento-cell {
+    height: 180px;
+  }
+  .bento-hero {
+    height: 360px;
+    grid-column: span 2;
+    grid-row: auto;
+  }
 }
 
 @media (max-width: 768px) {
   .room-showcase-stage {
     height: 340px;
     border-radius: 16px;
+  }
+  .luxury-mosaic-grid-5,
+  .luxury-mosaic-grid-4,
+  .luxury-mosaic-grid-3,
+  .luxury-mosaic-grid-2,
+  .luxury-mosaic-grid-1 {
+    grid-template-columns: 1fr;
+    height: 340px;
+  }
+  .mosaic-side-grid,
+  .mosaic-side-grid-3,
+  .mosaic-side-stack {
+    display: none !important;
+  }
+  .luxury-bento-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .bento-hero {
+    height: 240px;
+  }
+  .bento-cell {
+    height: 120px;
+    border-radius: 10px;
+  }
+  .gallery-layout-switcher {
+    padding: 2px;
+  }
+  .layout-pill-btn {
+    padding: 4px 10px;
+    font-size: 0.72rem;
   }
   .room-showcase-img-wrap {
     padding: 8px;

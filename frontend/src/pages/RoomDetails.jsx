@@ -15,6 +15,7 @@ const RoomDetails = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [galleryLayout, setGalleryLayout] = useState('mosaic'); // 'mosaic' | 'bento' | 'stage'
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -132,66 +133,212 @@ const RoomDetails = () => {
 
   return (
     <div className="room-details-container pb-5" style={{ marginTop: '70px', minHeight: '100vh' }}>
-      {/* Back Navigation Bar */}
-      <div className="container pt-4 mb-4">
-        <Link to="/#rooms" className="text-muted d-inline-flex align-items-center hover-accent fw-semibold text-uppercase small letter-spacing-1">
-          <i className="fas fa-chevron-left me-2" style={{ fontSize: '0.75rem' }}></i> Back to stay collections
-        </Link>
+      {/* Back Navigation Bar with Layout Switcher */}
+      <div className="container pt-4 mb-3">
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <Link to="/#rooms" className="text-muted d-inline-flex align-items-center hover-accent fw-semibold text-uppercase small letter-spacing-1">
+            <i className="fas fa-chevron-left me-2" style={{ fontSize: '0.75rem' }}></i> Back to stay collections
+          </Link>
+
+          {/* Grid Layout Switcher */}
+          <div className="gallery-layout-switcher">
+            <button 
+              type="button" 
+              className={`layout-pill-btn ${galleryLayout === 'mosaic' ? 'active' : ''}`}
+              onClick={() => setGalleryLayout('mosaic')}
+              title="Classic 5-Photo Luxury Grid"
+            >
+              <i className="fas fa-th-large me-1"></i> Mosaic Grid
+            </button>
+            <button 
+              type="button" 
+              className={`layout-pill-btn ${galleryLayout === 'bento' ? 'active' : ''}`}
+              onClick={() => setGalleryLayout('bento')}
+              title="Modern Bento Grid"
+            >
+              <i className="fas fa-layer-group me-1"></i> Bento Grid
+            </button>
+            <button 
+              type="button" 
+              className={`layout-pill-btn ${galleryLayout === 'stage' ? 'active' : ''}`}
+              onClick={() => setGalleryLayout('stage')}
+              title="Stage Showcase Viewer"
+            >
+              <i className="fas fa-image me-1"></i> Stage
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Premium Stay Gallery Showcase */}
+      {/* Gallery Section */}
       <div className="container mb-5">
-        <div className="room-showcase-container">
-          
-          {/* Main Stage Image Viewer */}
-          <div 
-            className="room-showcase-stage"
-            onClick={() => setLightboxOpen(true)}
-            title="Click to view full screen"
-          >
-            {/* Ambient Blurred Backdrop matching current image */}
-            <div 
-              className="room-showcase-backdrop"
-              style={{ backgroundImage: `url(${images[activeImageIndex]})` }}
-            />
-
-            {/* Clear, Uncropped Room Image as Uploaded */}
-            <div className="room-showcase-img-wrap">
-              <img 
-                src={images[activeImageIndex]} 
-                alt={`${room.category_name} - Photo ${activeImageIndex + 1}`} 
-                className="room-showcase-main-img" 
-              />
-            </div>
-
-            {/* Navigation Arrows on Stage */}
-            {images.length > 1 && (
-              <>
-                <button 
-                  type="button"
-                  className="showcase-nav-btn showcase-prev" 
-                  onClick={prevImage}
-                  aria-label="Previous photo"
-                  title="Previous photo"
+        {galleryLayout === 'mosaic' && (
+          <div className="luxury-mosaic-wrapper position-relative">
+            {images.length >= 5 ? (
+              <div className="luxury-mosaic-grid-5">
+                <div 
+                  className="mosaic-cell mosaic-main"
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
                 >
-                  <i className="fas fa-chevron-left"></i>
-                </button>
-                <button 
-                  type="button"
-                  className="showcase-nav-btn showcase-next" 
-                  onClick={nextImage}
-                  aria-label="Next photo"
-                  title="Next photo"
+                  <img src={images[0]} alt={`${room.category_name} 1`} />
+                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
+                  <div className="mosaic-hover-hint"><i className="fas fa-expand me-1"></i>View Full</div>
+                </div>
+                <div className="mosaic-side-grid">
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
+                  >
+                    <img src={images[1]} alt={`${room.category_name} 2`} />
+                  </div>
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(2); setLightboxOpen(true); }}
+                  >
+                    <img src={images[2]} alt={`${room.category_name} 3`} />
+                  </div>
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(3); setLightboxOpen(true); }}
+                  >
+                    <img src={images[3]} alt={`${room.category_name} 4`} />
+                  </div>
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(4); setLightboxOpen(true); }}
+                  >
+                    <img src={images[4]} alt={`${room.category_name} 5`} />
+                  </div>
+                </div>
+              </div>
+            ) : images.length === 4 ? (
+              <div className="luxury-mosaic-grid-4">
+                <div 
+                  className="mosaic-cell mosaic-main"
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
                 >
-                  <i className="fas fa-chevron-right"></i>
-                </button>
-              </>
+                  <img src={images[0]} alt={`${room.category_name} 1`} />
+                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
+                </div>
+                <div className="mosaic-side-grid-3">
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
+                  >
+                    <img src={images[1]} alt={`${room.category_name} 2`} />
+                  </div>
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(2); setLightboxOpen(true); }}
+                  >
+                    <img src={images[2]} alt={`${room.category_name} 3`} />
+                  </div>
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(3); setLightboxOpen(true); }}
+                  >
+                    <img src={images[3]} alt={`${room.category_name} 4`} />
+                  </div>
+                </div>
+              </div>
+            ) : images.length === 3 ? (
+              <div className="luxury-mosaic-grid-3">
+                <div 
+                  className="mosaic-cell mosaic-main"
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
+                >
+                  <img src={images[0]} alt={`${room.category_name} 1`} />
+                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
+                </div>
+                <div className="mosaic-side-stack">
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
+                  >
+                    <img src={images[1]} alt={`${room.category_name} 2`} />
+                  </div>
+                  <div 
+                    className="mosaic-cell"
+                    onClick={() => { setActiveImageIndex(2); setLightboxOpen(true); }}
+                  >
+                    <img src={images[2]} alt={`${room.category_name} 3`} />
+                  </div>
+                </div>
+              </div>
+            ) : images.length === 2 ? (
+              <div className="luxury-mosaic-grid-2">
+                <div 
+                  className="mosaic-cell mosaic-main"
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
+                >
+                  <img src={images[0]} alt={`${room.category_name} 1`} />
+                  <span className="mosaic-cover-badge"><i className="fas fa-crown me-1"></i>Cover</span>
+                </div>
+                <div 
+                  className="mosaic-cell"
+                  onClick={() => { setActiveImageIndex(1); setLightboxOpen(true); }}
+                >
+                  <img src={images[1]} alt={`${room.category_name} 2`} />
+                </div>
+              </div>
+            ) : (
+              <div className="luxury-mosaic-grid-1">
+                <div 
+                  className="mosaic-cell"
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
+                >
+                  <img src={images[0]} alt={`${room.category_name}`} />
+                </div>
+              </div>
             )}
 
-            {/* Photo Counter Pill */}
-            <div className="showcase-counter-badge">
-              <i className="far fa-images me-2"></i>
-              {activeImageIndex + 1} / {images.length}
+            {/* Floating Action Buttons */}
+            <div className="gallery-buttons-container">
+              {images.length > 0 && (
+                <button 
+                  type="button"
+                  className="btn-gallery-view-all" 
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
+                >
+                  <i className="fas fa-th me-2"></i> View All Photos ({images.length})
+                </button>
+              )}
+              {room.is_available && (
+                <Link 
+                  to={`/booking/${room.id}`} 
+                  className="btn-gallery-book-slot"
+                >
+                  <i className="fas fa-calendar-check me-2"></i> Book My Slot
+                </Link>
+              )}
+            </div>
+          </div>
+        )}
+
+        {galleryLayout === 'bento' && (
+          <div className="luxury-bento-wrapper position-relative">
+            <div className="luxury-bento-grid">
+              {images.map((img, idx) => {
+                const isHero = idx === 0;
+                return (
+                  <div
+                    key={idx}
+                    className={`bento-cell ${isHero ? 'bento-hero' : `bento-item-${idx}`}`}
+                    onClick={() => { setActiveImageIndex(idx); setLightboxOpen(true); }}
+                  >
+                    <img src={img} alt={`${room.category_name} ${idx + 1}`} />
+                    {isHero && (
+                      <div className="bento-hero-overlay">
+                        <span className="badge bg-accent text-white mb-1"><i className="fas fa-crown me-1"></i>Cover</span>
+                        <h4 className="text-white fw-bold mb-0 font-serif-luxury">{room.category_name}</h4>
+                      </div>
+                    )}
+                    <div className="bento-hover-hint">
+                      <i className="fas fa-search-plus"></i>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Floating Action Buttons */}
@@ -200,42 +347,109 @@ const RoomDetails = () => {
                 <button 
                   type="button"
                   className="btn-gallery-view-all" 
-                  onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
                 >
-                  <i className="fas fa-expand me-2"></i> Fullscreen ({images.length})
+                  <i className="fas fa-th me-2"></i> View All Photos ({images.length})
                 </button>
               )}
               {room.is_available && (
                 <Link 
                   to={`/booking/${room.id}`} 
                   className="btn-gallery-book-slot"
-                  onClick={(e) => e.stopPropagation()}
                 >
                   <i className="fas fa-calendar-check me-2"></i> Book My Slot
                 </Link>
               )}
             </div>
           </div>
+        )}
 
-          {/* Interactive Thumbnails Row (if > 1 image) */}
-          {images.length > 1 && (
-            <div className="room-thumbnails-strip mt-3">
-              {images.map((imgUrl, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  className={`room-thumb-btn ${activeImageIndex === idx ? 'active' : ''}`}
-                  onClick={() => setActiveImageIndex(idx)}
-                  title={`View photo ${idx + 1}`}
-                >
-                  <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="room-thumb-img" />
-                  {idx === 0 && <span className="room-thumb-cover-tag">Cover</span>}
-                </button>
-              ))}
+        {galleryLayout === 'stage' && (
+          <div className="room-showcase-container">
+            {/* Main Stage Image Viewer */}
+            <div 
+              className="room-showcase-stage"
+              onClick={() => setLightboxOpen(true)}
+              title="Click to view full screen"
+            >
+              <div 
+                className="room-showcase-backdrop"
+                style={{ backgroundImage: `url(${images[activeImageIndex]})` }}
+              />
+              <div className="room-showcase-img-wrap">
+                <img 
+                  src={images[activeImageIndex]} 
+                  alt={`${room.category_name} - Photo ${activeImageIndex + 1}`} 
+                  className="room-showcase-main-img" 
+                />
+              </div>
+
+              {images.length > 1 && (
+                <>
+                  <button 
+                    type="button"
+                    className="showcase-nav-btn showcase-prev" 
+                    onClick={prevImage}
+                    aria-label="Previous photo"
+                  >
+                    <i className="fas fa-chevron-left"></i>
+                  </button>
+                  <button 
+                    type="button"
+                    className="showcase-nav-btn showcase-next" 
+                    onClick={nextImage}
+                    aria-label="Next photo"
+                  >
+                    <i className="fas fa-chevron-right"></i>
+                  </button>
+                </>
+              )}
+
+              <div className="showcase-counter-badge">
+                <i className="far fa-images me-2"></i>
+                {activeImageIndex + 1} / {images.length}
+              </div>
+
+              <div className="gallery-buttons-container">
+                {images.length > 0 && (
+                  <button 
+                    type="button"
+                    className="btn-gallery-view-all" 
+                    onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+                  >
+                    <i className="fas fa-expand me-2"></i> Fullscreen ({images.length})
+                  </button>
+                )}
+                {room.is_available && (
+                  <Link 
+                    to={`/booking/${room.id}`} 
+                    className="btn-gallery-book-slot"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <i className="fas fa-calendar-check me-2"></i> Book My Slot
+                  </Link>
+                )}
+              </div>
             </div>
-          )}
 
-        </div>
+            {images.length > 1 && (
+              <div className="room-thumbnails-strip mt-3">
+                {images.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`room-thumb-btn ${activeImageIndex === idx ? 'active' : ''}`}
+                    onClick={() => setActiveImageIndex(idx)}
+                    title={`View photo ${idx + 1}`}
+                  >
+                    <img src={imgUrl} alt={`Thumbnail ${idx + 1}`} className="room-thumb-img" />
+                    {idx === 0 && <span className="room-thumb-cover-tag">Cover</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Details Section */}
