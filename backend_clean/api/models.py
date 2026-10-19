@@ -36,7 +36,7 @@ class Room(models.Model):
     adult_capacity = models.IntegerField(default=2, null=True, blank=True)
     child_capacity = models.IntegerField(default=0, null=True, blank=True)
     extra_capacity = models.CharField(max_length=255, blank=True, default='')
-    facilities = models.TextField(help_text="Comma separated facilities e.g., WiFi, AC, TV")
+    facilities = models.TextField(blank=True, default='', help_text="Comma separated facilities e.g., WiFi, AC, TV")
     is_available = models.BooleanField(default=True)
     image = models.ImageField(upload_to='rooms/', null=True, blank=True)
     image2 = models.ImageField(upload_to='rooms/', null=True, blank=True)

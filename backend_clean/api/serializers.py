@@ -66,6 +66,7 @@ class RoomSerializer(serializers.ModelSerializer):
     adult_capacity = serializers.IntegerField(required=False, allow_null=True, default=2)
     child_capacity = serializers.IntegerField(required=False, allow_null=True, default=0)
     extra_capacity = serializers.CharField(required=False, allow_blank=True, default='')
+    facilities = serializers.CharField(required=False, allow_blank=True, default='')
 
     class Meta:
         model = Room
@@ -86,6 +87,8 @@ class RoomSerializer(serializers.ModelSerializer):
             data['description'] = ''
         if 'extra_capacity' in data and data['extra_capacity'] is None:
             data['extra_capacity'] = ''
+        if 'facilities' in data and data['facilities'] is None:
+            data['facilities'] = ''
         return super().to_internal_value(data)
 
 class GallerySerializer(serializers.ModelSerializer):

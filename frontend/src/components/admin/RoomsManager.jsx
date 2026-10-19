@@ -15,6 +15,9 @@ const RoomsManager = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [newFacilityInput, setNewFacilityInput] = useState('');
+  const [customFacilities, setCustomFacilities] = useState([]);
+
   const dynamicFacilities = useMemo(() => {
     const facilitiesSet = new Set(BASE_FACILITIES);
     rooms.forEach(room => {
@@ -25,8 +28,15 @@ const RoomsManager = () => {
         });
       }
     });
+    customFacilities.forEach(f => facilitiesSet.add(f));
+    if (roomForm.facilities) {
+      roomForm.facilities.split(',').forEach(f => {
+        const trimmed = f.trim();
+        if (trimmed) facilitiesSet.add(trimmed);
+      });
+    }
     return Array.from(facilitiesSet).sort();
-  }, [rooms]);
+  }, [rooms, customFacilities, roomForm.facilities]);
   
   const [roomForm, setRoomForm] = useState({
     room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [],
@@ -62,7 +72,7 @@ const RoomsManager = () => {
       if (key !== 'images') {
         if (roomForm[key] !== null && roomForm[key] !== '') {
           formData.append(key, roomForm[key]);
-        } else if (key === 'description' || key === 'room_number' || key === 'extra_capacity') {
+        } else if (key === 'description' || key === 'room_number' || key === 'extra_capacity' || key === 'facilities') {
           formData.append(key, '');
         } else if (key === 'price_per_night') {
           formData.append(key, '0.00');
@@ -126,9 +136,31 @@ const RoomsManager = () => {
     setEditingRoom(room.id);
   };
 
+  const handleAddCustomFacility = (e) => {
+    if (e) e.preventDefault();
+    const trimmed = newFacilityInput.trim();
+    if (!trimmed) return;
+
+    if (!customFacilities.includes(trimmed)) {
+      setCustomFacilities(prev => [...prev, trimmed]);
+    }
+
+    const currentFacilities = roomForm.facilities 
+      ? roomForm.facilities.split(',').map(f => f.trim()).filter(Boolean) 
+      : [];
+
+    if (!currentFacilities.includes(trimmed)) {
+      currentFacilities.push(trimmed);
+      setRoomForm(prev => ({ ...prev, facilities: currentFacilities.join(', ') }));
+    }
+
+    setNewFacilityInput('');
+  };
+
   const handleCancelRoomEdit = () => {
     setRoomForm({ room_number: '', category: '', description: '', price_per_night: '', adult_capacity: 2, child_capacity: 0, extra_capacity: '', facilities: '', images: [], check_in_time: '03:30 PM', check_out_time: '02:30 PM' });
     setEditingRoom(null);
+    setNewFacilityInput('');
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -354,7 +386,36 @@ const RoomsManager = () => {
               <small className="text-muted" style={{ fontSize: '0.78rem' }}>Add custom capacity notes (e.g. extra bed rules, infant policy, or overall capacity limits).</small>
             </div>
             <div className="mb-3">
-              <label className="form-label text-muted small fw-bold mb-2">Facilities</label>
+              <label className="form-label text-muted small fw-bold mb-2">Facilities & Features <span className="text-muted fw-normal">(Optional)</span></label>
+              
+              {/* Text bar to add custom feature with '+' button */}
+              <div className="input-group mb-2">
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  placeholder="Type a new facility / feature (e.g. Jacuzzi, Mini Bar)..." 
+                  value={newFacilityInput} 
+                  onChange={e => setNewFacilityInput(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustomFacility();
+                    }
+                  }}
+                />
+                <button 
+                  type="button" 
+                  className="btn btn-primary-modern px-3 d-flex align-items-center gap-1"
+                  onClick={handleAddCustomFacility}
+                  title="Add this feature"
+                >
+                  <i className="fas fa-plus"></i>
+                  <span>Add</span>
+                </button>
+              </div>
+              <small className="text-muted d-block mb-3" style={{ fontSize: '0.78rem' }}>Type any feature above and click <strong>+ Add</strong> (or press Enter) to add consecutive features.</small>
+
+              {/* Facility Badges / Quick Selection */}
               <div className="d-flex flex-wrap gap-2">
                 {dynamicFacilities.map(facility => {
                   const currentFacilities = roomForm.facilities ? roomForm.facilities.split(',').map(f => f.trim()).filter(Boolean) : [];
@@ -377,6 +438,12 @@ const RoomsManager = () => {
                   );
                 })}
               </div>
+
+              {roomForm.facilities && (
+                <div className="mt-2 text-muted small">
+                  <strong>Selected ({roomForm.facilities.split(',').filter(f => f.trim()).length}):</strong> {roomForm.facilities}
+                </div>
+              )}
             </div>
             <div className="mb-3">
               <label className="form-label text-muted small fw-bold">Description <span className="text-muted fw-normal">(Optional)</span></label>
