@@ -15,6 +15,8 @@ const RoomDetails = () => {
   const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -62,13 +64,34 @@ const RoomDetails = () => {
   }
 
   const prevImage = (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setActiveImageIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
   const nextImage = (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
     setActiveImageIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+
+  const minSwipeDistance = 45;
+
+  const handleTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance) {
+      nextImage();
+    } else if (distance < -minSwipeDistance) {
+      prevImage();
+    }
   };
 
   const getFacilityIcon = (facilityName) => {
@@ -141,53 +164,135 @@ const RoomDetails = () => {
         </div>
       </div>
 
-      {/* Gallery Section - Luxury Bento Grid (Fill) */}
-      <div className="container mb-5">
-        <div className="luxury-bento-wrapper position-relative">
-          <div className={`luxury-bento-grid bento-grid-count-${Math.min(images.length, 5)}`}>
-            {images.map((img, idx) => {
-              const isHero = idx === 0;
-              return (
-                <div
-                  key={idx}
-                  className={`bento-cell ${isHero ? 'bento-hero' : `bento-item-${idx}`}`}
-                  onClick={() => { setActiveImageIndex(idx); setLightboxOpen(true); }}
-                  title="Click to view full photo"
-                >
-                  <img 
-                    src={img} 
-                    alt={`${room.category_name} ${idx + 1}`} 
-                    className="bento-cell-img"
-                  />
-                  {isHero && (
-                    <div className="bento-hero-overlay">
-                      <span className="badge bg-accent text-white mb-1"><i className="fas fa-crown me-1"></i>Cover</span>
-                      <h4 className="text-white fw-bold mb-0 font-serif-luxury">{room.category_name}</h4>
+      {/* Gallery Section */}
+      <div className="container mb-4 mb-md-5">
+        {/* Desktop Bento Grid (Screens >= 768px) */}
+        <div className="d-none d-md-block">
+          <div className="luxury-bento-wrapper position-relative">
+            <div className={`luxury-bento-grid bento-grid-count-${Math.min(images.length, 5)}`}>
+              {images.map((img, idx) => {
+                const isHero = idx === 0;
+                return (
+                  <div
+                    key={idx}
+                    className={`bento-cell ${isHero ? 'bento-hero' : `bento-item-${idx}`}`}
+                    onClick={() => { setActiveImageIndex(idx); setLightboxOpen(true); }}
+                    title="Click to view full photo"
+                  >
+                    <img 
+                      src={img} 
+                      alt={`${room.category_name} ${idx + 1}`} 
+                      className="bento-cell-img"
+                    />
+                    {isHero && (
+                      <div className="bento-hero-overlay">
+                        <h4 className="text-white fw-bold mb-0 font-serif-luxury">{room.category_name}</h4>
+                      </div>
+                    )}
+                    <div className="bento-hover-hint">
+                      <i className="fas fa-search-plus"></i>
                     </div>
-                  )}
-                  <div className="bento-hover-hint">
-                    <i className="fas fa-search-plus"></i>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            {/* Floating Action Buttons */}
+            <div className="gallery-buttons-container">
+              {images.length > 0 && (
+                <button 
+                  type="button"
+                  className="btn-gallery-view-all" 
+                  onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
+                >
+                  <i className="fas fa-th me-2"></i> View All Photos ({images.length})
+                </button>
+              )}
+              {room.is_available && (
+                <Link 
+                  to={`/booking/${room.id}`} 
+                  className="btn-gallery-book-slot"
+                >
+                  <i className="fas fa-calendar-check me-2"></i> Book My Slot
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Swipeable Gallery (Screens < 768px) */}
+        <div className="d-block d-md-none">
+          <div 
+            className="mobile-gallery-card position-relative"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onClick={() => setLightboxOpen(true)}
+          >
+            <img 
+              src={images[activeImageIndex]} 
+              alt={`${room.category_name} - Photo ${activeImageIndex + 1}`} 
+              className="mobile-gallery-img"
+            />
+
+            {/* Top Badges */}
+            <div className="mobile-gallery-top-bar">
+              <span className="mobile-badge-counter ms-auto">
+                <i className="far fa-images me-1"></i> {activeImageIndex + 1} / {images.length}
+              </span>
+            </div>
+
+            {/* Navigation Arrows */}
+            {images.length > 1 && (
+              <>
+                <button 
+                  type="button" 
+                  className="mobile-gallery-arrow mobile-arrow-prev"
+                  onClick={(e) => { e.stopPropagation(); prevImage(e); }}
+                  aria-label="Previous photo"
+                >
+                  <i className="fas fa-chevron-left"></i>
+                </button>
+                <button 
+                  type="button" 
+                  className="mobile-gallery-arrow mobile-arrow-next"
+                  onClick={(e) => { e.stopPropagation(); nextImage(e); }}
+                  aria-label="Next photo"
+                >
+                  <i className="fas fa-chevron-right"></i>
+                </button>
+              </>
+            )}
+
+            {/* Pagination Dots */}
+            {images.length > 1 && (
+              <div className="mobile-gallery-dots" onClick={(e) => e.stopPropagation()}>
+                {images.map((_, dotIdx) => (
+                  <button
+                    key={dotIdx}
+                    type="button"
+                    className={`mobile-dot ${activeImageIndex === dotIdx ? 'active' : ''}`}
+                    onClick={() => setActiveImageIndex(dotIdx)}
+                    aria-label={`Go to photo ${dotIdx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
-          {/* Floating Action Buttons */}
-          <div className="gallery-buttons-container">
-            {images.length > 0 && (
-              <button 
-                type="button"
-                className="btn-gallery-view-all" 
-                onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
-              >
-                <i className="fas fa-th me-2"></i> View All Photos ({images.length})
-              </button>
-            )}
+          {/* Clean Mobile Action Buttons */}
+          <div className="d-flex align-items-center justify-content-between gap-2 mt-3">
+            <button 
+              type="button"
+              className="btn btn-outline-dark rounded-pill flex-grow-1 py-2 fw-semibold small d-flex align-items-center justify-content-center"
+              onClick={() => { setActiveImageIndex(0); setLightboxOpen(true); }}
+            >
+              <i className="fas fa-th me-2"></i> All Photos ({images.length})
+            </button>
             {room.is_available && (
               <Link 
                 to={`/booking/${room.id}`} 
-                className="btn-gallery-book-slot"
+                className="btn btn-accent text-white rounded-pill flex-grow-1 py-2 fw-bold small d-flex align-items-center justify-content-center"
               >
                 <i className="fas fa-calendar-check me-2"></i> Book My Slot
               </Link>

@@ -506,7 +506,7 @@ const RoomsManager = () => {
                             <div className="position-absolute top-0 start-0 w-100 p-1 d-flex justify-content-between align-items-center" style={{ zIndex: 2 }}>
                               {isCover ? (
                                 <span className="badge bg-warning text-dark fw-bold shadow-sm" style={{ fontSize: '0.65rem' }}>
-                                  <i className="fas fa-crown me-1"></i>Cover
+                                  Cover
                                 </span>
                               ) : (
                                 <span className="badge bg-dark bg-opacity-75 text-white" style={{ fontSize: '0.65rem' }}>
