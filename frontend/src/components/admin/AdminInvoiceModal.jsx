@@ -69,7 +69,6 @@ const AdminInvoiceModal = ({ booking, onClose }) => {
           .navbar, 
           nav, 
           footer, 
-          .watermark-overlay, 
           .d-print-none {
             display: none !important;
           }
