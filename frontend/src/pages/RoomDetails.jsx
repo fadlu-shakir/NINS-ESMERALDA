@@ -292,7 +292,7 @@ const RoomDetails = () => {
             {room.is_available && (
               <Link 
                 to={`/booking/${room.id}`} 
-                className="btn btn-accent text-white rounded-pill flex-grow-1 py-2 fw-bold small d-flex align-items-center justify-content-center"
+                className="btn btn-mobile-book-slot rounded-pill flex-grow-1 py-2 fw-bold small d-flex align-items-center justify-content-center"
               >
                 <i className="fas fa-calendar-check me-2"></i> Book My Slot
               </Link>
