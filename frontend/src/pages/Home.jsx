@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Carousel } from 'bootstrap';
 import api from '../services/api';
 import Rooms from '../components/Rooms';
 import Gallery from '../components/Gallery';
@@ -19,19 +20,69 @@ import video4 from '../../resort_img/vid/oonj.mp4';
 const Home = () => {
   const [featuredRooms, setFeaturedRooms] = useState([]);
   const [activeSlide, setActiveSlide] = useState(0);
+  const carouselInstanceRef = useRef(null);
 
   useEffect(() => {
     const carouselEl = document.getElementById('resortHeroCarousel');
-    if (carouselEl) {
-      const handleSlide = (e) => {
-        setActiveSlide(e.to);
-      };
-      carouselEl.addEventListener('slide.bs.carousel', handleSlide);
-      return () => {
-        carouselEl.removeEventListener('slide.bs.carousel', handleSlide);
-      };
+    if (!carouselEl) return;
+
+    try {
+      carouselInstanceRef.current = Carousel.getOrCreateInstance(carouselEl, {
+        interval: 5000,
+        ride: 'carousel',
+        pause: false,
+        wrap: true
+      });
+      carouselInstanceRef.current.cycle();
+    } catch (err) {
+      console.warn("Bootstrap Carousel init error:", err);
     }
+
+    const handleSlide = (e) => {
+      setActiveSlide(e.to);
+    };
+
+    const handleSlid = (e) => {
+      const activeItem = e.relatedTarget;
+      if (activeItem) {
+        const video = activeItem.querySelector('video');
+        if (video) {
+          video.play().catch(() => {});
+        }
+      }
+    };
+
+    carouselEl.addEventListener('slide.bs.carousel', handleSlide);
+    carouselEl.addEventListener('slid.bs.carousel', handleSlid);
+
+    return () => {
+      carouselEl.removeEventListener('slide.bs.carousel', handleSlide);
+      carouselEl.removeEventListener('slid.bs.carousel', handleSlid);
+      if (carouselInstanceRef.current) {
+        carouselInstanceRef.current.dispose();
+      }
+    };
   }, []);
+
+  const handlePrev = (e) => {
+    e.preventDefault();
+    if (carouselInstanceRef.current) {
+      carouselInstanceRef.current.prev();
+    }
+  };
+
+  const handleNext = (e) => {
+    e.preventDefault();
+    if (carouselInstanceRef.current) {
+      carouselInstanceRef.current.next();
+    }
+  };
+
+  const handleGoTo = (index) => {
+    if (carouselInstanceRef.current) {
+      carouselInstanceRef.current.to(index);
+    }
+  };
 
   useScrollReveal('.highlight-item');
   useScrollParallax('.parallax-element', 0.4);
@@ -77,14 +128,19 @@ const Home = () => {
     <div className="home-container">
       {/* Enhanced Hero Carousel Section */}
       <section className="hero-carousel-enhanced">
-        <div id="resortHeroCarousel" className="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="7000">
+        <div 
+          id="resortHeroCarousel" 
+          className="carousel slide carousel-fade" 
+          data-bs-ride="carousel" 
+          data-bs-interval="5000"
+          data-bs-pause="false"
+        >
           <div className="carousel-indicators-custom">
             {slides.map((_, index) => (
               <button
                 key={index}
                 type="button"
-                data-bs-target="#resortHeroCarousel"
-                data-bs-slide-to={index}
+                onClick={() => handleGoTo(index)}
                 className={`carousel-indicator-dot ${index === activeSlide ? 'active' : ''}`}
                 aria-label={`Slide ${index + 1}`}
               />
@@ -153,12 +209,22 @@ const Home = () => {
           </div>
 
           {/* Custom Navigation Arrows */}
-          <button className="carousel-nav-btn carousel-nav-prev" type="button" data-bs-target="#resortHeroCarousel" data-bs-slide="prev" aria-label="Previous slide">
+          <button 
+            className="carousel-nav-btn carousel-nav-prev" 
+            type="button" 
+            onClick={handlePrev}
+            aria-label="Previous slide"
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="15 18 9 12 15 6"></polyline>
             </svg>
           </button>
-          <button className="carousel-nav-btn carousel-nav-next" type="button" data-bs-target="#resortHeroCarousel" data-bs-slide="next" aria-label="Next slide">
+          <button 
+            className="carousel-nav-btn carousel-nav-next" 
+            type="button" 
+            onClick={handleNext}
+            aria-label="Next slide"
+          >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="9 18 15 12 9 6"></polyline>
             </svg>
