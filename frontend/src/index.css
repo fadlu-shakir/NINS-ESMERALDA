@@ -322,6 +322,106 @@ a:hover {
   }
 }
 
+/* User Profile Dropdown Menu in Navbar */
+.navbar-user-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 210px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 8px 0;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  z-index: 1060;
+  margin-top: 10px;
+}
+
+.navbar-user-dropdown-menu .dropdown-item {
+  color: #1f2937;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.navbar-user-dropdown-menu .dropdown-item:hover {
+  background-color: #f3f4f6;
+  color: var(--color-accent) !important;
+  padding-left: 1.25rem !important;
+}
+
+.navbar-user-dropdown-menu .dropdown-item.text-danger:hover {
+  background-color: #fef2f2;
+  color: #dc2626 !important;
+}
+
+@media (max-width: 991px) {
+  .navbar-user-dropdown-menu {
+    position: static;
+    width: 100%;
+    margin-top: 10px;
+    box-shadow: none !important;
+    border: 1px solid #e2e8f0;
+  }
+}
+
+/* Navbar Login / Register User Button */
+.btn-navbar-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+.navbar.transparent .btn-navbar-login {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.navbar.transparent .btn-navbar-login:hover {
+  background: #ffffff;
+  color: #111827 !important;
+  border-color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.navbar.scrolled .btn-navbar-login {
+  background: #111827;
+  color: #ffffff !important;
+  border: 1.5px solid #111827;
+}
+
+.navbar.scrolled .btn-navbar-login:hover {
+  background: #374151;
+  border-color: #374151;
+  color: #ffffff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 991px) {
+  .btn-navbar-login {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 20px;
+    background: #111827 !important;
+    color: #ffffff !important;
+    border: none !important;
+    margin-top: 8px;
+  }
+}
+
 .notification-item.unread {
   border-left: 4px solid var(--color-accent);
 }

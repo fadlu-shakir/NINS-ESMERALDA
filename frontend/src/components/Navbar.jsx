@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { IoDiamondOutline, IoNotificationsOutline } from "react-icons/io5";
@@ -37,12 +37,29 @@ const Navbar = () => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [categories, setCategories] = useState([]);
+
+  const userDropdownRef = useRef(null);
+  const notificationsRef = useRef(null);
 
   const isBroker = location.search.includes('invite=broker');
   const isHomePage = location.pathname === '/';
   const isTransparent = isHomePage && !isScrolled;
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target)) {
+        setShowUserDropdown(false);
+      }
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
+        setShowNotifications(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -163,10 +180,19 @@ const Navbar = () => {
             {user ? (
               <>
                 {/* Notifications Bell */}
-                <li className="nav-item me-3 position-relative">
+                <li className="nav-item me-3 position-relative" ref={notificationsRef}>
                   <button
-                    className="btn btn-link nav-link p-0 position-relative"
-                    onClick={fetchNotifications}
+                    className="btn btn-link nav-link p-0 position-relative shadow-none border-0"
+                    onClick={() => {
+                      setShowUserDropdown(false);
+                      if (showNotifications) {
+                        setShowNotifications(false);
+                      } else {
+                        fetchNotifications();
+                      }
+                    }}
+                    type="button"
+                    aria-label="Notifications"
                   >
                     <IoNotificationsOutline size={24} className="notification-icon" />
                     {unreadCount > 0 && (
@@ -181,7 +207,7 @@ const Navbar = () => {
                     <div className="notification-dropdown shadow-lg bg-white rounded-3 p-0 animate__animated animate__fadeIn">
                       <div className="p-3 border-bottom d-flex justify-content-between align-items-center bg-light rounded-top-3">
                         <h6 className="mb-0 fw-bold">Notifications</h6>
-                        <button className="btn btn-sm btn-link text-muted p-0" onClick={() => setShowNotifications(false)}>
+                        <button className="btn btn-sm btn-link text-muted p-0 shadow-none border-0" onClick={() => setShowNotifications(false)}>
                           <i className="fas fa-times"></i>
                         </button>
                       </div>
@@ -191,7 +217,7 @@ const Navbar = () => {
                             <div key={n.id} className={`p-3 border-bottom notification-item ${!n.is_read ? 'unread bg-light' : ''}`}>
                               <div className="d-flex justify-content-between align-items-start mb-1">
                                 <span className="fw-bold small">{n.title}</span>
-                                {!n.is_read && <button className="btn btn-sm btn-link p-0 text-accent x-small fw-bold" onClick={() => markAsRead(n.id)}>Mark as read</button>}
+                                {!n.is_read && <button className="btn btn-sm btn-link p-0 text-accent x-small fw-bold shadow-none" onClick={() => markAsRead(n.id)}>Mark as read</button>}
                               </div>
                               <p className="small text-muted mb-0">{n.message}</p>
                               <small className="x-small text-muted-50">{new Date(n.created_at).toLocaleDateString()}</small>
@@ -205,29 +231,75 @@ const Navbar = () => {
                   )}
                 </li>
 
-                <li className="nav-item dropdown">
-                  <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                {/* User Dropdown */}
+                <li className="nav-item position-relative" ref={userDropdownRef}>
+                  <button
+                    type="button"
+                    className="btn nav-link d-flex align-items-center gap-2 border-0 bg-transparent text-reset p-1 shadow-none"
+                    onClick={() => {
+                      setShowNotifications(false);
+                      setShowUserDropdown(prev => !prev);
+                    }}
+                    aria-expanded={showUserDropdown}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <img
                       src="/resort_img/icon.png"
                       alt={user.username}
-                      className="rounded-circle me-1.5"
+                      className="rounded-circle shadow-sm"
                       style={{ width: '35px', height: '35px', objectFit: 'cover' }}
                     />
-                    {user.username}
-                  </a>
-                  <ul className="dropdown-menu dropdown-menu-end shadow border-0">
-                    {user.is_staff && (
-                      <li><Link className="dropdown-item" to="/admin" onClick={closeNavbar}><i className="fas fa-cog me-2"></i>Admin Dashboard</Link></li>
-                    )}
-                    <li><Link className="dropdown-item" to="/dashboard" onClick={closeNavbar}><i className="fas fa-tachometer-alt me-2"></i>Dashboard</Link></li>
-                    <li><hr className="dropdown-divider" /></li>
-                    <li><button className="dropdown-item text-danger" onClick={() => { handleLogout(); closeNavbar(); }}><i className="fas fa-sign-out-alt me-2"></i>Logout</button></li>
-                  </ul>
+                    <span className="fw-semibold">{user.username}</span>
+                    <i 
+                      className="fas fa-chevron-down ms-1" 
+                      style={{ 
+                        fontSize: '0.65rem',
+                        transform: showUserDropdown ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.2s ease'
+                      }}
+                    ></i>
+                  </button>
+
+                  {showUserDropdown && (
+                    <div className="navbar-user-dropdown-menu animate__animated animate__fadeIn">
+                      {user.is_staff && (
+                        <Link 
+                          className="dropdown-item py-2 px-3 fw-medium d-flex align-items-center" 
+                          to="/admin" 
+                          onClick={() => { setShowUserDropdown(false); closeNavbar(); }}
+                        >
+                          <i className="fas fa-cog me-2 text-accent"></i>Admin Dashboard
+                        </Link>
+                      )}
+                      <Link 
+                        className="dropdown-item py-2 px-3 fw-medium d-flex align-items-center" 
+                        to="/dashboard" 
+                        onClick={() => { setShowUserDropdown(false); closeNavbar(); }}
+                      >
+                        <i className="fas fa-tachometer-alt me-2 text-accent"></i>Dashboard
+                      </Link>
+                      <hr className="dropdown-divider my-1" />
+                      <button 
+                        type="button"
+                        className="dropdown-item py-2 px-3 text-danger fw-medium d-flex align-items-center w-100 text-start bg-transparent border-0" 
+                        onClick={() => { setShowUserDropdown(false); handleLogout(); closeNavbar(); }}
+                      >
+                        <i className="fas fa-sign-out-alt me-2"></i>Logout
+                      </button>
+                    </div>
+                  )}
                 </li>
               </>
             ) : (
-              <li className="nav-item">
-                <Link className="nav-link" to="/login" onClick={closeNavbar}>Login / Register</Link>
+              <li className="nav-item ms-lg-2">
+                <Link 
+                  className="btn-navbar-login" 
+                  to="/login" 
+                  onClick={closeNavbar}
+                >
+                  <i className="fas fa-user-circle fs-5"></i>
+                  <span>Login / Register</span>
+                </Link>
               </li>
             )}
           </ul>
