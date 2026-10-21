@@ -319,69 +319,19 @@ const Navbar = () => {
                       <span className="text-uppercase letter-spacing-2 text-muted fw-bold" style={{ fontSize: '0.68rem' }}>Guest Access</span>
                     </div>
 
-                    <div className="px-3 pb-2">
+                    <div className="px-3 pb-3">
                       <Link 
                         to="/login" 
-                        className="btn btn-dark w-100 rounded-pill py-2 px-3 fw-bold d-flex align-items-center justify-content-center gap-2 mb-2 shadow-sm text-white"
+                        className="btn btn-dark w-100 rounded-pill py-2 px-3 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm text-white"
                         style={{ fontSize: '0.85rem' }}
                         onClick={() => { setShowHamburgerMenu(false); closeNavbar(); }}
                       >
                         <i className="fas fa-user-circle fs-5"></i>
                         <span>Login / Register</span>
                       </Link>
-                      <Link 
-                        to="/login?invite=broker" 
-                        className="btn btn-outline-dark w-100 rounded-pill py-2 px-3 fw-semibold d-flex align-items-center justify-content-center gap-2"
-                        style={{ fontSize: '0.85rem' }}
-                        onClick={() => { setShowHamburgerMenu(false); closeNavbar(); }}
-                      >
-                        <i className="fas fa-briefcase"></i>
-                        <span>Broker Portal</span>
-                      </Link>
                     </div>
 
-                    <div className="dropdown-divider my-1"></div>
-
-                    <div className="px-3 pt-2 pb-1">
-                      <span className="text-uppercase letter-spacing-2 text-muted fw-bold" style={{ fontSize: '0.68rem' }}>Quick Navigation</span>
-                    </div>
-
-                    <div className="px-2 pb-2">
-                      <a 
-                        href="/#rooms" 
-                        className="dropdown-item py-2 px-3 rounded-2 fw-medium d-flex align-items-center gap-2"
-                        onClick={() => { setShowHamburgerMenu(false); closeNavbar(); }}
-                      >
-                        <i className="fas fa-door-open text-muted" style={{ width: '16px' }}></i>
-                        <span>Rooms & Suites</span>
-                      </a>
-                      <a 
-                        href="/#gallery" 
-                        className="dropdown-item py-2 px-3 rounded-2 fw-medium d-flex align-items-center gap-2"
-                        onClick={() => { setShowHamburgerMenu(false); closeNavbar(); }}
-                      >
-                        <i className="fas fa-images text-muted" style={{ width: '16px' }}></i>
-                        <span>Photo Gallery</span>
-                      </a>
-                      <a 
-                        href="/#about" 
-                        className="dropdown-item py-2 px-3 rounded-2 fw-medium d-flex align-items-center gap-2"
-                        onClick={() => { setShowHamburgerMenu(false); closeNavbar(); }}
-                      >
-                        <i className="fas fa-hotel text-muted" style={{ width: '16px' }}></i>
-                        <span>About Resort</span>
-                      </a>
-                      <a 
-                        href="/#reviews" 
-                        className="dropdown-item py-2 px-3 rounded-2 fw-medium d-flex align-items-center gap-2"
-                        onClick={() => { setShowHamburgerMenu(false); closeNavbar(); }}
-                      >
-                        <i className="fas fa-star text-muted" style={{ width: '16px' }}></i>
-                        <span>Guest Reviews</span>
-                      </a>
-                    </div>
-
-                    <div className="dropdown-divider my-1"></div>
+                    <div className="dropdown-divider my-0"></div>
 
                     <div className="p-2">
                       <a 
@@ -403,19 +353,11 @@ const Navbar = () => {
                 <div className="d-lg-none mt-3 pt-3 border-top w-100">
                   <Link 
                     to="/login" 
-                    className="btn btn-dark w-100 rounded-pill py-2 mb-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm text-white"
+                    className="btn btn-dark w-100 rounded-pill py-2 fw-bold d-flex align-items-center justify-content-center gap-2 shadow-sm text-white"
                     onClick={closeNavbar}
                   >
                     <i className="fas fa-user-circle fs-5"></i>
                     <span>Login / Register</span>
-                  </Link>
-                  <Link 
-                    to="/login?invite=broker" 
-                    className="btn btn-outline-dark w-100 rounded-pill py-2 fw-medium d-flex align-items-center justify-content-center gap-2"
-                    onClick={closeNavbar}
-                  >
-                    <i className="fas fa-briefcase"></i>
-                    <span>Broker Portal</span>
                   </Link>
                 </div>
               </li>
