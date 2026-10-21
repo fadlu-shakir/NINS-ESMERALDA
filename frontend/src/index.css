@@ -365,22 +365,23 @@ a:hover {
   }
 }
 
-/* Navbar Login / Register User Button */
-.btn-navbar-login {
+/* Navbar Hamburger Menu Button & Dropdown */
+.btn-navbar-hamburger {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 20px;
-  border-radius: 50px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  letter-spacing: 0.3px;
-  text-decoration: none;
-  transition: all 0.25s ease;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid transparent;
+  background: transparent;
   cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 0;
+  font-size: 1.15rem;
 }
 
-.navbar.transparent .btn-navbar-login {
+.navbar.transparent .btn-navbar-hamburger {
   background: rgba(255, 255, 255, 0.2);
   color: #ffffff !important;
   border: 1.5px solid rgba(255, 255, 255, 0.7);
@@ -388,38 +389,56 @@ a:hover {
   -webkit-backdrop-filter: blur(10px);
 }
 
-.navbar.transparent .btn-navbar-login:hover {
+.navbar.transparent .btn-navbar-hamburger:hover {
   background: #ffffff;
   color: #111827 !important;
   border-color: #ffffff;
-  transform: translateY(-1px);
+  transform: scale(1.05);
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-.navbar.scrolled .btn-navbar-login {
+.navbar.scrolled .btn-navbar-hamburger {
   background: #111827;
   color: #ffffff !important;
   border: 1.5px solid #111827;
 }
 
-.navbar.scrolled .btn-navbar-login:hover {
+.navbar.scrolled .btn-navbar-hamburger:hover {
   background: #374151;
   border-color: #374151;
   color: #ffffff !important;
-  transform: translateY(-1px);
+  transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-@media (max-width: 991px) {
-  .btn-navbar-login {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 20px;
-    background: #111827 !important;
-    color: #ffffff !important;
-    border: none !important;
-    margin-top: 8px;
-  }
+/* Luxury Dropdown Menu */
+.navbar-hamburger-dropdown {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 0;
+  min-width: 270px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05);
+  z-index: 1050;
+  overflow: hidden;
+  animation-duration: 0.25s;
+}
+
+.navbar-hamburger-dropdown .dropdown-item {
+  color: #1f2937;
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.navbar-hamburger-dropdown .dropdown-item:hover {
+  background-color: #f8fafc;
+  color: #111827;
+  transform: translateX(3px);
 }
 
 .notification-item.unread {
