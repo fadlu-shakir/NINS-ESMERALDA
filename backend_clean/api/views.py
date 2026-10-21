@@ -503,6 +503,7 @@ class BookingViewSet(viewsets.ModelViewSet):
     def approve(self, request, pk=None):
         booking = self.get_object()
         booking.status = 'Confirmed'
+        booking.approved_at = timezone.now()
         booking.save()
         return Response({'status': 'Booking approved'})
 

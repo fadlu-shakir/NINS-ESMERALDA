@@ -123,13 +123,15 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'is_broker', 'room', 'room_details', 'guest_name', 'guest_phone', 'check_in_date', 'check_out_date', 'adults', 'kids', 'total_amount', 'status', 'created_at', 'payment', 'booking_key')
+        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'is_broker', 'room', 'room_details', 'guest_name', 'guest_phone', 'check_in_date', 'check_out_date', 'adults', 'kids', 'total_amount', 'status', 'created_at', 'approved_at', 'redirected_to_whatsapp', 'payment', 'booking_key')
         read_only_fields = ('user', 'total_amount', 'status', 'booking_key')
         extra_kwargs = {
             'check_in_date': {'required': False, 'allow_null': True},
             'check_out_date': {'required': False, 'allow_null': True},
             'guest_name': {'required': False, 'allow_blank': True},
             'guest_phone': {'required': False, 'allow_blank': True},
+            'approved_at': {'required': False, 'allow_null': True},
+            'redirected_to_whatsapp': {'required': False},
         }
 
     def validate(self, attrs):

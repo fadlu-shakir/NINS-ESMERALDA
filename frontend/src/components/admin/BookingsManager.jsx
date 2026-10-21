@@ -102,12 +102,14 @@ const BookingsManager = () => {
 
   const activeBookings = bookings.filter(b => {
     if (b.status === 'Cancelled') return false;
+    if (!b.check_out_date) return true;
     const checkoutDate = new Date(b.check_out_date);
     return checkoutDate >= today;
   });
 
   const historyBookings = bookings.filter(b => {
     if (b.status === 'Cancelled') return true;
+    if (!b.check_out_date) return false;
     const checkoutDate = new Date(b.check_out_date);
     return checkoutDate < today;
   });

@@ -69,7 +69,8 @@ const BookingPage = () => {
         guest_name: formData.guest_name.trim(),
         guest_phone: formData.guest_phone.trim(),
         adults: formData.adults,
-        kids: formData.kids
+        kids: formData.kids,
+        redirected_to_whatsapp: true
       });
       const newBooking = res.data;
       const bookingRef = newBooking.booking_key || `#${newBooking.id}`;
