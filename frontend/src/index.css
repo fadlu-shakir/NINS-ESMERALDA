@@ -899,6 +899,25 @@ a:hover {
   transform: translateX(6px);
 }
 
+.room-card-btn {
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.luxury-card:hover .room-card-btn {
+  background-color: #1c1917;
+  color: #ffffff;
+  border-color: #1c1917;
+}
+
+.luxury-card:hover .room-card-btn i {
+  transform: translateX(4px);
+}
+
+.room-card-btn i {
+  transition: transform 0.3s ease;
+}
+
 /* Elegant Sticky Filter Bar */
 .sticky-filter-bar {
   position: sticky;

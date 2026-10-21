@@ -63,24 +63,16 @@ const RoomCard = ({ room }) => {
           <span className="text-muted-50 small"><i className="far fa-clock me-1"></i> {room.check_in_time}</span>
         </div>
 
-        {/* Buttons */}
-        <div className="row g-2 mt-auto">
-          <div className="col-6">
-            <Link to={`/rooms/${room.id}`} className="btn btn-outline-dark btn-sm rounded-1 w-100 py-2 fw-medium text-uppercase letter-spacing-1" style={{ fontSize: '0.75rem' }}>
-              Details
-            </Link>
-          </div>
-          <div className="col-6">
-            {room.is_available ? (
-              <Link to={`/booking/${room.id}`} className="btn btn-accent btn-sm rounded-1 w-100 py-2 fw-bold text-uppercase letter-spacing-1 text-white" style={{ fontSize: '0.75rem' }}>
-                Book Now
-              </Link>
-            ) : (
-              <button className="btn btn-secondary btn-sm rounded-1 w-100 py-2 text-uppercase letter-spacing-1" style={{ fontSize: '0.75rem' }} disabled>
-                Reserved
-              </button>
-            )}
-          </div>
+        {/* Action Button */}
+        <div className="mt-auto pt-3 border-top border-light">
+          <Link 
+            to={`/rooms/${room.id}`} 
+            className="btn btn-outline-dark btn-sm rounded-1 w-100 py-2 fw-bold text-uppercase letter-spacing-1 d-flex align-items-center justify-content-center gap-2 room-card-btn"
+            style={{ fontSize: '0.78rem' }}
+          >
+            <span>{room.is_available ? 'View Details & Book' : 'View Room Details'}</span>
+            <i className="fas fa-arrow-right small"></i>
+          </Link>
         </div>
       </div>
     </div>
