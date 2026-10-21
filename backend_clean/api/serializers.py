@@ -123,8 +123,14 @@ class BookingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Booking
-        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'is_broker', 'room', 'room_details', 'check_in_date', 'check_out_date', 'adults', 'kids', 'total_amount', 'status', 'created_at', 'payment', 'booking_key')
+        fields = ('id', 'user', 'username', 'user_email', 'user_phone', 'is_broker', 'room', 'room_details', 'guest_name', 'guest_phone', 'check_in_date', 'check_out_date', 'adults', 'kids', 'total_amount', 'status', 'created_at', 'payment', 'booking_key')
         read_only_fields = ('user', 'total_amount', 'status', 'booking_key')
+        extra_kwargs = {
+            'check_in_date': {'required': False, 'allow_null': True},
+            'check_out_date': {'required': False, 'allow_null': True},
+            'guest_name': {'required': False, 'allow_blank': True},
+            'guest_phone': {'required': False, 'allow_blank': True},
+        }
 
     def validate(self, attrs):
         check_in = attrs.get('check_in_date')
@@ -134,7 +140,7 @@ class BookingSerializer(serializers.ModelSerializer):
         if check_in and check_out and check_in >= check_out:
             raise serializers.ValidationError("Check-out date must be after check-in date.")
         
-        if not room:
+        if not room or not check_in or not check_out:
             return attrs
             
         overlapping_bookings = Booking.objects.filter(

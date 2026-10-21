@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import CustomCalendar from '../components/CustomCalendar';
 import api from '../services/api';
 import { getImageUrl } from '../utils/formatImage';
 
@@ -10,14 +9,11 @@ const BookingPage = () => {
   const navigate = useNavigate();
   const [room, setRoom] = useState(null);
   const [formData, setFormData] = useState({
-    check_in_date: '',
-    check_out_date: '',
     adults: 1,
     kids: 0,
     guest_name: '',
     guest_phone: ''
   });
-  const [bookedDates, setBookedDates] = useState([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [redirectingToWhatsApp, setRedirectingToWhatsApp] = useState(false);
@@ -47,168 +43,60 @@ const BookingPage = () => {
       try {
         const roomRes = await api.get(`rooms/list/${id}/`);
         setRoom(roomRes.data);
-        const bookedRes = await api.get(`rooms/list/${id}/booked_dates/`);
-        setBookedDates(bookedRes.data);
-        setLoading(false);
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching room:", error);
+      } finally {
         setLoading(false);
       }
     };
     fetchData();
   }, [id]);
 
-  // Smart Defaults: Auto-select next available dates
-  useEffect(() => {
-    if (room && !loading && !formData.check_in_date) {
-      const getNextAvailableDates = () => {
-        let checkIn = new Date();
-        checkIn.setHours(0,0,0,0);
-        let checkOut = new Date(checkIn);
-        checkOut.setDate(checkOut.getDate() + 1);
-
-        const isDateBooked = (dStr) => bookedDates.some(b => (dStr >= b.check_in && dStr < b.check_out));
-        
-        for(let attempts = 0; attempts < 30; attempts++) {
-          const inStr = checkIn.toISOString().split('T')[0];
-          const outStr = checkOut.toISOString().split('T')[0];
-          if (!isDateBooked(inStr) && !isDateBooked(outStr) && 
-              !bookedDates.some(b => (b.check_in >= inStr && b.check_in < outStr))) {
-              return { checkIn: inStr, checkOut: outStr };
-          }
-          checkIn.setDate(checkIn.getDate() + 1);
-          checkOut.setDate(checkOut.getDate() + 1);
-        }
-        return { checkIn: '', checkOut: '' };
-      };
-
-      const defaults = getNextAvailableDates();
-      setFormData(prev => ({
-        ...prev,
-        check_in_date: defaults.checkIn,
-        check_out_date: defaults.checkOut
-      }));
-    }
-  }, [room, loading, bookedDates]);
-
-  const handleDateChange = (date) => {
-    if (!date) {
-        setFormData({ ...formData, check_in_date: '', check_out_date: '' });
-        return;
-    }
-    
-    if (date) {
-        const offsetDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
-        const dStr = offsetDate.toISOString().split('T')[0];
-        
-        if (!formData.check_in_date || (formData.check_in_date && formData.check_out_date)) {
-            setFormData({ ...formData, check_in_date: dStr, check_out_date: '' });
-        } else if (formData.check_in_date && !formData.check_out_date) {
-            if (new Date(dStr) > new Date(formData.check_in_date)) {
-                // Check if there are booked dates in between
-                const isConflict = bookedDates.some(booking => {
-                    return (booking.check_in >= formData.check_in_date && booking.check_in < dStr) ||
-                           (booking.check_out > formData.check_in_date && booking.check_out <= dStr) ||
-                           (booking.check_in <= formData.check_in_date && booking.check_out >= dStr);
-                });
-                if (isConflict) {
-                    toast.error("You cannot book dates that include already reserved days.");
-                    setFormData({ ...formData, check_in_date: dStr, check_out_date: '' });
-                } else {
-                    setFormData({ ...formData, check_out_date: dStr });
-                }
-            } else {
-                setFormData({ ...formData, check_in_date: dStr, check_out_date: '' });
-            }
-        }
-    }
-  };
-
   const hasPrice = room?.price_per_night !== null && room?.price_per_night !== undefined && Number(room?.price_per_night) > 0;
-
-  const calculateTotal = () => {
-    if (!formData.check_in_date || !formData.check_out_date || !room || !hasPrice) return 0;
-    const start = new Date(formData.check_in_date + 'T00:00:00');
-    const end = new Date(formData.check_out_date + 'T00:00:00');
-    const diffTime = end - start;
-    if (diffTime <= 0) return Number(room.price_per_night);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays * Number(room.price_per_night);
-  };
-
-  const calculateDays = () => {
-    if (!formData.check_in_date || !formData.check_out_date) return 1;
-    const start = new Date(formData.check_in_date + 'T00:00:00');
-    const end = new Date(formData.check_out_date + 'T00:00:00');
-    const diffTime = end - start;
-    return diffTime > 0 ? Math.ceil(diffTime / (1000 * 60 * 60 * 24)) : 1;
-  };
-
-  const formatDisplayDate = (dateStr) => {
-    if (!dateStr) return '';
-    try {
-      const d = new Date(dateStr + 'T00:00:00');
-      return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-    } catch {
-      return dateStr;
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.check_in_date || !formData.check_out_date) {
-        toast.error("Please select both check-in and check-out dates.");
-        return;
+    if (!formData.guest_name.trim() || !formData.guest_phone.trim()) {
+      toast.error("Please enter your name and contact phone number.");
+      return;
     }
-    
+
     setProcessing(true);
     try {
-      // 1. Create Booking in database (Method 1: Holds dates immediately on calendar)
-      const { guest_name, guest_phone, ...bookingPayload } = formData;
+      // 1. Create Booking inquiry in database
       const res = await api.post('bookings/', {
         room: id,
-        ...bookingPayload
+        guest_name: formData.guest_name.trim(),
+        guest_phone: formData.guest_phone.trim(),
+        adults: formData.adults,
+        kids: formData.kids
       });
       const newBooking = res.data;
       const bookingRef = newBooking.booking_key || `#${newBooking.id}`;
-      const nights = calculateDays();
-      const totalAmount = newBooking.total_amount 
-        ? Number(newBooking.total_amount).toLocaleString('en-IN')
-        : calculateTotal().toLocaleString('en-IN');
-      const inDateFormatted = formatDisplayDate(formData.check_in_date);
-      const outDateFormatted = formatDisplayDate(formData.check_out_date);
 
       // 2. Prepare pre-filled WhatsApp message
       const message = `🌿 *Esmeralda Boutique Resort Stay Reservation* 🌿\n\n` +
         `Hello, I would like to book a stay with the following details:\n\n` +
         `📌 *Booking Ref:* ${bookingRef}\n` +
-        (formData.guest_name ? `👤 *Guest Name:* ${formData.guest_name}\n` : '') +
-        (formData.guest_phone ? `📞 *Contact Phone:* ${formData.guest_phone}\n` : '') +
+        `👤 *Guest Name:* ${formData.guest_name.trim()}\n` +
+        `📞 *Contact Phone:* ${formData.guest_phone.trim()}\n` +
         `🏨 *Room:* ${room.category_name}${room.room_number ? ` (Room ${room.room_number})` : ''}\n` +
-        `📅 *Check-in:* ${inDateFormatted}\n` +
-        `📅 *Check-out:* ${outDateFormatted}\n` +
-        `🌙 *Duration:* ${nights} Night${nights > 1 ? 's' : ''}\n` +
         `👥 *Guests:* ${formData.adults} Adult${formData.adults > 1 ? 's' : ''}${formData.kids > 0 ? `, ${formData.kids} Child${formData.kids > 1 ? 'ren' : ''}` : ''}\n` +
-        (hasPrice ? `💰 *Estimated Total:* ₹${totalAmount}\n\n` : '\n') +
-        `Please confirm my reservation and share payment details. Thank you!`;
+        (hasPrice ? `💰 *Room Rate:* ₹${Number(room.price_per_night).toLocaleString('en-IN')} / night\n\n` : '\n') +
+        `Please confirm room availability and assist me with booking. Thank you!`;
 
       const phone = "918138011207";
       const targetUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
       setBookingDetails({
         ref: bookingRef,
-        inDate: inDateFormatted,
-        outDate: outDateFormatted,
-        nights,
-        total: hasPrice ? totalAmount : null
+        guestName: formData.guest_name.trim(),
+        guestPhone: formData.guest_phone.trim(),
+        adults: formData.adults,
+        kids: formData.kids
       });
       setWhatsappLink(targetUrl);
       setRedirectingToWhatsApp(true);
-
-      // Refresh booked dates so calendar instantly reflects the hold
-      api.get(`rooms/list/${id}/booked_dates/`)
-        .then(bookedRes => setBookedDates(bookedRes.data))
-        .catch(() => {});
 
       // 3. Open WhatsApp
       setTimeout(() => {
@@ -216,7 +104,35 @@ const BookingPage = () => {
       }, 1200);
 
     } catch (error) {
-      toast.error(error.response?.data?.non_field_errors?.[0] || error.response?.data?.detail || 'Booking failed. These dates may have just been reserved.');
+      console.error("Booking creation error, using direct WhatsApp fallback:", error);
+      const fallbackRef = `ESM-${Math.floor(100000 + Math.random() * 900000)}`;
+      const message = `🌿 *Esmeralda Boutique Resort Stay Reservation* 🌿\n\n` +
+        `Hello, I would like to book a stay with the following details:\n\n` +
+        `📌 *Inquiry Ref:* ${fallbackRef}\n` +
+        `👤 *Guest Name:* ${formData.guest_name.trim()}\n` +
+        `📞 *Contact Phone:* ${formData.guest_phone.trim()}\n` +
+        `🏨 *Room:* ${room.category_name}${room.room_number ? ` (Room ${room.room_number})` : ''}\n` +
+        `👥 *Guests:* ${formData.adults} Adult${formData.adults > 1 ? 's' : ''}${formData.kids > 0 ? `, ${formData.kids} Child${formData.kids > 1 ? 'ren' : ''}` : ''}\n` +
+        (hasPrice ? `💰 *Room Rate:* ₹${Number(room.price_per_night).toLocaleString('en-IN')} / night\n\n` : '\n') +
+        `Please confirm room availability and assist me with booking. Thank you!`;
+
+      const phone = "918138011207";
+      const targetUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+      setBookingDetails({
+        ref: fallbackRef,
+        guestName: formData.guest_name.trim(),
+        guestPhone: formData.guest_phone.trim(),
+        adults: formData.adults,
+        kids: formData.kids
+      });
+      setWhatsappLink(targetUrl);
+      setRedirectingToWhatsApp(true);
+
+      setTimeout(() => {
+        window.open(targetUrl, '_blank') || (window.location.href = targetUrl);
+      }, 1200);
+    } finally {
       setProcessing(false);
     }
   };
@@ -240,12 +156,12 @@ const BookingPage = () => {
           <div className="mb-4 animate__animated animate__bounceIn" style={{ color: '#25D366' }}>
             <i className="fab fa-whatsapp" style={{ fontSize: '5.5rem' }}></i>
           </div>
-          <h2 className="fw-bold font-serif-luxury animate__animated animate__fadeInUp mb-2 text-center">Dates Held Successfully!</h2>
+          <h2 className="fw-bold font-serif-luxury animate__animated animate__fadeInUp mb-2 text-center">Reservation Request Ready!</h2>
           <div className="badge bg-light text-dark border font-monospace px-3 py-2 fs-6 mb-3 animate__animated animate__fadeInUp">
             Ref: {bookingDetails?.ref}
           </div>
           <p className="text-muted text-center mb-4 animate__animated animate__fadeInUp" style={{ maxWidth: '480px' }}>
-            Your stay from <strong>{bookingDetails?.inDate}</strong> to <strong>{bookingDetails?.outDate}</strong> is now reserved on our calendar. Opening WhatsApp with all details...
+            Your reservation details for <strong>{room.category_name}</strong> have been prepared. Opening WhatsApp to connect with our resort desk...
           </p>
           
           <div className="d-flex flex-column align-items-center gap-3 animate__animated animate__fadeInUp">
@@ -288,33 +204,31 @@ const BookingPage = () => {
           </div>
           
           <div className="p-5 bg-white">
-            <h5 className="text-uppercase letter-spacing-1 small text-muted fw-bold mb-4">Summary</h5>
+            <h5 className="text-uppercase letter-spacing-1 small text-muted fw-bold mb-4">Stay Overview</h5>
             {hasPrice && (
               <div className="d-flex justify-content-between mb-3 border-bottom pb-3">
                  <span className="text-muted">Rate per night</span>
-                 <span className="fw-bold">₹{room.price_per_night}</span>
+                 <span className="fw-bold fs-5 text-accent">₹{Number(room.price_per_night).toLocaleString('en-IN')}</span>
               </div>
             )}
             <div className="d-flex justify-content-between mb-3 border-bottom pb-3">
-               <span className="text-muted">Nights</span>
-               <span className="fw-bold">{calculateDays()}</span>
+               <span className="text-muted">Check-in</span>
+               <span className="fw-semibold">From {room.check_in_time}</span>
             </div>
-            {hasPrice && (
-              <div className="d-flex justify-content-between align-items-center mt-4 border-bottom pb-3">
-                 <span className="fw-bold fs-5 text-dark">Total</span>
-                 <span className="fw-bold fs-3 text-accent">₹{calculateTotal().toFixed(2)}</span>
-              </div>
-            )}
+            <div className="d-flex justify-content-between mb-3 border-bottom pb-3">
+               <span className="text-muted">Check-out</span>
+               <span className="fw-semibold">Until {room.check_out_time}</span>
+            </div>
             <div className="mt-4 p-3 rounded-3 bg-light text-muted small d-flex align-items-center">
                <i className="fab fa-whatsapp text-success fs-3 me-3"></i>
-               <span>Instant booking & date lock via WhatsApp on +91 81380 11207</span>
+               <span>Direct booking inquiry & assistance via WhatsApp on +91 81380 11207</span>
             </div>
           </div>
         </div>
 
         {/* RIGHT PANEL - Booking Form */}
         <div className="col-lg-7 col-xl-8 overflow-auto" style={{ height: 'calc(100vh - 70px)' }}>
-          <div className="container py-5 px-4 px-md-5 mx-auto" style={{ maxWidth: '800px' }}>
+          <div className="container py-5 px-4 px-md-5 mx-auto" style={{ maxWidth: '720px' }}>
             
             {/* Mobile Header (Hidden on Desktop) */}
             <div className="d-lg-none mb-4 pb-4 border-bottom">
@@ -323,74 +237,53 @@ const BookingPage = () => {
               </button>
               <h2 className="font-serif-luxury fw-bold mb-1">{room.category_name}</h2>
               {hasPrice && (
-                <p className="text-accent fw-bold mb-0">₹{room.price_per_night} / night</p>
+                <p className="text-accent fw-bold mb-0">₹{Number(room.price_per_night).toLocaleString('en-IN')} / night</p>
               )}
             </div>
 
-            <div className="d-flex align-items-center gap-3 mb-5">
-               <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: '40px', height: '40px' }}>1</div>
-               <h3 className="mb-0 fw-bold font-serif-luxury">Select Dates</h3>
+            <div className="mb-4">
+              <span className="text-accent text-uppercase fw-bold letter-spacing-2 small d-block mb-1">Direct Stay Reservation</span>
+              <h2 className="font-serif-luxury fw-bold display-6 mb-2">Guest Information</h2>
+              <p className="text-muted">Enter your contact details and guest count to reserve this room directly with us via WhatsApp.</p>
             </div>
             
             <form onSubmit={handleSubmit}>
-              <div className="card shadow-sm border-0 rounded-4 overflow-hidden mb-5">
-                <div className="card-body p-3 p-md-5">
-                  <CustomCalendar 
-                    checkInDate={formData.check_in_date}
-                    checkOutDate={formData.check_out_date}
-                    onDateChange={handleDateChange}
-                    bookedDates={bookedDates}
-                    minDate={new Date()}
-                  />
+              <div className="card shadow-sm border-0 rounded-4 mb-4">
+                <div className="card-body p-4 p-md-5">
                   
-                  <div className="row mt-4 pt-4 border-top">
-                    <div className="col-12 col-md-6 border-mobile-bottom pb-3 mb-3 pb-md-0 mb-md-0 border-desktop-end">
-                      <small className="text-muted d-block text-uppercase letter-spacing-1 fw-bold mb-1" style={{ fontSize: '0.7rem' }}>Check-in</small>
-                      <div className="fw-bold text-dark fs-5">{formData.check_in_date || 'Select date'}</div>
-                      <small className="text-muted">From {room.check_in_time}</small>
-                    </div>
-                    <div className="col-12 col-md-6 ps-md-4">
-                      <small className="text-muted d-block text-uppercase letter-spacing-1 fw-bold mb-1" style={{ fontSize: '0.7rem' }}>Check-out</small>
-                      <div className="fw-bold text-dark fs-5">{formData.check_out_date || 'Select date'}</div>
-                      <small className="text-muted">Until {room.check_out_time}</small>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="d-flex align-items-center gap-3 mb-5 mt-5">
-                 <div className="bg-dark text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style={{ width: '40px', height: '40px' }}>2</div>
-                 <h3 className="mb-0 fw-bold font-serif-luxury">Guest Details</h3>
-              </div>
-
-              <div className="card shadow-sm border-0 rounded-4 mb-5">
-                <div className="card-body p-3 p-md-5">
-                  
-                  {/* Optional Guest Contact Details (No login required) */}
-                  <div className="row g-3 mb-4 pb-4 border-bottom">
+                  {/* Guest Contact Details */}
+                  <div className="row g-4 mb-4 pb-4 border-bottom">
                     <div className="col-12 col-md-6">
-                      <label className="form-label small text-uppercase letter-spacing-1 fw-bold text-muted mb-1" style={{ fontSize: '0.75rem' }}>
-                        Your Name <span className="text-muted fw-normal">(Optional)</span>
+                      <label className="form-label small text-uppercase letter-spacing-1 fw-bold text-muted mb-2" style={{ fontSize: '0.75rem' }}>
+                        Your Full Name <span className="text-danger">*</span>
                       </label>
-                      <input 
-                        type="text" 
-                        className="form-control rounded-3 py-2 px-3 fs-6" 
-                        placeholder="e.g. Rahul Sharma"
-                        value={formData.guest_name || ''}
-                        onChange={(e) => setFormData({ ...formData, guest_name: e.target.value })}
-                      />
+                      <div className="input-group">
+                        <span className="input-group-text bg-light border-end-0 text-muted"><i className="far fa-user"></i></span>
+                        <input 
+                          type="text" 
+                          className="form-control rounded-end-3 py-2 px-3 fs-6" 
+                          placeholder="e.g. Rahul Sharma"
+                          required
+                          value={formData.guest_name}
+                          onChange={(e) => setFormData({ ...formData, guest_name: e.target.value })}
+                        />
+                      </div>
                     </div>
                     <div className="col-12 col-md-6">
-                      <label className="form-label small text-uppercase letter-spacing-1 fw-bold text-muted mb-1" style={{ fontSize: '0.75rem' }}>
-                        Contact Phone <span className="text-muted fw-normal">(Optional)</span>
+                      <label className="form-label small text-uppercase letter-spacing-1 fw-bold text-muted mb-2" style={{ fontSize: '0.75rem' }}>
+                        Contact Phone / WhatsApp <span className="text-danger">*</span>
                       </label>
-                      <input 
-                        type="tel" 
-                        className="form-control rounded-3 py-2 px-3 fs-6" 
-                        placeholder="e.g. 9876543210"
-                        value={formData.guest_phone || ''}
-                        onChange={(e) => setFormData({ ...formData, guest_phone: e.target.value })}
-                      />
+                      <div className="input-group">
+                        <span className="input-group-text bg-light border-end-0 text-muted"><i className="fas fa-phone-alt"></i></span>
+                        <input 
+                          type="tel" 
+                          className="form-control rounded-end-3 py-2 px-3 fs-6" 
+                          placeholder="e.g. 9876543210"
+                          required
+                          value={formData.guest_phone}
+                          onChange={(e) => setFormData({ ...formData, guest_phone: e.target.value })}
+                        />
+                      </div>
                     </div>
                   </div>
 
@@ -461,21 +354,6 @@ const BookingPage = () => {
                 </div>
               </div>
 
-              {/* Mobile Total Price (Hidden on Desktop) */}
-              {hasPrice && (
-                <div className="d-lg-none card shadow-sm border-0 rounded-4 mb-5 bg-dark text-white">
-                  <div className="card-body p-4 d-flex justify-content-between align-items-center">
-                    <div>
-                      <span className="d-block text-white-50 text-uppercase letter-spacing-1 small mb-1">Total Amount</span>
-                      <h3 className="mb-0 fw-bold">₹{calculateTotal().toFixed(2)}</h3>
-                    </div>
-                    <div className="text-end text-white-50 small">
-                      {calculateDays()} Nights
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Submit Button */}
               <button 
                 type="submit" 
@@ -491,7 +369,7 @@ const BookingPage = () => {
                 {processing ? (
                   <>
                     <span className="spinner-border spinner-border-sm me-3" role="status" aria-hidden="true"></span>
-                    Holding Dates & Opening WhatsApp...
+                    Opening WhatsApp...
                   </>
                 ) : (
                   <>
@@ -503,8 +381,8 @@ const BookingPage = () => {
               
               <div className="text-center mt-3">
                 <p className="text-muted small mb-1">
-                  <i className="fas fa-calendar-check me-2 text-success"></i>
-                  Your selected dates will be held immediately on our calendar.
+                  <i className="fas fa-check-circle me-2 text-success"></i>
+                  Connects directly with Esmeralda Boutique Resort desk on WhatsApp.
                 </p>
                 <small className="text-muted opacity-75">
                   Direct WhatsApp: <a href="tel:+918138011207" className="text-muted text-decoration-none fw-semibold">+91 81380 11207</a>
