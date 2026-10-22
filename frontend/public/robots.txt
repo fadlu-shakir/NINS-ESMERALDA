@@ -1,0 +1,5 @@
+# Robots.txt for Esmeralda Boutique Resort
+User-agent: *
+Allow: /
+
+Sitemap: https://esmeraldaboutiqueresort.com/sitemap.xml
